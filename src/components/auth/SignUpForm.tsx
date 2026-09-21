@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Phone, Globe, Briefcase, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, Phone, Globe, Eye, EyeOff, ArrowRight, MapPin, Navigation, Loader2 } from 'lucide-react';
 import { registerWithEmail, loginWithGoogle, loginWithApple, getFriendlyAuthErrorMessage } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
-import { ACCOUNT_PURPOSES, COUNTRIES } from '../../config/constants';
-import type { AccountPurpose } from '../../types/auth';
+import { COUNTRIES } from '../../config/constants';
 import { PhoneOTPModal } from './PhoneOTPModal';
+import { detectCurrentLocation } from '../../utils/location';
 
 interface SignUpFormProps {
   onSuccess: () => void;
@@ -20,7 +20,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [country, setCountry] = useState('India');
-  const [accountPurpose, setAccountPurpose] = useState<AccountPurpose>('Looking to Buy');
+  const [location, setLocation] = useState('');
+  const [detectingLocation, setDetectingLocation] = useState(false);
 
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
@@ -30,6 +31,20 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
   const [error, setError] = useState<string | null>(null);
 
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+
+  const handleDetectLocation = async () => {
+    setDetectingLocation(true);
+    setError(null);
+    try {
+      const loc = await detectCurrentLocation();
+      setLocation(`${loc.city}${loc.state ? `, ${loc.state}` : ''}`);
+      if (loc.country) setCountry(loc.country);
+    } catch (err: any) {
+      setError(err.message || 'Could not auto-detect location. Please enter manually.');
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +74,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
         phoneNumber,
         password,
         country,
-        accountPurpose
+        'Looking to Buy' // default buyer role
       );
       setUserDirectly(profile);
       onSuccess();
@@ -257,18 +272,42 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
           </div>
 
           <div className="form-group">
-            <label className="form-label">Account Purpose</label>
-            <div className="input-with-icon">
-              <Briefcase className="input-icon-left" size={18} />
-              <select
-                className="form-input has-left-icon"
-                value={accountPurpose}
-                onChange={(e) => setAccountPurpose(e.target.value as AccountPurpose)}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>City / Location</label>
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={detectingLocation}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: 'var(--gold-primary)',
+                  cursor: 'pointer',
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
               >
-                {ACCOUNT_PURPOSES.map(p => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
+                {detectingLocation ? (
+                  <Loader2 size={12} className="spinner" />
+                ) : (
+                  <Navigation size={12} />
+                )}
+                {detectingLocation ? 'Detecting...' : 'Auto-detect Location'}
+              </button>
+            </div>
+            <div className="input-with-icon">
+              <MapPin className="input-icon-left" size={18} />
+              <input
+                type="text"
+                className="form-input has-left-icon"
+                placeholder="e.g. Mumbai, Maharashtra"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+              />
             </div>
           </div>
         </div>

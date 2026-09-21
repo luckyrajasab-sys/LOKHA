@@ -267,3 +267,40 @@ export async function markAllNotificationsAsRead(userId: string): Promise<void> 
   const promises = snap.docs.map(d => updateDoc(d.ref, { isRead: true }));
   await Promise.all(promises);
 }
+
+// ==============================================================================
+// 6. USER COMMUNICATIONS & PREMIUM TIERS
+// ==============================================================================
+
+export const FREE_COMMUNICATION_LIMIT = 3;
+
+export async function recordUserCommunication(userId: string): Promise<void> {
+  try {
+    const userRef = doc(db, USERS_COL, userId);
+    await updateDoc(userRef, {
+      communicationCount: increment(1),
+      updatedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.warn('[User] Failed to increment communication count:', err);
+  }
+}
+
+export async function upgradeUserToPremium(
+  userId: string,
+  tier: 'silver' | 'gold' | 'platinum'
+): Promise<void> {
+  const userRef = doc(db, USERS_COL, userId);
+  await updateDoc(userRef, {
+    isPremium: true,
+    premiumTier: tier,
+    updatedAt: new Date().toISOString()
+  });
+
+  await createNotification(userId, {
+    type: 'system',
+    title: 'Lokha Premium Membership Activated!',
+    message: `Congratulations! Your account has been upgraded to the Lokha ${tier.toUpperCase()} Tier. Enjoy direct property owner access and priority concierge.`
+  });
+}
+

@@ -19,14 +19,18 @@ export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
+  const [globalSearchLocation, setGlobalSearchLocation] = useState<string>('');
 
   const handleNavigate = (view: string) => {
     setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query: string, location?: string) => {
     setGlobalSearchQuery(query);
+    if (location !== undefined) {
+      setGlobalSearchLocation(location);
+    }
     setCurrentView('properties');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -72,7 +76,12 @@ export const App: React.FC = () => {
       case 'properties':
       case 'stays':
       case 'projects':
-        return <PropertiesPage initialSearchQuery={globalSearchQuery} />;
+        return (
+          <PropertiesPage
+            initialSearchQuery={globalSearchQuery}
+            initialLocationQuery={globalSearchLocation}
+          />
+        );
 
       default:
         return <HomePage onNavigate={handleNavigate} />;

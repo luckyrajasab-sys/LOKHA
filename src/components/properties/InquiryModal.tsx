@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Send, Phone, CheckCircle, Building } from 'lucide-react';
-import { createInquiry } from '../../firebase/firestore';
+import { createInquiry, recordUserCommunication } from '../../firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import type { PropertyDocument } from '../../types/firebaseModels';
 
@@ -10,15 +10,17 @@ interface InquiryModalProps {
   onClose: () => void;
   property: PropertyDocument | null;
   onSuccess: () => void;
+  onOpenPremium?: () => void;
 }
 
 export const InquiryModal: React.FC<InquiryModalProps> = ({
   isOpen,
   onClose,
   property,
-  onSuccess
+  onSuccess,
+  onOpenPremium
 }) => {
-  const { user } = useAuth();
+  const { user, userDoc } = useAuth();
   const [message, setMessage] = useState('Hello, I am interested in this property. Please contact me with more information regarding availability and viewings.');
   const [phone, setPhone] = useState(user?.phone || '');
   const [loading, setLoading] = useState(false);
@@ -27,12 +29,27 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
 
   if (!property) return null;
 
+  const count = userDoc?.communicationCount || 0;
+  const isPremium = Boolean(userDoc?.isPremium);
+  const isLimitReached = !isPremium && count >= 3;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       setError('Please sign in to submit an inquiry.');
       return;
     }
+
+    if (isLimitReached) {
+      if (onOpenPremium) {
+        onClose();
+        onOpenPremium();
+      } else {
+        setError('You have reached the 3-free communication limit. Please upgrade to Premium (₹350, ₹500, ₹750).');
+      }
+      return;
+    }
+
     if (!message.trim()) {
       setError('Please provide an inquiry message.');
       return;
@@ -53,6 +70,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
         message: message.trim(),
         phone: phone.trim()
       });
+      await recordUserCommunication(user.id);
       setSubmitted(true);
       onSuccess();
     } catch (err: any) {
@@ -159,13 +177,50 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
             />
           </div>
 
+          {/* Communication Allowance Info */}
+          <div style={{
+            padding: '0.65rem 0.85rem',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: isLimitReached ? 'rgba(239, 68, 68, 0.12)' : 'rgba(212, 175, 55, 0.1)',
+            border: `1px solid ${isLimitReached ? 'rgba(239, 68, 68, 0.3)' : 'rgba(212, 175, 55, 0.25)'}`,
+            fontSize: '0.8rem',
+            marginBottom: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem',
+            flexWrap: 'wrap'
+          }}>
+            <span style={{ color: isLimitReached ? '#EF4444' : 'var(--text-secondary)' }}>
+              {isPremium
+                ? '⭐ Lokha Premium: Unlimited Communications'
+                : isLimitReached
+                ? 'Limit Reached: 3 free communications used.'
+                : `Free Communications Left: ${Math.max(0, 3 - count)} of 3`}
+            </span>
+
+            {isLimitReached && onOpenPremium && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenPremium();
+                }}
+                className="btn btn-primary btn-sm"
+                style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+              >
+                Upgrade (from ₹350)
+              </button>
+            )}
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || isLimitReached}
             className="btn btn-primary btn-full"
-            style={{ marginTop: '1rem' }}
+            style={{ marginTop: '0.5rem' }}
           >
-            {loading ? 'Transmitting Inquiry...' : 'Submit Real-time Inquiry'}
+            {loading ? 'Transmitting Inquiry...' : isLimitReached ? 'Upgrade Required to Inquire' : 'Submit Real-time Inquiry'}
             {!loading && <Send size={16} />}
           </button>
         </form>

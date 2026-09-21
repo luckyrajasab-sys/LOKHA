@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Building, CheckCheck } from 'lucide-react';
 import { subscribeToMessages } from '../../firebase/realtime';
-import { sendMessage } from '../../firebase/firestore';
+import { sendMessage, recordUserCommunication } from '../../firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import type { MessageDocument } from '../../types/firebaseModels';
 
@@ -12,6 +12,7 @@ interface ChatDrawerProps {
   recipientId: string;
   recipientName: string;
   propertyTitle?: string;
+  onOpenPremium?: () => void;
 }
 
 export const ChatDrawer: React.FC<ChatDrawerProps> = ({
@@ -20,13 +21,18 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   conversationId,
   recipientId,
   recipientName,
-  propertyTitle
+  propertyTitle,
+  onOpenPremium
 }) => {
-  const { user } = useAuth();
+  const { user, userDoc } = useAuth();
   const [messages, setMessages] = useState<MessageDocument[]>([]);
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const count = userDoc?.communicationCount || 0;
+  const isPremium = Boolean(userDoc?.isPremium);
+  const isLimitReached = !isPremium && count >= 3;
 
   useEffect(() => {
     if (!isOpen || !conversationId) return;
@@ -45,12 +51,21 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
     e.preventDefault();
     if (!inputText.trim() || !user || !conversationId || sending) return;
 
+    if (isLimitReached) {
+      if (onOpenPremium) {
+        onClose();
+        onOpenPremium();
+      }
+      return;
+    }
+
     setSending(true);
     const text = inputText;
     setInputText('');
 
     try {
       await sendMessage(conversationId, user.id, recipientId, text);
+      await recordUserCommunication(user.id);
     } catch (err) {
       console.error('Failed to send message:', err);
       setInputText(text); // Restore on failure
@@ -188,11 +203,51 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Communication Limit Warning or Info */}
+        {isLimitReached ? (
+          <div style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+            borderTop: '1px solid rgba(239, 68, 68, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem',
+            fontSize: '0.8rem'
+          }}>
+            <span style={{ color: '#EF4444' }}>Limit reached: 3 free communications used.</span>
+            {onOpenPremium && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenPremium();
+                }}
+                className="btn btn-primary btn-sm"
+                style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+              >
+                Upgrade (from ₹350)
+              </button>
+            )}
+          </div>
+        ) : (
+          <div style={{
+            padding: '0.35rem 1rem',
+            backgroundColor: 'var(--bg-secondary)',
+            borderTop: '1px solid var(--border-medium)',
+            fontSize: '0.72rem',
+            color: 'var(--text-tertiary)',
+            textAlign: 'right'
+          }}>
+            {isPremium ? '⭐ Lokha Premium: Unlimited Messages' : `Free communications left: ${Math.max(0, 3 - count)} of 3`}
+          </div>
+        )}
+
         {/* Input Bar */}
         <form
           onSubmit={handleSend}
           style={{
-            padding: '1rem',
+            padding: '0.85rem 1rem',
             borderTop: '1px solid var(--border-medium)',
             backgroundColor: 'var(--bg-secondary)',
             display: 'flex',
@@ -203,15 +258,15 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <input
             type="text"
             className="form-input"
-            placeholder="Type your message..."
+            placeholder={isLimitReached ? 'Upgrade to send more messages...' : 'Type your message...'}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            disabled={sending}
+            disabled={sending || isLimitReached}
             style={{ flex: 1 }}
           />
           <button
             type="submit"
-            disabled={!inputText.trim() || sending}
+            disabled={!inputText.trim() || sending || isLimitReached}
             className="btn btn-primary btn-sm"
             style={{ height: '42px', width: '42px', padding: 0, borderRadius: 'var(--radius-md)' }}
           >

@@ -13,12 +13,12 @@ import {
   Moon,
   LogOut,
   LogIn,
-  ChevronLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { LokhaLogo } from './LokhaLogo';
 
 interface SidebarProps {
   currentView: string;
@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleSidebarClick = () => {
-    // Whenever mouse clicks on the sidebar, expand it if collapsed
+    // Clicking anywhere on collapsed sidebar expands it
     if (!isExpanded) {
       onToggleExpanded();
     }
@@ -71,9 +71,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         left: 0,
         bottom: 0,
         width: isExpanded ? 'var(--sidebar-expanded-w, 260px)' : 'var(--sidebar-collapsed-w, 68px)',
-        backgroundColor: '#0A0A0E',
-        borderRight: '1px solid rgba(212, 175, 55, 0.18)',
-        boxShadow: isExpanded ? '12px 0 32px rgba(0, 0, 0, 0.65)' : '4px 0 16px rgba(0, 0, 0, 0.45)',
+        backgroundColor: 'var(--bg-secondary, #0D0D11)',
+        borderRight: '1px solid var(--border-gold, rgba(212, 175, 55, 0.22))',
+        boxShadow: isExpanded ? '12px 0 32px rgba(0, 0, 0, 0.55)' : '4px 0 16px rgba(0, 0, 0, 0.35)',
         zIndex: 150,
         display: 'flex',
         flexDirection: 'column',
@@ -84,50 +84,76 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }}
       aria-label="Main Sidebar Navigation"
     >
-      {/* Sidebar Header: Logo & Toggle Button */}
+      {/* Sidebar Header: Expanding / Collapsing Button */}
       <div style={{
         height: '4.75rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: isExpanded ? 'space-between' : 'center',
         padding: isExpanded ? '0 1.25rem' : '0',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+        borderBottom: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
         position: 'relative'
       }}>
         {isExpanded ? (
-          <div onClick={(e) => handleItemClick(e, 'home')} style={{ cursor: 'pointer' }}>
-            <LokhaLogo variant="full" size="sm" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              color: 'var(--gold-primary)'
+            }}>
+              Navigation Menu
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpanded();
+              }}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--bg-tertiary, #131319)',
+                border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.25))',
+                color: 'var(--gold-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)'
+              }}
+              title="Collapse Sidebar"
+              aria-label="Collapse Sidebar"
+            >
+              <PanelLeftClose size={18} />
+            </button>
           </div>
         ) : (
-          <div onClick={(e) => handleItemClick(e, 'home')} title="Lokha Home" style={{ cursor: 'pointer' }}>
-            <LokhaLogo variant="icon-only" size={32} />
-          </div>
-        )}
-
-        {/* Expand / Collapse Button */}
-        {isExpanded && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               onToggleExpanded();
             }}
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(212, 175, 55, 0.12)',
-              border: '1px solid rgba(212, 175, 55, 0.3)',
+              width: '42px',
+              height: '42px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--bg-tertiary, #131319)',
+              border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.35))',
               color: 'var(--gold-primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'background-color var(--transition-fast)'
+              boxShadow: 'var(--shadow-sm)',
+              transition: 'all var(--transition-fast)'
             }}
-            title="Collapse Sidebar"
-            aria-label="Collapse Sidebar"
+            title="Expand Sidebar (Click to Expand)"
+            aria-label="Expand Sidebar"
           >
-            <ChevronLeft size={16} />
+            <PanelLeftOpen size={20} />
           </button>
         )}
       </div>
@@ -181,11 +207,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       justifyContent: isExpanded ? 'flex-start' : 'center',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: isActive
-                        ? 'rgba(212, 175, 55, 0.14)'
+                        ? 'var(--gold-subtle, rgba(212, 175, 55, 0.14))'
                         : isHovered
-                        ? 'rgba(255, 255, 255, 0.04)'
+                        ? 'var(--bg-elevated, rgba(255, 255, 255, 0.05))'
                         : 'transparent',
-                      color: isActive ? 'var(--gold-primary)' : isHovered ? '#FFFFFF' : 'var(--text-secondary)',
+                      color: isActive ? 'var(--gold-primary)' : isHovered ? 'var(--text-primary)' : 'var(--text-secondary)',
                       borderLeft: isActive ? '3px solid var(--gold-primary)' : '3px solid transparent',
                       transition: 'all var(--transition-fast)',
                       cursor: 'pointer'
@@ -229,18 +255,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       left: 'calc(100% + 12px)',
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      backgroundColor: '#16161D',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-card, #16161D)',
+                      color: 'var(--text-primary, #FFFFFF)',
                       padding: '0.45rem 0.75rem',
                       borderRadius: 'var(--radius-md)',
-                      border: '1px solid rgba(212, 175, 55, 0.25)',
-                      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)',
+                      border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.3))',
+                      boxShadow: 'var(--shadow-md)',
                       fontSize: '0.75rem',
                       fontWeight: 600,
                       whiteSpace: 'nowrap',
                       zIndex: 200,
-                      pointerEvents: 'none',
-                      animation: 'modalIn 120ms ease forwards'
+                      pointerEvents: 'none'
                     }}>
                       {item.label}
                     </div>
@@ -291,11 +316,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         justifyContent: isExpanded ? 'flex-start' : 'center',
                         borderRadius: 'var(--radius-md)',
                         backgroundColor: isActive
-                          ? 'rgba(212, 175, 55, 0.14)'
+                          ? 'var(--gold-subtle, rgba(212, 175, 55, 0.14))'
                           : isHovered
-                          ? 'rgba(255, 255, 255, 0.04)'
+                          ? 'var(--bg-elevated, rgba(255, 255, 255, 0.05))'
                           : 'transparent',
-                        color: isActive ? 'var(--gold-primary)' : isHovered ? '#FFFFFF' : 'var(--text-secondary)',
+                        color: isActive ? 'var(--gold-primary)' : isHovered ? 'var(--text-primary)' : 'var(--text-secondary)',
                         borderLeft: isActive ? '3px solid var(--gold-primary)' : '3px solid transparent',
                         transition: 'all var(--transition-fast)',
                         cursor: 'pointer'
@@ -324,12 +349,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         left: 'calc(100% + 12px)',
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        backgroundColor: '#16161D',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-card, #16161D)',
+                        color: 'var(--text-primary, #FFFFFF)',
                         padding: '0.45rem 0.75rem',
                         borderRadius: 'var(--radius-md)',
-                        border: '1px solid rgba(212, 175, 55, 0.25)',
-                        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)',
+                        border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.3))',
+                        boxShadow: 'var(--shadow-md)',
                         fontSize: '0.75rem',
                         fontWeight: 600,
                         whiteSpace: 'nowrap',
@@ -378,11 +403,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   justifyContent: isExpanded ? 'flex-start' : 'center',
                   borderRadius: 'var(--radius-md)',
                   backgroundColor: currentView === 'dashboard'
-                    ? 'rgba(212, 175, 55, 0.14)'
+                    ? 'var(--gold-subtle, rgba(212, 175, 55, 0.14))'
                     : hoveredItem === 'dashboard'
-                    ? 'rgba(255, 255, 255, 0.04)'
+                    ? 'var(--bg-elevated, rgba(255, 255, 255, 0.05))'
                     : 'transparent',
-                  color: currentView === 'dashboard' ? 'var(--gold-primary)' : hoveredItem === 'dashboard' ? '#FFFFFF' : 'var(--text-secondary)',
+                  color: currentView === 'dashboard' ? 'var(--gold-primary)' : hoveredItem === 'dashboard' ? 'var(--text-primary)' : 'var(--text-secondary)',
                   borderLeft: currentView === 'dashboard' ? '3px solid var(--gold-primary)' : '3px solid transparent',
                   transition: 'all var(--transition-fast)',
                   cursor: 'pointer'
@@ -409,12 +434,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   left: 'calc(100% + 12px)',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  backgroundColor: '#16161D',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--bg-card, #16161D)',
+                  color: 'var(--text-primary, #FFFFFF)',
                   padding: '0.45rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)',
+                  border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.3))',
+                  boxShadow: 'var(--shadow-md)',
                   fontSize: '0.75rem',
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
@@ -443,11 +468,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   justifyContent: isExpanded ? 'flex-start' : 'center',
                   borderRadius: 'var(--radius-md)',
                   backgroundColor: currentView === 'settings'
-                    ? 'rgba(212, 175, 55, 0.14)'
+                    ? 'var(--gold-subtle, rgba(212, 175, 55, 0.14))'
                     : hoveredItem === 'settings'
-                    ? 'rgba(255, 255, 255, 0.04)'
+                    ? 'var(--bg-elevated, rgba(255, 255, 255, 0.05))'
                     : 'transparent',
-                  color: currentView === 'settings' ? 'var(--gold-primary)' : hoveredItem === 'settings' ? '#FFFFFF' : 'var(--text-secondary)',
+                  color: currentView === 'settings' ? 'var(--gold-primary)' : hoveredItem === 'settings' ? 'var(--text-primary)' : 'var(--text-secondary)',
                   borderLeft: currentView === 'settings' ? '3px solid var(--gold-primary)' : '3px solid transparent',
                   transition: 'all var(--transition-fast)',
                   cursor: 'pointer'
@@ -469,12 +494,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   left: 'calc(100% + 12px)',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  backgroundColor: '#16161D',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--bg-card, #16161D)',
+                  color: 'var(--text-primary, #FFFFFF)',
                   padding: '0.45rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)',
+                  border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.3))',
+                  boxShadow: 'var(--shadow-md)',
                   fontSize: '0.75rem',
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
@@ -492,11 +517,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Footer: Theme Toggle & Sign In / Out */}
       <div style={{
         padding: isExpanded ? '1rem 1.25rem' : '1rem 0.5rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        borderTop: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
         display: 'flex',
         flexDirection: 'column',
         gap: '0.5rem',
-        backgroundColor: '#08080B'
+        backgroundColor: 'var(--bg-tertiary, #0B0B0F)'
       }}>
         {/* Theme Toggle Button */}
         <button
@@ -509,20 +534,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '0.75rem',
-            padding: '0.5rem',
+            padding: '0.55rem',
             justifyContent: isExpanded ? 'flex-start' : 'center',
             borderRadius: 'var(--radius-md)',
-            color: 'var(--text-secondary)',
-            backgroundColor: 'transparent',
-            cursor: 'pointer'
+            color: 'var(--text-primary)',
+            backgroundColor: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
+            border: '1px solid var(--border-subtle)',
+            cursor: 'pointer',
+            transition: 'all var(--transition-fast)'
           }}
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
           aria-label="Toggle Theme"
         >
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          {theme === 'dark' ? <Sun size={18} color="var(--gold-primary)" /> : <Moon size={18} color="var(--gold-primary)" />}
           {isExpanded && (
-            <span style={{ fontSize: '0.8125rem' }}>
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>
+              {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
             </span>
           )}
         </button>
@@ -540,11 +567,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
-              padding: '0.5rem',
+              padding: '0.55rem',
               justifyContent: isExpanded ? 'flex-start' : 'center',
               borderRadius: 'var(--radius-md)',
               color: '#EF4444',
-              backgroundColor: 'transparent',
+              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
               cursor: 'pointer'
             }}
             title="Sign Out"
@@ -561,11 +589,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
-              padding: '0.5rem',
+              padding: '0.55rem',
               justifyContent: isExpanded ? 'flex-start' : 'center',
               borderRadius: 'var(--radius-md)',
               color: 'var(--gold-primary)',
-              backgroundColor: 'rgba(212, 175, 55, 0.08)',
+              backgroundColor: 'var(--gold-subtle, rgba(212, 175, 55, 0.12))',
+              border: '1px solid var(--border-gold)',
               cursor: 'pointer'
             }}
             title="Sign In"
@@ -578,8 +607,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Compact Click Hint */}
         {!isExpanded && (
-          <div style={{ textAlign: 'center', marginTop: '0.25rem' }}>
-            <ChevronRight size={14} color="var(--text-tertiary)" style={{ opacity: 0.5 }} />
+          <div style={{ textAlign: 'center', marginTop: '0.2rem' }}>
+            <ChevronRight size={13} color="var(--text-tertiary)" style={{ opacity: 0.6 }} />
           </div>
         )}
       </div>

@@ -13,7 +13,9 @@ import {
   AlertCircle,
   Map as MapIcon,
   Grid,
-  Columns
+  Columns,
+  Crosshair,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/common/Toast';
@@ -22,6 +24,9 @@ import { addFavorite, removeFavorite, getOrCreateConversation } from '../firebas
 import { InquiryModal } from '../components/properties/InquiryModal';
 import { ChatDrawer } from '../components/chat/ChatDrawer';
 import { PropertyMap } from '../components/properties/PropertyMap';
+import { PropertyDetailModal } from '../components/properties/PropertyDetailModal';
+import { PremiumModal } from '../components/common/PremiumModal';
+import { detectCurrentLocation } from '../utils/location';
 import type {
   PropertyDocument,
   PropertyType,
@@ -34,10 +39,14 @@ const COMMON_AMENITIES = ['Swimming Pool', 'Gym / Fitness Center', 'Sea View', '
 
 interface PropertiesPageProps {
   initialSearchQuery?: string;
+  initialLocationQuery?: string;
 }
 
-export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQuery = '' }) => {
-  const { user } = useAuth();
+export const PropertiesPage: React.FC<PropertiesPageProps> = ({
+  initialSearchQuery = '',
+  initialLocationQuery = ''
+}) => {
+  const { user, userDoc } = useAuth();
   const { showToast } = useToast();
 
   // Data & Real-time Listeners
@@ -49,18 +58,26 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
   // View Mode: Split (Map + List), Grid, or Map Only
   const [viewMode, setViewMode] = useState<'split' | 'grid' | 'map'>('split');
   const [selectedProperty, setSelectedProperty] = useState<PropertyDocument | null>(null);
+  const [detailModalProperty, setDetailModalProperty] = useState<PropertyDocument | null>(null);
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [locationQuery, setLocationQuery] = useState(initialLocationQuery);
+  const [isDetectingLoc, setIsDetectingLoc] = useState(false);
   const [selectedCity, setSelectedCity] = useState('All');
   const [selectedType, setSelectedType] = useState<PropertyType | 'All'>('All');
   const [selectedListingType, setSelectedListingType] = useState<PropertyListingType | 'All'>('All');
+  const [selectedPurpose, setSelectedPurpose] = useState<'All' | 'Buy' | 'Rent' | 'Lease' | 'Invest'>('All');
   const [selectedFurnished, setSelectedFurnished] = useState<FurnishedStatus | 'All'>('All');
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [minBedrooms, setMinBedrooms] = useState<number>(0);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Premium Modal State
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
+  const [premiumReason, setPremiumReason] = useState<string>('');
 
   // Modals & Chat Drawer
   const [inquiryTarget, setInquiryTarget] = useState<PropertyDocument | null>(null);
@@ -78,12 +95,18 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
     propertyTitle: ''
   });
 
-  // Synchronize initial query from top search bar
+  // Synchronize initial queries from navbar
   useEffect(() => {
-    if (initialSearchQuery) {
+    if (initialSearchQuery !== undefined) {
       setSearchQuery(initialSearchQuery);
     }
   }, [initialSearchQuery]);
+
+  useEffect(() => {
+    if (initialLocationQuery !== undefined) {
+      setLocationQuery(initialLocationQuery);
+    }
+  }, [initialLocationQuery]);
 
   // 1. Subscribe to Live Properties in Firestore
   useEffect(() => {
@@ -148,10 +171,31 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
     }
   };
 
-  // Start Instant Live Chat
+  // Detect Location via GPS
+  const handleDetectLocation = async () => {
+    try {
+      setIsDetectingLoc(true);
+      const loc = await detectCurrentLocation();
+      const place = loc.city ? (loc.state ? `${loc.city}, ${loc.state}` : loc.city) : loc.formattedAddress;
+      setLocationQuery(place);
+    } catch (err) {
+      console.warn('Location detection failed:', err);
+    } finally {
+      setIsDetectingLoc(false);
+    }
+  };
+
+  // Start Instant Live Chat with communication limit check
   const handleStartChat = async (property: PropertyDocument) => {
     if (!user) {
       showToast('Please sign in to message the property owner.', 'info');
+      return;
+    }
+
+    const count = userDoc?.communicationCount || 0;
+    if (!userDoc?.isPremium && count >= 3) {
+      setPremiumReason('You have used your 3 free communications with property owners. Please choose a plan below.');
+      setPremiumModalOpen(true);
       return;
     }
 
@@ -176,16 +220,56 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
     }
   };
 
-  // Filter client-side by text search query
+  // Open Inquiry modal with communication limit check
+  const handleOpenInquiry = (property: PropertyDocument) => {
+    if (!user) {
+      showToast('Please sign in to inquire on this property.', 'info');
+      return;
+    }
+
+    const count = userDoc?.communicationCount || 0;
+    if (!userDoc?.isPremium && count >= 3) {
+      setPremiumReason('You have used your 3 free communications with property owners. Please choose a plan below.');
+      setPremiumModalOpen(true);
+      return;
+    }
+
+    setInquiryTarget(property);
+  };
+
+  // Filter client-side by text query, location query, and purpose
   const filteredProperties = properties.filter((p) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      p.title.toLowerCase().includes(q) ||
-      p.city.toLowerCase().includes(q) ||
-      (p.address && p.address.toLowerCase().includes(q)) ||
-      (p.description && p.description.toLowerCase().includes(q))
-    );
+    // 1. Keyword search
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchKeyword =
+        p.title.toLowerCase().includes(q) ||
+        p.city.toLowerCase().includes(q) ||
+        (p.address && p.address.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q));
+      if (!matchKeyword) return false;
+    }
+
+    // 2. Location search
+    if (locationQuery.trim()) {
+      const loc = locationQuery.toLowerCase();
+      const matchLoc =
+        p.city.toLowerCase().includes(loc) ||
+        p.state.toLowerCase().includes(loc) ||
+        (p.address && p.address.toLowerCase().includes(loc)) ||
+        (p.pincode && p.pincode.toLowerCase().includes(loc));
+      if (!matchLoc) return false;
+    }
+
+    // 3. Purpose filter
+    if (selectedPurpose !== 'All') {
+      if (selectedPurpose === 'Buy' && p.listingType !== 'Sale') return false;
+      if (selectedPurpose === 'Rent' && p.listingType !== 'Rent') return false;
+      if (selectedPurpose === 'Lease' && p.listingType !== 'Lease') return false;
+      if (selectedPurpose === 'Invest' && p.price < 5000000) return false;
+    }
+
+    return true;
   });
 
   const uniqueCities = Array.from(new Set(properties.map(p => p.city).filter(Boolean)));
@@ -207,7 +291,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
       <div
         key={prop.propertyId}
         className="card"
-        onClick={() => setSelectedProperty(prop)}
+        onClick={() => {
+          setSelectedProperty(prop);
+          setDetailModalProperty(prop);
+        }}
         style={{
           padding: 0,
           overflow: 'hidden',
@@ -321,7 +408,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setInquiryTarget(prop);
+                  handleOpenInquiry(prop);
                 }}
                 className="btn btn-primary btn-sm"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem' }}
@@ -457,23 +544,66 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
         boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
         marginBottom: '2rem'
       }}>
+        {/* Row 1: Search, Location + GPS auto-detect, Purpose tabs */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-          <div className="input-with-icon" style={{ minWidth: '280px', flex: 1 }}>
-            <Search className="input-icon-left" size={18} />
+          {/* Keyword Search */}
+          <div className="input-with-icon" style={{ minWidth: '220px', flex: 1.2 }}>
+            <Search className="input-icon-left" size={17} color="var(--gold-primary)" />
             <input
               type="text"
               className="form-input has-left-icon"
-              placeholder="Search by city, title, or landmark..."
+              placeholder="Search by title, landmark, villa..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '0.4rem', backgroundColor: '#13131A', padding: '0.3rem', borderRadius: 'var(--radius-md)' }}>
-            {['All', 'Sale', 'Rent', 'Lease'].map((type) => (
+          {/* Location with Auto-detect */}
+          <div style={{ position: 'relative', minWidth: '200px', flex: 1, display: 'flex', alignItems: 'center' }}>
+            <MapPin size={16} color="var(--gold-primary)" style={{ position: 'absolute', left: '0.85rem', pointerEvents: 'none' }} />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="City or location..."
+              value={locationQuery}
+              onChange={(e) => setLocationQuery(e.target.value)}
+              style={{ paddingLeft: '2.5rem', paddingRight: '2.4rem' }}
+            />
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              disabled={isDetectingLoc}
+              title="Auto-detect current GPS location"
+              style={{
+                position: 'absolute',
+                right: '0.5rem',
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                backgroundColor: isDetectingLoc ? 'rgba(212, 175, 55, 0.25)' : 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+                color: 'var(--gold-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: isDetectingLoc ? 'wait' : 'pointer'
+              }}
+            >
+              {isDetectingLoc ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Crosshair size={14} />
+              )}
+            </button>
+          </div>
+
+          {/* Account Purpose / Looking For Filter Pills */}
+          <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#13131A', padding: '0.3rem', borderRadius: 'var(--radius-md)' }}>
+            {(['All', 'Buy', 'Rent', 'Lease', 'Invest'] as const).map((purpose) => (
               <button
-                key={type}
-                onClick={() => setSelectedListingType(type as any)}
+                key={purpose}
+                type="button"
+                onClick={() => setSelectedPurpose(purpose)}
                 style={{
                   padding: '0.35rem 0.85rem',
                   borderRadius: 'var(--radius-sm)',
@@ -481,12 +611,12 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
                   fontWeight: 600,
                   border: 'none',
                   cursor: 'pointer',
-                  backgroundColor: selectedListingType === type ? 'var(--gold-primary)' : 'transparent',
-                  color: selectedListingType === type ? 'var(--gold-text)' : 'var(--text-secondary)',
+                  backgroundColor: selectedPurpose === purpose ? 'var(--gold-primary)' : 'transparent',
+                  color: selectedPurpose === purpose ? '#070709' : 'var(--text-secondary)',
                   transition: 'all var(--transition-fast)'
                 }}
               >
-                {type}
+                {purpose === 'Buy' ? 'Buy (Sale)' : purpose === 'Invest' ? 'Investment' : purpose}
               </button>
             ))}
           </div>
@@ -739,11 +869,26 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
         </>
       )}
 
+      {/* Real-time Property Detail Modal (with Google Maps direct link) */}
+      <PropertyDetailModal
+        isOpen={Boolean(detailModalProperty)}
+        property={detailModalProperty}
+        onClose={() => setDetailModalProperty(null)}
+        onStartChat={(p) => handleStartChat(p)}
+        onInquire={(p) => handleOpenInquiry(p)}
+        isSaved={detailModalProperty ? favoriteIds.includes(detailModalProperty.propertyId) : false}
+        onToggleSave={(p) => handleToggleFavorite(p)}
+      />
+
       {/* Real-time Inquiry Modal */}
       <InquiryModal
         isOpen={Boolean(inquiryTarget)}
         onClose={() => setInquiryTarget(null)}
         property={inquiryTarget}
+        onOpenPremium={() => {
+          setPremiumReason('You have used your 3 free communications with property owners. Please choose a plan below to continue.');
+          setPremiumModalOpen(true);
+        }}
         onSuccess={() => {
           showToast('Inquiry submitted to the owner in real-time!', 'success');
         }}
@@ -757,6 +902,17 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({ initialSearchQue
         recipientId={activeChat.recipientId}
         recipientName={activeChat.recipientName}
         propertyTitle={activeChat.propertyTitle}
+        onOpenPremium={() => {
+          setPremiumReason('You have used your 3 free communications with property owners. Please choose a plan below to continue.');
+          setPremiumModalOpen(true);
+        }}
+      />
+
+      {/* Premium Membership Modal (₹350, ₹500, ₹750) */}
+      <PremiumModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
+        reason={premiumReason}
       />
     </div>
   );

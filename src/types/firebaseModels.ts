@@ -5,11 +5,17 @@ export interface UserDocument {
   fullName: string;
   email: string;
   phone: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
   profileImage: string;
   role: FirebaseUserRole;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  isPremium?: boolean;
+  premiumTier?: 'silver' | 'gold' | 'platinum';
+  communicationCount?: number;
 }
 
 export type PropertyType =

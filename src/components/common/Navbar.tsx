@@ -10,17 +10,21 @@ import {
   LogOut,
   ShieldCheck,
   Menu,
-  X
+  X,
+  MapPin,
+  Crosshair,
+  Loader2
 } from 'lucide-react';
 import { subscribeToNotifications } from '../../firebase/realtime';
 import { markNotificationAsRead } from '../../firebase/firestore';
 import type { NotificationDocument } from '../../types/firebaseModels';
 import { LokhaLogo } from './LokhaLogo';
+import { detectCurrentLocation } from '../../utils/location';
 
 interface NavbarProps {
   currentView: string;
   onNavigate: (view: string) => void;
-  onSearch?: (query: string) => void;
+  onSearch?: (query: string, location?: string) => void;
   onToggleSidebar?: () => void;
 }
 
@@ -34,6 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationDocument[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
+  const [isDetectingLoc, setIsDetectingLoc] = useState(false);
 
   // Real-time notification subscription
   useEffect(() => {
@@ -59,10 +65,23 @@ export const Navbar: React.FC<NavbarProps> = ({
     onNavigate('dashboard');
   };
 
+  const handleDetectLocation = async () => {
+    try {
+      setIsDetectingLoc(true);
+      const loc = await detectCurrentLocation();
+      const place = loc.city ? (loc.state ? `${loc.city}, ${loc.state}` : loc.city) : loc.formattedAddress;
+      setLocationQuery(place);
+    } catch (err) {
+      console.warn('Location detection failed:', err);
+    } finally {
+      setIsDetectingLoc(false);
+    }
+  };
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onSearch) {
-      onSearch(searchQuery);
+      onSearch(searchQuery, locationQuery);
     }
     onNavigate('properties');
   };
@@ -123,8 +142,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* 2. Central Luxury Global Search Bar */}
-        <div style={{ flex: 1, maxWidth: '640px', minWidth: '180px' }}>
+        {/* 2. Central Luxury Global Search Bar with Location & Auto-detect */}
+        <div style={{ flex: 1, maxWidth: '720px', minWidth: '200px' }}>
           <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '100%' }}>
             <div style={{
               position: 'relative',
@@ -132,51 +151,144 @@ export const Navbar: React.FC<NavbarProps> = ({
               alignItems: 'center',
               backgroundColor: '#0E0E14',
               borderRadius: 'var(--radius-full)',
-              border: '1px solid rgba(212, 175, 55, 0.28)',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
-              transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)'
+              border: '1px solid rgba(212, 175, 55, 0.32)',
+              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+              transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
+              overflow: 'hidden'
             }}>
-              <Search
-                size={17}
-                color="var(--gold-primary)"
-                style={{ position: 'absolute', left: '1.1rem', pointerEvents: 'none' }}
-              />
+              {/* Keyword Segment */}
+              <div style={{ position: 'relative', flex: 1.3, display: 'flex', alignItems: 'center', minWidth: '130px' }}>
+                <Search
+                  size={16}
+                  color="var(--gold-primary)"
+                  style={{ position: 'absolute', left: '1rem', pointerEvents: 'none' }}
+                />
 
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search luxury estates, penthouses, villas, or cities..."
-                style={{
-                  width: '100%',
-                  padding: '0.7rem 2.8rem 0.7rem 3rem',
-                  fontSize: '0.875rem',
-                  color: '#FFFFFF',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  letterSpacing: '0.01em'
-                }}
-              />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Estates, villas, penthouses..."
+                  style={{
+                    width: '100%',
+                    padding: '0.65rem 0.6rem 0.65rem 2.7rem',
+                    fontSize: '0.85rem',
+                    color: '#FFFFFF',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    letterSpacing: '0.01em'
+                  }}
+                />
 
-              {searchQuery && (
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    style={{
+                      position: 'absolute',
+                      right: '0.5rem',
+                      color: 'var(--text-tertiary)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    aria-label="Clear Search"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Middle Divider */}
+              <div style={{
+                width: '1px',
+                height: '24px',
+                backgroundColor: 'rgba(212, 175, 55, 0.25)',
+                margin: '0 2px',
+                flexShrink: 0
+              }} />
+
+              {/* Location & GPS Auto-detect Segment */}
+              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: '120px' }}>
+                <MapPin
+                  size={15}
+                  color="var(--gold-primary)"
+                  style={{ position: 'absolute', left: '0.75rem', pointerEvents: 'none' }}
+                />
+
+                <input
+                  type="text"
+                  value={locationQuery}
+                  onChange={(e) => setLocationQuery(e.target.value)}
+                  placeholder="Location or City..."
+                  style={{
+                    width: '100%',
+                    padding: '0.65rem 2.2rem 0.65rem 2.2rem',
+                    fontSize: '0.825rem',
+                    color: '#FFFFFF',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    outline: 'none'
+                  }}
+                />
+
+                {/* GPS Auto-detect button */}
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={handleDetectLocation}
+                  disabled={isDetectingLoc}
+                  title="Auto-detect current GPS location"
+                  aria-label="Auto-detect location"
                   style={{
                     position: 'absolute',
-                    right: '0.9rem',
-                    color: 'var(--text-tertiary)',
-                    cursor: 'pointer',
+                    right: '0.5rem',
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '50%',
+                    backgroundColor: isDetectingLoc ? 'rgba(212, 175, 55, 0.25)' : 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                    color: 'var(--gold-primary)',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    cursor: isDetectingLoc ? 'wait' : 'pointer',
+                    transition: 'all 0.2s'
                   }}
-                  aria-label="Clear Search"
                 >
-                  <X size={15} />
+                  {isDetectingLoc ? (
+                    <Loader2 size={13} className="animate-spin" />
+                  ) : (
+                    <Crosshair size={13} />
+                  )}
                 </button>
-              )}
+              </div>
+
+              {/* Submit Search Button */}
+              <button
+                type="submit"
+                style={{
+                  height: '34px',
+                  margin: '3px 4px 3px 0',
+                  padding: '0 0.85rem',
+                  borderRadius: 'var(--radius-full)',
+                  backgroundColor: 'var(--gold-primary)',
+                  color: '#070709',
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  flexShrink: 0
+                }}
+              >
+                Search
+              </button>
             </div>
           </form>
         </div>
