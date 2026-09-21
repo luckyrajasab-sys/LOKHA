@@ -1,0 +1,47 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+
+    // Property Media (Storage path: property-images/{propertyId}/...)
+    match /property-images/{propertyId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImage();
+    }
+
+    // Legacy / alternate property path
+    match /properties/{propertyId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImage();
+    }
+
+    // User Profile Avatars
+    match /user-avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isUser(userId) && isValidImage();
+    }
+
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isUser(userId) && isValidImage();
+    }
+
+    // Project Documents & Brochures
+    match /projects/{projectId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.resource.size < 25 * 1024 * 1024;
+    }
+  }
+}
