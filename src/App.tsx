@@ -14,6 +14,7 @@ import { SignUpPage } from './pages/SignUpPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PropertiesPage } from './pages/PropertiesPage';
+import { NotificationsPage } from './pages/NotificationsPage';
 
 export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
@@ -55,6 +56,9 @@ export const App: React.FC = () => {
             onNavigateToLogin={() => handleNavigate('login')}
           />
         );
+
+      case 'notifications':
+        return <NotificationsPage onNavigate={handleNavigate} />;
 
       case 'dashboard':
       case 'saved':
@@ -104,7 +108,7 @@ export const App: React.FC = () => {
               currentView={currentView}
               onNavigate={handleNavigate}
               isExpanded={sidebarExpanded}
-              onToggleExpanded={() => setSidebarExpanded(prev => !prev)}
+              onToggleExpanded={(val?: boolean) => setSidebarExpanded(prev => val !== undefined ? val : !prev)}
             />
 
             {/* Mobile Backdrop Overlay when sidebar is expanded on small screens */}
