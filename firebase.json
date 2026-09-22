@@ -18,7 +18,9 @@
     "authorizedDomains": [
       "localhost",
       "lokha-82898.firebaseapp.com",
-      "lokha-82898.web.app"
+      "lokha-82898.web.app",
+      "vercel.app",
+      "*.vercel.app"
     ],
     "providers": {
       "emailPassword": true,
