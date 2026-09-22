@@ -497,3 +497,15 @@ export function convertStaysToProperties(stays: AccommodationListing[]): Propert
     isFeatured: true
   }));
 }
+
+export function getCityCoordinates(cityName: string): [number, number] | null {
+  if (!cityName) return null;
+  const key = cityName.toLowerCase().trim();
+  for (const [k, v] of Object.entries(CITY_DATABASE)) {
+    if (key.includes(k) || k.includes(key)) {
+      return [v.lat, v.lng];
+    }
+  }
+  return null;
+}
+

@@ -20,10 +20,9 @@ import {
   APP_UPDATES_NOTIFICATIONS,
   getRentLeaseNotificationsForArea
 } from '../services/notificationData';
-import { isVercelOnly } from '../services/mockAreaService';
 
 interface NotificationsPageProps {
-  onNavigate: (view: string) => void;
+  onNavigate: (view: string, location?: string) => void;
 }
 
 export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate }) => {
@@ -52,11 +51,9 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  const filteredRentals = isVercelOnly()
-    ? getRentLeaseNotificationsForArea(selectedCity !== 'All' ? selectedCity : 'Bengaluru')
-    : (selectedCity === 'All'
-      ? SAMPLE_RENT_LEASE_NOTIFICATIONS
-      : SAMPLE_RENT_LEASE_NOTIFICATIONS.filter(r => r.city.toLowerCase().includes(selectedCity.toLowerCase())));
+  const filteredRentals = selectedCity === 'All'
+    ? SAMPLE_RENT_LEASE_NOTIFICATIONS
+    : getRentLeaseNotificationsForArea(selectedCity);
 
   return (
     <div style={{
@@ -175,8 +172,12 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
               <option value="All">All Regions</option>
               <option value="Bengaluru">Bengaluru</option>
               <option value="Mumbai">Mumbai</option>
-              <option value="Gurugram">Gurugram</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Pune">Pune</option>
               <option value="Hyderabad">Hyderabad</option>
+              <option value="Gurugram">Gurugram</option>
+              <option value="Goa">Goa</option>
             </select>
           </div>
 
@@ -226,7 +227,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
             </div>
 
             <button
-              onClick={() => onNavigate('properties')}
+              onClick={() => onNavigate('properties', selectedCity !== 'All' ? selectedCity : undefined)}
               style={{
                 background: 'none',
                 border: 'none',
@@ -252,7 +253,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
             {filteredRentals.map(rental => (
               <div
                 key={rental.id}
-                onClick={() => onNavigate('properties')}
+                onClick={() => onNavigate('properties', rental.city)}
                 style={{
                   backgroundColor: 'var(--bg-secondary, #0D0D12)',
                   borderRadius: 'var(--radius-lg, 12px)',
@@ -353,7 +354,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onNavigate('properties');
+                        onNavigate('properties', rental.city);
                       }}
                       className="btn btn-primary btn-sm"
                       style={{ fontSize: '0.78rem', borderRadius: 'var(--radius-full)', padding: '0.45rem 1rem' }}

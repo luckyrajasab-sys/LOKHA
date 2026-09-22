@@ -23,7 +23,10 @@ export const App: React.FC = () => {
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
   const [globalSearchLocation, setGlobalSearchLocation] = useState<string>('');
 
-  const handleNavigate = (view: string) => {
+  const handleNavigate = (view: string, location?: string) => {
+    if (location !== undefined) {
+      setGlobalSearchLocation(location);
+    }
     setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

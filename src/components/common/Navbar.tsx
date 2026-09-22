@@ -31,7 +31,7 @@ import { isVercelOnly } from '../../services/mockAreaService';
 
 interface NavbarProps {
   currentView: string;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: string, location?: string) => void;
   onSearch?: (query: string, location?: string) => void;
   onToggleSidebar?: () => void;
 }
@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleRentPropertyClick = (_property: RentLeaseNotification) => {
     setNotifOpen(false);
-    onNavigate('properties');
+    onNavigate('properties', _property.city);
   };
 
   const handleLogout = async () => {

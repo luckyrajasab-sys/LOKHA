@@ -27,7 +27,7 @@ import { PropertyMap } from '../components/properties/PropertyMap';
 import { PropertyDetailModal } from '../components/properties/PropertyDetailModal';
 import { PremiumModal } from '../components/common/PremiumModal';
 import { detectCurrentLocation } from '../utils/location';
-import { isVercelOnly, getAreaPropertiesAndStays, convertStaysToProperties } from '../services/mockAreaService';
+import { isVercelOnly, getAreaPropertiesAndStays, convertStaysToProperties, getCityCoordinates } from '../services/mockAreaService';
 import type {
   PropertyDocument,
   PropertyType,
@@ -91,6 +91,17 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     const convertedStays = convertStaysToProperties(areaStays);
     setAreaMockProperties([...areaHouses, ...convertedStays]);
   }, [initialLocationQuery, locationQuery, selectedCity, userCoordinates]);
+
+  // Sync map center coordinates to the queried city
+  useEffect(() => {
+    const targetCity = initialLocationQuery || locationQuery || (selectedCity !== 'All' ? selectedCity : '');
+    if (targetCity) {
+      const coords = getCityCoordinates(targetCity);
+      if (coords) {
+        setUserCoordinates(coords);
+      }
+    }
+  }, [initialLocationQuery, locationQuery, selectedCity]);
 
   // Premium Modal State
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
