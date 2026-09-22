@@ -17,8 +17,10 @@ import { detectCurrentLocation } from '../utils/location';
 import {
   SAMPLE_RENT_LEASE_NOTIFICATIONS,
   APP_OFFERS_NOTIFICATIONS,
-  APP_UPDATES_NOTIFICATIONS
+  APP_UPDATES_NOTIFICATIONS,
+  getRentLeaseNotificationsForArea
 } from '../services/notificationData';
+import { isVercelOnly } from '../services/mockAreaService';
 
 interface NotificationsPageProps {
   onNavigate: (view: string) => void;
@@ -50,9 +52,11 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  const filteredRentals = selectedCity === 'All'
-    ? SAMPLE_RENT_LEASE_NOTIFICATIONS
-    : SAMPLE_RENT_LEASE_NOTIFICATIONS.filter(r => r.city.toLowerCase().includes(selectedCity.toLowerCase()));
+  const filteredRentals = isVercelOnly()
+    ? getRentLeaseNotificationsForArea(selectedCity !== 'All' ? selectedCity : 'Bengaluru')
+    : (selectedCity === 'All'
+      ? SAMPLE_RENT_LEASE_NOTIFICATIONS
+      : SAMPLE_RENT_LEASE_NOTIFICATIONS.filter(r => r.city.toLowerCase().includes(selectedCity.toLowerCase())));
 
   return (
     <div style={{

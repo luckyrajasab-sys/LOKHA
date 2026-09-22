@@ -27,6 +27,7 @@ import { PropertyMap } from '../components/properties/PropertyMap';
 import { PropertyDetailModal } from '../components/properties/PropertyDetailModal';
 import { PremiumModal } from '../components/common/PremiumModal';
 import { detectCurrentLocation } from '../utils/location';
+import { isVercelOnly, getAreaPropertiesAndStays, convertStaysToProperties } from '../services/mockAreaService';
 import type {
   PropertyDocument,
   PropertyType,
@@ -40,17 +41,20 @@ const COMMON_AMENITIES = ['Swimming Pool', 'Gym / Fitness Center', 'Sea View', '
 interface PropertiesPageProps {
   initialSearchQuery?: string;
   initialLocationQuery?: string;
+  initialViewType?: string;
 }
 
 export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   initialSearchQuery = '',
-  initialLocationQuery = ''
+  initialLocationQuery = '',
+  initialViewType = 'properties'
 }) => {
   const { user, userDoc } = useAuth();
   const { showToast } = useToast();
 
   // Data & Real-time Listeners
   const [properties, setProperties] = useState<PropertyDocument[]>([]);
+  const [areaMockProperties, setAreaMockProperties] = useState<PropertyDocument[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,13 +71,25 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [selectedCity, setSelectedCity] = useState('All');
   const [selectedType, setSelectedType] = useState<PropertyType | 'All'>('All');
   const [selectedListingType, setSelectedListingType] = useState<PropertyListingType | 'All'>('All');
-  const [selectedPurpose, setSelectedPurpose] = useState<'All' | 'Buy' | 'Rent' | 'Lease' | 'Invest'>('All');
+  const [selectedPurpose, setSelectedPurpose] = useState<'All' | 'Buy' | 'Rent' | 'Lease' | 'Stays' | 'Invest'>(
+    initialViewType === 'stays' ? 'Stays' : 'All'
+  );
   const [selectedFurnished, setSelectedFurnished] = useState<FurnishedStatus | 'All'>('All');
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [minBedrooms, setMinBedrooms] = useState<number>(0);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Auto-populate abundant houses and stays for Vercel app link
+  useEffect(() => {
+    if (isVercelOnly()) {
+      const city = initialLocationQuery || (selectedCity !== 'All' ? selectedCity : 'Bengaluru');
+      const { properties: areaHouses, stays: areaStays } = getAreaPropertiesAndStays(city);
+      const convertedStays = convertStaysToProperties(areaStays);
+      setAreaMockProperties([...areaHouses, ...convertedStays]);
+    }
+  }, [initialLocationQuery]);
 
   // Premium Modal State
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
@@ -178,6 +194,16 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       const loc = await detectCurrentLocation();
       const place = loc.city ? (loc.state ? `${loc.city}, ${loc.state}` : loc.city) : loc.formattedAddress;
       setLocationQuery(place);
+      const cityName = loc.city || 'Bengaluru';
+      setSelectedCity(cityName);
+
+      // On Vercel link, immediately load abundant houses and stays for this auto-detected area
+      if (isVercelOnly()) {
+        const { properties: areaHouses, stays: areaStays } = getAreaPropertiesAndStays(cityName, loc.latitude, loc.longitude);
+        const convertedStays = convertStaysToProperties(areaStays);
+        setAreaMockProperties([...areaHouses, ...convertedStays]);
+        showToast(`Loaded ${areaHouses.length} houses & ${areaStays.length} stays in ${cityName}!`, 'success');
+      }
     } catch (err) {
       console.warn('Location detection failed:', err);
     } finally {
@@ -237,8 +263,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     setInquiryTarget(property);
   };
 
+  // Combine live properties with auto-detected area houses and stays on Vercel
+  const effectiveProperties = isVercelOnly()
+    ? (areaMockProperties.length > 0 ? areaMockProperties : properties)
+    : (properties.length > 0 ? properties : areaMockProperties);
+
   // Filter client-side by text query, location query, and purpose
-  const filteredProperties = properties.filter((p) => {
+  const filteredProperties = effectiveProperties.filter((p) => {
     // 1. Keyword search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -263,6 +294,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
 
     // 3. Purpose filter
     if (selectedPurpose !== 'All') {
+      const isStay = p.propertyId.includes('stay');
+      if (selectedPurpose === 'Stays') return isStay;
+      if (isStay) return false; // Stays only shown when All or Stays is chosen
       if (selectedPurpose === 'Buy' && p.listingType !== 'Sale') return false;
       if (selectedPurpose === 'Rent' && p.listingType !== 'Rent') return false;
       if (selectedPurpose === 'Lease' && p.listingType !== 'Lease') return false;
@@ -272,7 +306,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     return true;
   });
 
-  const uniqueCities = Array.from(new Set(properties.map(p => p.city).filter(Boolean)));
+  const uniqueCities = Array.from(new Set(effectiveProperties.map(p => p.city).filter(Boolean)));
 
   const toggleAmenity = (name: string) => {
     setSelectedAmenities(prev =>
@@ -285,7 +319,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     const isSelected = selectedProperty?.propertyId === prop.propertyId;
     const coverImage = prop.images[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
     const isRent = prop.listingType === 'Rent';
-    const displayPrice = isRent ? (prop.rentAmount || prop.price) : prop.price;
+    const isLease = prop.listingType === 'Lease';
+    const isStay = prop.propertyId.includes('stay');
+    const displayPrice = isStay
+      ? (prop.rentAmount || 12000)
+      : isRent
+      ? (prop.rentAmount || prop.price)
+      : isLease
+      ? (prop.leaseAmount || prop.price)
+      : prop.price;
 
     return (
       <div
@@ -385,7 +427,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
           <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
             <div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>
-                {isRent ? 'Rent / Month' : 'Asking Price'}
+                {isStay ? 'Starting / Night' : isRent ? 'Rent / Month' : isLease ? 'Lease / Year' : 'Asking Price'}
               </div>
               <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 ₹ {displayPrice.toLocaleString()}
@@ -598,8 +640,8 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
           </div>
 
           {/* Account Purpose / Looking For Filter Pills */}
-          <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#13131A', padding: '0.3rem', borderRadius: 'var(--radius-md)' }}>
-            {(['All', 'Buy', 'Rent', 'Lease', 'Invest'] as const).map((purpose) => (
+          <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#13131A', padding: '0.3rem', borderRadius: 'var(--radius-md)', flexWrap: 'wrap' }}>
+            {(['All', 'Buy', 'Rent', 'Lease', 'Stays', 'Invest'] as const).map((purpose) => (
               <button
                 key={purpose}
                 type="button"
@@ -616,7 +658,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                   transition: 'all var(--transition-fast)'
                 }}
               >
-                {purpose === 'Buy' ? 'Buy (Sale)' : purpose === 'Invest' ? 'Investment' : purpose}
+                {purpose === 'Buy'
+                  ? 'Buy (Sale)'
+                  : purpose === 'Invest'
+                  ? 'Investment'
+                  : purpose === 'Stays'
+                  ? 'Stays & Hospitality'
+                  : purpose}
               </button>
             ))}
           </div>

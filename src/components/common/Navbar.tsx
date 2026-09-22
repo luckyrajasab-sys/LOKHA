@@ -24,8 +24,10 @@ import {
   SAMPLE_RENT_LEASE_NOTIFICATIONS,
   APP_OFFERS_NOTIFICATIONS,
   APP_UPDATES_NOTIFICATIONS,
+  getRentLeaseNotificationsForArea,
   type RentLeaseNotification
 } from '../../services/notificationData';
+import { isVercelOnly } from '../../services/mockAreaService';
 
 interface NavbarProps {
   currentView: string;
@@ -62,8 +64,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [user]);
 
   const unreadPersonalCount = personalNotifications.filter(n => !n.isRead).length;
+  const rentLeaseItems = isVercelOnly()
+    ? getRentLeaseNotificationsForArea('Bengaluru')
+    : SAMPLE_RENT_LEASE_NOTIFICATIONS;
+
   // Rent/lease new badges + offers badge + personal unread
-  const totalAlertsCount = SAMPLE_RENT_LEASE_NOTIFICATIONS.filter(r => r.isNew).length +
+  const totalAlertsCount = rentLeaseItems.filter(r => r.isNew).length +
     APP_OFFERS_NOTIFICATIONS.length +
     unreadPersonalCount;
 
@@ -414,7 +420,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <span style={{ color: 'var(--gold-primary)', fontWeight: 600 }}>Newly Listed</span>
                       </div>
 
-                      {SAMPLE_RENT_LEASE_NOTIFICATIONS.map(item => (
+                      {rentLeaseItems.map(item => (
                         <div
                           key={item.id}
                           onClick={() => handleRentPropertyClick(item)}

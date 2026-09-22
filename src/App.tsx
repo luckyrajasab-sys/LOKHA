@@ -84,6 +84,7 @@ export const App: React.FC = () => {
           <PropertiesPage
             initialSearchQuery={globalSearchQuery}
             initialLocationQuery={globalSearchLocation}
+            initialViewType={currentView}
           />
         );
 
