@@ -12,8 +12,7 @@ import {
   Sun,
   Moon,
   LogOut,
-  LogIn,
-  Crown
+  LogIn
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -267,7 +266,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onMouseLeave={handleSidebarMouseLeave}
         style={{
           position: 'fixed',
-          top: 0,
+          top: '4.75rem',
           left: 0,
           bottom: 0,
           width: isExpanded ? 'var(--sidebar-expanded-w, 260px)' : 'var(--sidebar-collapsed-w, 68px)',
@@ -283,71 +282,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}
         aria-label="Main Sidebar Navigation"
       >
-        {/* Clean Sidebar Header: Expand Button Removed, Elegant Brand Monogram */}
-        <div style={{
-          height: '4.75rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isExpanded ? 'flex-start' : 'center',
-          padding: isExpanded ? '0 1.25rem' : '0',
-          borderBottom: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
-          position: 'relative'
-        }}>
-          {isExpanded ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(212, 175, 55, 0.08) 100%)',
-                border: '1px solid var(--border-gold, rgba(212, 175, 55, 0.4))',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--gold-primary)'
-              }}>
-                <Crown size={18} />
-              </div>
-              <div>
-                <div style={{
-                  fontSize: '0.85rem',
-                  fontWeight: 900,
-                  letterSpacing: '0.12em',
-                  color: 'var(--gold-primary)',
-                  textTransform: 'uppercase'
-                }}>
-                  Lokha
-                </div>
-                <div style={{
-                  fontSize: '0.58rem',
-                  letterSpacing: '0.15em',
-                  color: 'var(--text-tertiary)',
-                  textTransform: 'uppercase'
-                }}>
-                  Estate Suite
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(13, 13, 17, 0.9) 100%)',
-                border: '1px solid rgba(212, 175, 55, 0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--gold-primary)',
-                boxShadow: '0 0 12px rgba(212, 175, 55, 0.15)'
-              }}
-              title="Lokha Navigation"
-            >
-              <Crown size={18} />
-            </div>
-          )}
-        </div>
 
         {/* Navigation Groups List */}
         <div style={{

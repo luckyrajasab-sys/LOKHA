@@ -33,6 +33,10 @@ export function getFriendlyAuthErrorMessage(errorCode: string): string {
       return 'Network error. Please check your internet connection.';
     case 'auth/popup-closed-by-user':
       return 'Sign-in window closed before completing authentication.';
+    case 'auth/unauthorized-domain':
+      return 'This web domain is not authorized in Firebase. Please add this domain under Firebase Console > Authentication > Settings > Authorized domains.';
+    case 'auth/operation-not-allowed':
+      return 'This sign-in method is not enabled in Firebase Console.';
     default:
       return 'An unexpected authentication error occurred. Please try again.';
   }

@@ -102,8 +102,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header style={{
       position: 'sticky',
       top: 0,
-      zIndex: 100,
-      backgroundColor: 'var(--bg-glass, rgba(7, 7, 9, 0.92))',
+      width: '100%',
+      zIndex: 200,
+      backgroundColor: 'var(--bg-glass, rgba(7, 7, 9, 0.95))',
       backdropFilter: 'blur(16px)',
       borderBottom: '1px solid rgba(212, 175, 55, 0.16)',
       transition: 'all var(--transition-base)',

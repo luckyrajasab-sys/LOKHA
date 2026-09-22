@@ -27,6 +27,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [directUser, setDirectUser] = useState<UserProfile | null>(() => {
+    try {
+      const cached = localStorage.getItem('lokha_cached_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [userDoc, setUserDoc] = useState<UserDocument | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,13 +76,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(false);
           },
           (err) => {
-            console.error('[AuthContext] Firestore onSnapshot error on users doc:', err);
-            setError(err.message);
+            console.warn('[AuthContext] Firestore onSnapshot warning on users doc:', err);
+            setUserDoc((prev) => prev || {
+              uid: fbUser.uid,
+              fullName: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
+              email: fbUser.email || '',
+              phone: fbUser.phoneNumber || '',
+              profileImage: fbUser.photoURL || '',
+              role: 'buyer',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              isActive: true
+            });
             setLoading(false);
           }
         );
       } else {
         setUserDoc(null);
+        setDirectUser(null);
+        try {
+          localStorage.removeItem('lokha_cached_user');
+        } catch {
+          // ignore
+        }
         setLoading(false);
       }
     });
@@ -91,6 +115,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await logOut();
       setUserDoc(null);
       setFirebaseUser(null);
+      setDirectUser(null);
+      try {
+        localStorage.removeItem('lokha_cached_user');
+      } catch {
+        // ignore
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -98,7 +128,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Convert UserDocument to UserProfile interface for seamless backwards compatibility
+  const computedFromFb: UserProfile | null = firebaseUser ? {
+    id: firebaseUser.uid,
+    displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+    email: firebaseUser.email || '',
+    phone: firebaseUser.phoneNumber || '',
+    photoURL: firebaseUser.photoURL || '',
+    country: 'India',
+    preferredLanguage: 'en',
+    preferredCurrency: 'INR',
+    roles: ['buyer'],
+    accountType: 'Looking to Buy',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    emailVerified: Boolean(firebaseUser.emailVerified),
+    phoneVerified: Boolean(firebaseUser.phoneNumber),
+    profileCompleted: Boolean(firebaseUser.displayName),
+    status: 'active'
+  } : null;
+
+  // Convert UserDocument to UserProfile interface, with fallback to directUser / computedFromFb
   const user: UserProfile | null = userDoc ? {
     id: userDoc.uid,
     displayName: userDoc.fullName,
@@ -117,23 +167,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     phoneVerified: Boolean(userDoc.phone),
     profileCompleted: Boolean(userDoc.fullName && userDoc.phone),
     status: userDoc.isActive ? 'active' : 'suspended'
-  } : null;
+  } : (directUser || computedFromFb);
 
-  const role: FirebaseUserRole = userDoc?.role || 'buyer';
+  const role: FirebaseUserRole = userDoc?.role || (user?.roles?.[0] as FirebaseUserRole) || 'buyer';
   const isBuyer = role === 'buyer';
   const isOwner = role === 'owner';
   const isAgent = role === 'agent';
   const isAdmin = role === 'admin';
 
   const hasRole = (r: string): boolean => {
-    if (!userDoc) return false;
-    return userDoc.role === r || (userDoc.role === 'admin');
+    if (!user) return false;
+    return role === r || role === 'admin' || Boolean(user.roles?.includes(r as any));
   };
 
   const isPrivileged = isOwner || isAgent || isAdmin;
 
-  const setUserDirectly = (_newUser: UserProfile | null) => {
-    // Kept for backward compatibility, Firestore onSnapshot handles authoritative state
+  const setUserDirectly = (newUser: UserProfile | null) => {
+    setDirectUser(newUser);
+    try {
+      if (newUser) {
+        localStorage.setItem('lokha_cached_user', JSON.stringify(newUser));
+      } else {
+        localStorage.removeItem('lokha_cached_user');
+      }
+    } catch (e) {
+      console.warn('[AuthContext] LocalStorage write error:', e);
+    }
+    setLoading(false);
   };
 
   return (

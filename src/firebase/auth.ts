@@ -39,7 +39,11 @@ export async function signUpWithEmail(
     isActive: true
   };
 
-  await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+  try {
+    await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+  } catch (err) {
+    console.warn('[Firebase Auth] Note: Firestore user document write skipped or delayed:', err);
+  }
   return userDoc;
 }
 
@@ -50,7 +54,13 @@ export async function logInWithEmail(email: string, pass: string): Promise<UserD
   const credential = await signInWithEmailAndPassword(auth, email, pass);
   const fbUser = credential.user;
 
-  let userDoc = await getUserDocument(fbUser.uid);
+  let userDoc: UserDocument | null = null;
+  try {
+    userDoc = await getUserDocument(fbUser.uid);
+  } catch (err) {
+    console.warn('[Firebase Auth] Note: Could not fetch user doc:', err);
+  }
+
   if (!userDoc) {
     // If document is missing, create it
     const now = new Date().toISOString();
@@ -65,7 +75,11 @@ export async function logInWithEmail(email: string, pass: string): Promise<UserD
       updatedAt: now,
       isActive: true
     };
-    await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+    try {
+      await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+    } catch (err) {
+      console.warn('[Firebase Auth] Note: Firestore user doc write skipped or delayed:', err);
+    }
   }
 
   return userDoc;
@@ -78,7 +92,13 @@ export async function logInWithGoogle(): Promise<UserDocument> {
   const result = await signInWithPopup(auth, googleProvider);
   const fbUser = result.user;
 
-  let userDoc = await getUserDocument(fbUser.uid);
+  let userDoc: UserDocument | null = null;
+  try {
+    userDoc = await getUserDocument(fbUser.uid);
+  } catch (err) {
+    console.warn('[Firebase Auth] Note: Could not fetch user doc:', err);
+  }
+
   if (!userDoc) {
     const now = new Date().toISOString();
     userDoc = {
@@ -92,7 +112,11 @@ export async function logInWithGoogle(): Promise<UserDocument> {
       updatedAt: now,
       isActive: true
     };
-    await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+    try {
+      await setDoc(doc(db, USERS_COLLECTION, fbUser.uid), userDoc);
+    } catch (err) {
+      console.warn('[Firebase Auth] Note: Firestore user doc write skipped or delayed:', err);
+    }
   }
 
   return userDoc;

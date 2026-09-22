@@ -100,65 +100,74 @@ export const App: React.FC = () => {
           <div style={{
             minHeight: '100vh',
             display: 'flex',
+            flexDirection: 'column',
             backgroundColor: 'var(--bg-primary, #070709)',
             color: 'var(--text-primary, #FFFFFF)',
             position: 'relative'
           }}>
-            {/* 1. Animated Expandable Sidebar (Present on all pages) */}
-            <Sidebar
+            {/* Top Navigation Bar: Spans 100% full screen width edge-to-edge */}
+            <Navbar
               currentView={currentView}
               onNavigate={handleNavigate}
-              isExpanded={sidebarExpanded}
-              onToggleExpanded={(val?: boolean) => setSidebarExpanded(prev => val !== undefined ? val : !prev)}
+              onSearch={handleSearch}
+              onToggleSidebar={() => setSidebarExpanded(prev => !prev)}
             />
 
-            {/* Mobile Backdrop Overlay when sidebar is expanded on small screens */}
-            {sidebarExpanded && (
-              <div
-                onClick={() => setSidebarExpanded(false)}
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(0, 0, 0, 0.65)',
-                  backdropFilter: 'blur(4px)',
-                  zIndex: 140
-                }}
-                className="mobile-backdrop"
-              />
-            )}
-
-            {/* 2. Main Layout Area (Smoothly expands/contracts with sidebar) */}
+            {/* Body Layout: Sidebar + Main Content Layout */}
             <div style={{
-              flex: 1,
               display: 'flex',
-              flexDirection: 'column',
-              minWidth: 0,
-              marginLeft: sidebarExpanded
-                ? 'var(--sidebar-expanded-w, 260px)'
-                : 'var(--sidebar-collapsed-w, 68px)',
-              transition: 'margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1)'
-            }} className="main-content-layout">
-              {/* Top Navigation Bar: Strictly Logo, Search Bar, Notification, Profile */}
-              <Navbar
+              flex: 1,
+              position: 'relative',
+              minHeight: 'calc(100vh - 4.75rem)'
+            }}>
+              {/* 1. Animated Expandable Sidebar (Present on all pages) */}
+              <Sidebar
                 currentView={currentView}
                 onNavigate={handleNavigate}
-                onSearch={handleSearch}
-                onToggleSidebar={() => setSidebarExpanded(prev => !prev)}
+                isExpanded={sidebarExpanded}
+                onToggleExpanded={(val?: boolean) => setSidebarExpanded(prev => val !== undefined ? val : !prev)}
               />
 
-              {/* Dynamic View Content */}
-              <main style={{ flex: 1 }}>
-                {renderContent()}
-              </main>
+              {/* Mobile Backdrop Overlay when sidebar is expanded on small screens */}
+              {sidebarExpanded && (
+                <div
+                  onClick={() => setSidebarExpanded(false)}
+                  style={{
+                    position: 'fixed',
+                    top: '4.75rem',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                    backdropFilter: 'blur(4px)',
+                    zIndex: 140
+                  }}
+                  className="mobile-backdrop"
+                />
+              )}
 
-              {/* Footer */}
-              <Footer onNavigate={handleNavigate} />
+              {/* 2. Main Layout Area (Smoothly expands/contracts with sidebar) */}
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                minWidth: 0,
+                marginLeft: sidebarExpanded
+                  ? 'var(--sidebar-expanded-w, 260px)'
+                  : 'var(--sidebar-collapsed-w, 68px)',
+                transition: 'margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1)'
+              }} className="main-content-layout">
+                {/* Dynamic View Content */}
+                <main style={{ flex: 1 }}>
+                  {renderContent()}
+                </main>
 
-              {/* Mobile Bottom Navigation Bar */}
-              <MobileBottomNav currentView={currentView} onNavigate={handleNavigate} />
+                {/* Footer */}
+                <Footer onNavigate={handleNavigate} />
+
+                {/* Mobile Bottom Navigation Bar */}
+                <MobileBottomNav currentView={currentView} onNavigate={handleNavigate} />
+              </div>
             </div>
           </div>
 
