@@ -219,6 +219,15 @@ export const AddPropertyPage: React.FC<AddPropertyPageProps> = ({ onNavigate }) 
         amenities,
         images: selectedImageUrls.length > 0 ? selectedImageUrls : [CURATED_SAMPLE_IMAGES[0]],
         status: 'available' as const,
+        verificationStatus: (user.roles?.includes('admin') ? 'verified' : 'pending') as any,
+        compliance: {
+          reraNumber: 'TN/01/B/PENDING-AUDIT',
+          ebConsumerNumber: ebConsumerNumber.trim(),
+          pattaNumber: govDocNumber.trim(),
+          isReraVerified: user.roles?.includes('admin'),
+          isEbVerified: true,
+          isPattaVerified: true
+        },
         furnishedStatus,
         isFeatured: true
       };

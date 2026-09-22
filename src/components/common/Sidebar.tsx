@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Compass,
   Building,
-  Bed,
   Layers,
   Heart,
   MessageSquare,
@@ -14,7 +13,17 @@ import {
   LogOut,
   LogIn,
   X,
-  PlusCircle
+  PlusCircle,
+  Map,
+  Calculator,
+  TrendingUp,
+  Users,
+  Building2,
+  MapPin,
+  BookOpen,
+  Info,
+  Phone,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -39,16 +48,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const mainNav = [
     { id: 'home', label: 'Explore Estates', icon: Compass },
-    { id: 'properties', label: 'Buy & Rent', icon: Building, badge: 'Live' },
-    { id: 'stays', label: 'Stays & Hospitality', icon: Bed },
-    { id: 'projects', label: 'New Developments', icon: Layers },
+    { id: 'buy', label: 'Buy Luxury Homes', icon: Building, badge: 'Freehold' },
+    { id: 'rent', label: 'Rent & Executive Leases', icon: KeyRound },
+    { id: 'properties', label: 'All Property Discovery', icon: Layers, badge: 'Live' },
+    { id: 'map', label: 'Interactive Map Radar', icon: Map, badge: 'GPS' },
+    { id: 'projects', label: 'Developer Townships', icon: Building2 },
     { id: 'list-property', label: 'Give / List Property', icon: PlusCircle, badge: 'Verified' },
   ];
 
+  const toolsNav = [
+    { id: 'compare', label: 'Side-by-Side Comparison', icon: Layers },
+    { id: 'emi-calculator', label: 'Home Loan EMI Calculator', icon: Calculator },
+    { id: 'home-valuation', label: 'Market Valuation Engine', icon: TrendingUp },
+    { id: 'agents', label: 'Certified RERA Advisors', icon: Users },
+    { id: 'agencies', label: 'Developer Directory', icon: Building2 },
+    { id: 'locations', label: 'City Hubs & Circle Rates', icon: MapPin },
+    { id: 'insights', label: 'Legal Guides & Stamp Duty', icon: BookOpen },
+  ];
+
   const userNav = [
-    { id: 'saved', label: 'Saved Portfolio', icon: Heart },
-    { id: 'messages', label: 'Real-Time Chat', icon: MessageSquare },
-    { id: 'bookings', label: 'My Bookings', icon: CalendarCheck },
+    { id: 'saved', label: 'Saved Private Portfolio', icon: Heart },
+    { id: 'site-visits', label: 'Scheduled Site Visits', icon: CalendarCheck },
+    { id: 'messages', label: 'Real-Time Client Chat', icon: MessageSquare },
+  ];
+
+  const companyNav = [
+    { id: 'about', label: 'The LOKHA Standard', icon: Info },
+    { id: 'contact', label: 'Private Concierge Hotline', icon: Phone },
   ];
 
   // Desktop hover expansion: expands immediately when mouse pointer enters the sidebar!
@@ -283,7 +309,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Group 2: Account & Interactions */}
+          {/* Group 2: Tools & Analytics */}
+          <div>
+            {isExpanded && (
+              <div style={{
+                fontSize: '0.625rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.16em',
+                color: 'var(--text-tertiary)',
+                padding: '0 0.65rem 0.5rem'
+              }}>
+                Intelligence & Tools
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {toolsNav.map((item) => renderNavButton(item, currentView === item.id))}
+            </div>
+          </div>
+
+          {/* Group 3: Account & Interactions */}
           {user && (
             <div>
               {isExpanded && (
@@ -304,6 +350,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           )}
+
+          {/* Group 4: Company & Advisory */}
+          <div>
+            {isExpanded && (
+              <div style={{
+                fontSize: '0.625rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.16em',
+                color: 'var(--text-tertiary)',
+                padding: '0 0.65rem 0.5rem'
+              }}>
+                The Brand
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {companyNav.map((item) => renderNavButton(item, currentView === item.id))}
+            </div>
+          </div>
 
           {/* Group 3: Role Management / Dashboard */}
           <div>

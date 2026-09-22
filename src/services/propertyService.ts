@@ -1,165 +1,150 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
-  addDoc,
+  updateDoc,
+  increment,
   query,
   where,
-  onSnapshot
+  limit
 } from 'firebase/firestore';
-import { db, isFirebaseConfigured } from '../config/firebase';
-import type { Property } from '../types/property';
-import { propertyApi, type PropertySearchParams } from './api/propertyApiService';
+import { db } from '../firebase/config';
+import type { PropertyDocument, PropertyStatusType } from '../types/firebaseModels';
 
-const COLLECTION = 'properties';
+const PROPERTIES_COL = 'properties';
 
-/**
- * Fetch properties from the PostgreSQL Cloud SQL backend API.
- * Falls back to Firestore/local data if the server is offline or not yet reachable.
- */
-export async function fetchProperties(
-  params: PropertySearchParams = {},
-  fallbackData: Property[] = []
-): Promise<{ properties: Property[]; total: number; source: 'sql' | 'firestore' }> {
+export async function fetchPropertyDocumentById(propertyId: string): Promise<PropertyDocument | null> {
   try {
-    const res = await propertyApi.search(params);
-    if (res.properties && res.properties.length > 0) {
-      return {
-        properties: res.properties,
-        total: res.pagination?.total || res.properties.length,
-        source: 'sql'
-      };
+    const ref = doc(db, PROPERTIES_COL, propertyId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      return snap.data() as PropertyDocument;
     }
   } catch (err) {
-    console.warn('[Property Service] Cloud SQL backend unreachable, falling back to Firestore:', err);
+    console.warn('Could not fetch property by ID:', err);
   }
-
-  return {
-    properties: fallbackData,
-    total: fallbackData.length,
-    source: 'firestore'
-  };
+  return null;
 }
 
-/**
- * Real-time subscription to published properties in Firestore.
- * Updates subscribers immediately when any listing is added or modified.
- */
-export function subscribeToProperties(
-  callback: (properties: Property[]) => void,
-  fallbackData: Property[] = []
-): () => void {
-  if (!isFirebaseConfigured) {
-    callback(fallbackData);
-    return () => {};
-  }
+export async function incrementPropertyDocumentViews(propertyId: string): Promise<void> {
+  try {
+    // Avoid rapid duplicate view incrementing
+    const lastViewKey = `lokha_view_${propertyId}`;
+    const lastViewed = sessionStorage.getItem(lastViewKey);
+    const now = Date.now();
+    if (lastViewed && now - parseInt(lastViewed, 10) < 60000) {
+      return; // Debounce view increments within 1 minute
+    }
+    sessionStorage.setItem(lastViewKey, now.toString());
 
+    const ref = doc(db, PROPERTIES_COL, propertyId);
+    await updateDoc(ref, {
+      views: increment(1)
+    });
+  } catch (e) {
+    console.warn('Could not increment views:', e);
+  }
+}
+
+export async function createPropertyDocument(
+  data: Omit<PropertyDocument, 'propertyId' | 'createdAt' | 'updatedAt' | 'views'>
+): Promise<PropertyDocument> {
+  const colRef = collection(db, PROPERTIES_COL);
+  const newDocRef = doc(colRef);
+  const now = new Date().toISOString();
+
+  const property: PropertyDocument = {
+    ...data,
+    propertyId: newDocRef.id,
+    verificationStatus: 'pending', // Starts as pending for admin verification
+    status: 'available',
+    createdAt: now,
+    updatedAt: now,
+    views: 0
+  };
+
+  await setDoc(newDocRef, property);
+  return property;
+}
+
+export async function updatePropertyDocument(
+  propertyId: string,
+  updates: Partial<Omit<PropertyDocument, 'propertyId' | 'createdAt' | 'ownerId'>>
+): Promise<void> {
+  const ref = doc(db, PROPERTIES_COL, propertyId);
+  await updateDoc(ref, {
+    ...updates,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+export async function setPropertyDocumentStatus(
+  propertyId: string,
+  status: PropertyStatusType
+): Promise<void> {
+  const ref = doc(db, PROPERTIES_COL, propertyId);
+  await updateDoc(ref, {
+    status,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+export async function fetchSimilarProperties(property: PropertyDocument, limitCount: number = 3): Promise<PropertyDocument[]> {
   try {
     const q = query(
-      collection(db, COLLECTION),
-      where('status', '==', 'Published')
+      collection(db, PROPERTIES_COL),
+      where('city', '==', property.city),
+      where('propertyType', '==', property.propertyType),
+      limit(limitCount + 2)
     );
+    const snap = await getDocs(q);
+    return snap.docs
+      .map(d => d.data() as PropertyDocument)
+      .filter(p => p.propertyId !== property.propertyId)
+      .slice(0, limitCount);
+  } catch {
+    return [];
+  }
+}
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        if (snapshot.empty) {
-          // If no documents exist in Firestore yet, provide the fallback data
-          callback(fallbackData);
-          return;
-        }
-
-        const items: Property[] = [];
-        snapshot.forEach((docSnap) => {
-          items.push({
-            id: docSnap.id,
-            ...(docSnap.data() as Omit<Property, 'id'>)
-          });
-        });
-        callback(items);
-      },
-      (error) => {
-        console.warn('Realtime Firestore subscription error, using fallback:', error);
-        callback(fallbackData);
-      }
+export async function fetchAllVerifiedProperties(): Promise<PropertyDocument[]> {
+  try {
+    const q = query(
+      collection(db, PROPERTIES_COL),
+      where('status', '==', 'available')
     );
-
-    return unsubscribe;
-  } catch (err) {
-    console.warn('Failed to attach Firestore onSnapshot listener:', err);
-    callback(fallbackData);
-    return () => {};
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data() as PropertyDocument);
+  } catch {
+    return [];
   }
 }
 
-/**
- * Create a new property in Cloud Firestore and/or Cloud SQL backend.
- */
-export async function createProperty(
-  propertyData: Omit<Property, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'favorites' | 'inquiries'>
-): Promise<Property> {
-  // Attempt PostgreSQL API creation first
-  try {
-    const sqlRes = await propertyApi.create(propertyData as any);
-    if (sqlRes?.property) {
-      return sqlRes.property;
-    }
-  } catch (e) {
-    console.warn('[Property Service] Backend API create failed, falling back to Firestore:', e);
-  }
+/** Alias for fetchAllVerifiedProperties — used by newer pages */
+export const getProperties = async (filters?: {
+  listingType?: string;
+  city?: string;
+  propertyType?: string;
+  verifiedOnly?: boolean;
+}): Promise<PropertyDocument[]> => {
+  const all = await fetchAllVerifiedProperties();
+  if (!filters) return all;
+  return all.filter(p => {
+    if (filters.listingType && p.listingType !== filters.listingType) return false;
+    if (filters.city && p.city !== filters.city) return false;
+    if (filters.propertyType && p.propertyType !== filters.propertyType) return false;
+    if (filters.verifiedOnly && p.verificationStatus !== 'verified') return false;
+    return true;
+  });
+};
 
-  const newProperty: Omit<Property, 'id'> = {
-    ...propertyData,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    views: 0,
-    favorites: 0,
-    inquiries: 0
-  };
+/** Alias for fetchPropertyDocumentById — used by PropertyDetailsPage */
+export const getPropertyById = fetchPropertyDocumentById;
 
-  if (!isFirebaseConfigured) {
-    const mockId = 'prop_' + Date.now();
-    return { id: mockId, ...newProperty };
-  }
+/** Alias for incrementPropertyDocumentViews — used by PropertyDetailsPage */
+export const incrementPropertyViews = incrementPropertyDocumentViews;
 
-  const docRef = await addDoc(collection(db, COLLECTION), newProperty);
-  return {
-    id: docRef.id,
-    ...newProperty
-  };
-}
-
-/**
- * Seed initial sample properties into Firestore if the database collection is empty.
- */
-export async function seedPropertiesIfEmpty(
-  sampleProperties: Property[],
-  currentUserId: string
-): Promise<number> {
-  if (!isFirebaseConfigured || !currentUserId) return 0;
-
-  try {
-    const existingSnap = await getDocs(collection(db, COLLECTION));
-    if (!existingSnap.empty) {
-      return 0; // Collection already populated
-    }
-
-    let seededCount = 0;
-    for (const item of sampleProperties) {
-      const { id, ...data } = item;
-      const targetDoc = doc(db, COLLECTION, id);
-      await setDoc(targetDoc, {
-        ...data,
-        ownerId: currentUserId,
-        status: 'Published',
-        updatedAt: new Date().toISOString()
-      });
-      seededCount++;
-    }
-    return seededCount;
-  } catch (err) {
-    console.error('Error seeding initial Firestore properties:', err);
-    return 0;
-  }
-}
+/** Alias for fetchSimilarProperties — used by PropertyDetailsPage */
+export const getSimilarProperties = fetchSimilarProperties;

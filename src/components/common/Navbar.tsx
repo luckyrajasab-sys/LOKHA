@@ -14,7 +14,9 @@ import {
   ExternalLink,
   Flame,
   Copy,
-  Check
+  Check,
+  Heart,
+  Calendar
 } from 'lucide-react';
 import { subscribeToNotifications } from '../../firebase/realtime';
 import { markNotificationAsRead } from '../../firebase/firestore';
@@ -849,7 +851,47 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }}
                     >
                       <User size={16} />
-                      <span>My Portfolio</span>
+                      <span>My Dashboard</span>
+                    </button>
+
+                    <button
+                      onClick={() => onNavigate('saved')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.6rem 0.75rem',
+                        borderRadius: 'var(--radius-md)',
+                        color: 'var(--text-secondary)',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.825rem',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <Heart size={16} />
+                      <span>Saved Estates</span>
+                    </button>
+
+                    <button
+                      onClick={() => onNavigate('site-visits')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.6rem 0.75rem',
+                        borderRadius: 'var(--radius-md)',
+                        color: 'var(--text-secondary)',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.825rem',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <Calendar size={16} />
+                      <span>Site Visits & Inspections</span>
                     </button>
 
                     <button

@@ -243,5 +243,51 @@ service cloud.firestore {
         isAdmin()
       );
     }
+
+    // SITE VISITS
+    match /siteVisits/{visitId} {
+      allow read: if isAuthenticated() && (
+        resource.data.buyerId == request.auth.uid ||
+        resource.data.ownerId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && request.resource.data.buyerId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.buyerId == request.auth.uid ||
+        resource.data.ownerId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // AGENTS & AGENCIES DIRECTORY (Publicly readable, Admin manageable)
+    match /agents/{agentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /agencies/{agencyId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // VALUATION REQUESTS
+    match /valuations/{valuationId} {
+      allow create: if true;
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // PROPERTY REPORTS
+    match /reports/{reportId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // CONTACT & SUPPORT MESSAGES
+    match /contactMessages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

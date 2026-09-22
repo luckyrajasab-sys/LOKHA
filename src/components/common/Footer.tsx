@@ -139,34 +139,36 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               Real Estate
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              <li><button onClick={() => onNavigate('properties')} className="btn-ghost" style={{ padding: 0 }}>Luxury Apartments</button></li>
-              <li><button onClick={() => onNavigate('properties')} className="btn-ghost" style={{ padding: 0 }}>Villas & Penthouses</button></li>
-              <li><button onClick={() => onNavigate('properties')} className="btn-ghost" style={{ padding: 0 }}>Plots & Land</button></li>
-              <li><button onClick={() => onNavigate('properties')} className="btn-ghost" style={{ padding: 0 }}>Commercial Spaces</button></li>
+              <li><button onClick={() => onNavigate('buy')} className="btn-ghost" style={{ padding: 0 }}>Buy Luxury Homes</button></li>
+              <li><button onClick={() => onNavigate('rent')} className="btn-ghost" style={{ padding: 0 }}>Rent & Executive Leases</button></li>
+              <li><button onClick={() => onNavigate('map')} className="btn-ghost" style={{ padding: 0 }}>Interactive Map Radar</button></li>
+              <li><button onClick={() => onNavigate('compare')} className="btn-ghost" style={{ padding: 0 }}>Side-by-Side Comparison</button></li>
+              <li><button onClick={() => onNavigate('properties')} className="btn-ghost" style={{ padding: 0 }}>All Estates Marketplace</button></li>
             </ul>
           </div>
 
           <div>
             <h4 style={{ fontSize: '0.875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-              Accommodation
+              Intelligence & Tools
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              <li><button onClick={() => onNavigate('stays')} className="btn-ghost" style={{ padding: 0 }}>Luxury Hotels</button></li>
-              <li><button onClick={() => onNavigate('stays')} className="btn-ghost" style={{ padding: 0 }}>Premium PGs & Co-Living</button></li>
-              <li><button onClick={() => onNavigate('stays')} className="btn-ghost" style={{ padding: 0 }}>Hostels & Student Housing</button></li>
-              <li><button onClick={() => onNavigate('stays')} className="btn-ghost" style={{ padding: 0 }}>Serviced Apartments</button></li>
+              <li><button onClick={() => onNavigate('emi-calculator')} className="btn-ghost" style={{ padding: 0 }}>Home Loan EMI Calculator</button></li>
+              <li><button onClick={() => onNavigate('home-valuation')} className="btn-ghost" style={{ padding: 0 }}>Property Valuation Engine</button></li>
+              <li><button onClick={() => onNavigate('locations')} className="btn-ghost" style={{ padding: 0 }}>City Hubs & Rates</button></li>
+              <li><button onClick={() => onNavigate('insights')} className="btn-ghost" style={{ padding: 0 }}>RERA Legal & Tax Guides</button></li>
             </ul>
           </div>
 
           <div>
             <h4 style={{ fontSize: '0.875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-              Developers & Partners
+              Developers & Advisory
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              <li><button onClick={() => onNavigate('projects')} className="btn-ghost" style={{ padding: 0 }}>New Project Launches</button></li>
-              <li><button onClick={() => onNavigate('projects')} className="btn-ghost" style={{ padding: 0 }}>Builder Promotional Offers</button></li>
-              <li><button onClick={() => onNavigate('signup')} className="btn-ghost" style={{ padding: 0 }}>Developer Portal</button></li>
-              <li><button onClick={() => onNavigate('signup')} className="btn-ghost" style={{ padding: 0 }}>Agent Registration</button></li>
+              <li><button onClick={() => onNavigate('projects')} className="btn-ghost" style={{ padding: 0 }}>New Townships & Launches</button></li>
+              <li><button onClick={() => onNavigate('agencies')} className="btn-ghost" style={{ padding: 0 }}>Grade-A Developer Directory</button></li>
+              <li><button onClick={() => onNavigate('agents')} className="btn-ghost" style={{ padding: 0 }}>Certified RERA Advisors</button></li>
+              <li><button onClick={() => onNavigate('about')} className="btn-ghost" style={{ padding: 0 }}>The LOKHA Standard</button></li>
+              <li><button onClick={() => onNavigate('contact')} className="btn-ghost" style={{ padding: 0 }}>Private Concierge Hotline</button></li>
             </ul>
           </div>
         </div>

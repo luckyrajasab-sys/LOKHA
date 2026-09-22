@@ -31,6 +31,7 @@ import {
   getOrCreateConversation
 } from '../firebase/firestore';
 import { updateUserRole, toggleUserActiveStatus } from '../firebase/auth';
+import { verifyProperty } from '../services/adminService';
 import { PropertyFormModal } from '../components/properties/PropertyFormModal';
 import { ChatDrawer } from '../components/chat/ChatDrawer';
 import { useToast } from '../components/common/Toast';
@@ -818,6 +819,86 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Pending Listing Verification Queue */}
+            <div className="card" style={{ padding: '1.5rem', gridColumn: '1 / -1' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShieldCheck size={18} style={{ color: '#22C55E' }} />
+                Pending Verification Queue ({adminProperties.filter(p => p.verificationStatus === 'pending').length})
+              </h3>
+
+              {adminProperties.filter(p => p.verificationStatus === 'pending').length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  ✓ All submitted estates have been verified and published to the public search index.
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+                  {adminProperties.filter(p => p.verificationStatus === 'pending').map((p) => (
+                    <div key={p.propertyId} style={{
+                      padding: '1rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid rgba(212, 175, 55, 0.25)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem'
+                    }}>
+                      <div>
+                        <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{p.title}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                          {p.city} • ₹ {p.price.toLocaleString()} • Listed by: {p.listedByName || p.ownerName || 'User'}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--gold-primary)', marginTop: '0.25rem' }}>
+                          EB Consumer: {p.ebConsumerNumber || p.compliance?.ebConsumerNumber || 'Provided'}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+                        <button
+                          onClick={async () => {
+                            await verifyProperty(p.propertyId, true);
+                            showToast(`Approved & published: ${p.title}`, 'success');
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '0.45rem',
+                            borderRadius: 'var(--radius-full)',
+                            backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                            border: '1px solid rgba(34, 197, 94, 0.4)',
+                            color: '#22C55E',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Verify & Publish
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            await verifyProperty(p.propertyId, false, 'Invalid documentation');
+                            showToast(`Rejected listing: ${p.title}`, 'info');
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '0.45rem',
+                            borderRadius: 'var(--radius-full)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            border: '1px solid rgba(239, 68, 68, 0.4)',
+                            color: '#EF4444',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Reject Listing
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
