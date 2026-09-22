@@ -11,7 +11,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToSignUp }) => {
-  const { setUserDirectly, loginAsDemoMember } = useAuth();
+  const { setUserDirectly } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -20,11 +20,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToSig
 
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
-
-  const handleInstantMemberLogin = () => {
-    loginAsDemoMember();
-    onSuccess();
-  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,28 +98,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToSig
         <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
           Sign in to your global estate and accommodation portfolio
         </p>
-      </div>
-
-      {/* 1-Click Instant Member Access for Vercel/Testing */}
-      <div style={{
-        marginBottom: '1.5rem',
-        padding: '0.875rem 1rem',
-        background: 'linear-gradient(135deg, rgba(201, 162, 77, 0.15), rgba(201, 162, 77, 0.05))',
-        border: '1px dashed var(--gold-primary)',
-        borderRadius: 'var(--radius-lg)',
-        textAlign: 'center'
-      }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gold-light)', marginBottom: '0.5rem', letterSpacing: '0.02em' }}>
-          ⚡ 1-CLICK INSTANT MEMBER ACCESS
-        </div>
-        <button
-          type="button"
-          onClick={handleInstantMemberLogin}
-          className="btn btn-primary btn-sm btn-full"
-          style={{ justifyContent: 'center', fontWeight: 700, letterSpacing: '0.01em' }}
-        >
-          Enter as Verified Member (Instant)
-        </button>
       </div>
 
       {error && (

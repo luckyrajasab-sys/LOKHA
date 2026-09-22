@@ -12,7 +12,7 @@ interface SignUpFormProps {
 }
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToLogin }) => {
-  const { setUserDirectly, loginAsDemoMember } = useAuth();
+  const { setUserDirectly } = useAuth();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -44,11 +44,6 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
     } finally {
       setDetectingLocation(false);
     }
-  };
-
-  const handleInstantMemberAccess = () => {
-    loginAsDemoMember();
-    onSuccess();
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -146,28 +141,6 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
         <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
           Join high-net-worth buyers, investors, and certified developers globally
         </p>
-      </div>
-
-      {/* 1-Click Instant Member Access for Vercel/Testing */}
-      <div style={{
-        marginBottom: '1.5rem',
-        padding: '0.875rem 1rem',
-        background: 'linear-gradient(135deg, rgba(201, 162, 77, 0.15), rgba(201, 162, 77, 0.05))',
-        border: '1px dashed var(--gold-primary)',
-        borderRadius: 'var(--radius-lg)',
-        textAlign: 'center'
-      }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gold-light)', marginBottom: '0.5rem', letterSpacing: '0.02em' }}>
-          ⚡ 1-CLICK INSTANT MEMBER ACCESS
-        </div>
-        <button
-          type="button"
-          onClick={handleInstantMemberAccess}
-          className="btn btn-primary btn-sm btn-full"
-          style={{ justifyContent: 'center', fontWeight: 700, letterSpacing: '0.01em' }}
-        >
-          Enter as Verified Member (Instant)
-        </button>
       </div>
 
       {error && (

@@ -14,8 +14,7 @@ import {
   ExternalLink,
   Flame,
   Copy,
-  Check,
-  Zap
+  Check
 } from 'lucide-react';
 import { subscribeToNotifications } from '../../firebase/realtime';
 import { markNotificationAsRead } from '../../firebase/firestore';
@@ -42,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   onToggleSidebar
 }) => {
-  const { user, logout, loginAsDemoMember } = useAuth();
+  const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [activeNotifTab, setActiveNotifTab] = useState<'rent' | 'offers' | 'updates' | 'personal'>('rent');
@@ -739,32 +738,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           {!user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <button
-                type="button"
-                onClick={() => {
-                  loginAsDemoMember();
-                  onNavigate('dashboard');
-                }}
-                className="btn btn-sm navbar-demo-btn"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08))',
-                  border: '1.5px solid var(--gold-primary)',
-                  color: 'var(--gold-primary)',
-                  borderRadius: 'var(--radius-full)',
-                  padding: '0.45rem 0.95rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  cursor: 'pointer',
-                  boxShadow: '0 0 14px rgba(212, 175, 55, 0.3)'
-                }}
-                title="1-Click Instant Demo Access as Verified Member"
-              >
-                <Zap size={14} fill="var(--gold-primary)" />
-                <span>Instant Demo</span>
-              </button>
-              <button
                 onClick={() => onNavigate('login')}
                 className="btn btn-outline btn-sm navbar-signin-btn"
                 style={{ borderRadius: 'var(--radius-full)', padding: '0.45rem 1rem', fontSize: '0.8rem' }}
@@ -982,11 +955,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
           .navbar-alerts-btn {
             padding: 0 0.6rem !important;
-            height: 36px !important;
-          }
-          .navbar-demo-btn {
-            padding: 0.35rem 0.65rem !important;
-            font-size: 0.72rem !important;
             height: 36px !important;
           }
           .navbar-join-btn {

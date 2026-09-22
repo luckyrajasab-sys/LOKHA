@@ -14,7 +14,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRole: _requiredRole,
   onRedirectToLogin
 }) => {
-  const { user, loading, loginAsDemoMember } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -60,25 +60,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           Authentication Required
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-          Please sign in or use 1-click Instant Demo to access your saved properties, dashboard, and verified inquiries.
+          Please sign in to access your saved properties, dashboard, and verified inquiries.
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <button
-            type="button"
-            onClick={() => loginAsDemoMember()}
-            className="btn btn-primary btn-full"
-            style={{ fontWeight: 800, letterSpacing: '0.02em' }}
-          >
-            ⚡ Enter as Verified Member (Instant Demo)
-          </button>
-          <button
-            type="button"
-            onClick={onRedirectToLogin}
-            className="btn btn-outline btn-full"
-          >
-            Sign In with Existing Account
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onRedirectToLogin}
+          className="btn btn-primary btn-full"
+        >
+          Sign In to Continue
+        </button>
       </div>
     );
   }
