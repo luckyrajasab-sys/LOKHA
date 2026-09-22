@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Center: Clean Luxury Brand Status Pill */}
-        <div style={{
+        <div className="navbar-status-pill" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.75rem'
@@ -187,6 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* App Notification Center Button (Always Visible) */}
           <div style={{ position: 'relative' }}>
             <button
+              className="navbar-alerts-btn"
               onClick={() => {
                 setNotifOpen(!notifOpen);
                 setDropdownOpen(false);
@@ -233,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </span>
                 )}
               </div>
-              <span style={{
+              <span className="navbar-alerts-label" style={{
                 fontSize: '0.775rem',
                 fontWeight: 700,
                 letterSpacing: '0.02em',
@@ -732,14 +733,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <button
                 onClick={() => onNavigate('login')}
-                className="btn btn-outline btn-sm"
+                className="btn btn-outline btn-sm navbar-signin-btn"
                 style={{ borderRadius: 'var(--radius-full)', padding: '0.45rem 1rem', fontSize: '0.8rem' }}
               >
                 Sign In
               </button>
               <button
                 onClick={() => onNavigate('signup')}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-sm navbar-join-btn"
                 style={{ borderRadius: 'var(--radius-full)', padding: '0.45rem 1.1rem', fontSize: '0.8rem' }}
               >
                 Join Lokha
@@ -913,6 +914,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 860px) {
+          .navbar-status-pill {
+            display: none !important;
+          }
+        }
+        @media (max-width: 580px) {
+          .navbar-alerts-label {
+            display: none !important;
+          }
+          .navbar-alerts-btn {
+            padding: 0 0.65rem !important;
+          }
+          .navbar-join-btn {
+            display: none !important;
+          }
+          .navbar-signin-btn {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.75rem !important;
+          }
+        }
+      `}</style>
     </header>
   );
 };

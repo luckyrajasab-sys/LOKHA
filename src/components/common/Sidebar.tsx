@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Compass,
   Building,
@@ -12,7 +12,8 @@ import {
   Sun,
   Moon,
   LogOut,
-  LogIn
+  LogIn,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -34,19 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
 
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [hoveringIconId, setHoveringIconId] = useState<string | null>(null);
-  const [autoExpandedByHover, setAutoExpandedByHover] = useState<boolean>(false);
-
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Clean up any pending timer on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-    };
-  }, []);
 
   const mainNav = [
     { id: 'home', label: 'Explore Estates', icon: Compass },
@@ -61,57 +49,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'bookings', label: 'My Bookings', icon: CalendarCheck },
   ];
 
-  // Mouse enters an icon: if collapsed, start 3-second expansion timer
-  const handleIconMouseEnter = (itemId: string) => {
-    setHoveredItem(itemId);
-
-    if (!isExpanded) {
-      setHoveringIconId(itemId);
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-      // If hover lasts > 3 seconds, expand sidebar
-      hoverTimerRef.current = setTimeout(() => {
-        setAutoExpandedByHover(true);
-        onToggleExpanded(true);
-        setHoveringIconId(null);
-      }, 3000);
+  // Desktop hover expansion: expands immediately when mouse pointer enters the sidebar!
+  const handleSidebarMouseEnter = () => {
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      onToggleExpanded(true);
     }
   };
 
-  // Mouse leaves an icon: cancel timer
-  const handleIconMouseLeave = () => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    setHoveringIconId(null);
-    setHoveredItem(null);
-  };
-
-  // Mouse leaves entire sidebar: collapse if it was auto-expanded by hover
+  // Collapses back smoothly when mouse leaves the sidebar on desktop
   const handleSidebarMouseLeave = () => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    setHoveringIconId(null);
     setHoveredItem(null);
-
-    if (autoExpandedByHover) {
-      setAutoExpandedByHover(false);
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
       onToggleExpanded(false);
     }
   };
 
   const handleItemClick = (e: React.MouseEvent, viewId: string) => {
     e.stopPropagation();
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    setHoveringIconId(null);
     onNavigate(viewId);
+    // On mobile devices, close the sidebar drawer upon selection
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      onToggleExpanded(false);
+    }
   };
 
   const renderNavButton = (
@@ -120,14 +79,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ) => {
     const Icon = item.icon;
     const isHovered = hoveredItem === item.id;
-    const isHolding = !isExpanded && hoveringIconId === item.id;
 
     return (
       <div
         key={item.id}
         style={{ position: 'relative' }}
-        onMouseEnter={() => handleIconMouseEnter(item.id)}
-        onMouseLeave={handleIconMouseLeave}
+        onMouseEnter={() => setHoveredItem(item.id)}
+        onMouseLeave={() => setHoveredItem(null)}
       >
         <button
           onClick={(e) => handleItemClick(e, item.id)}
@@ -152,45 +110,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           aria-label={item.label}
         >
-          {/* Animated 3-Second Hold-to-Expand Radial Ring in Collapsed Mode */}
-          {isHolding && (
-            <svg
-              style={{
-                position: 'absolute',
-                width: '36px',
-                height: '36px',
-                pointerEvents: 'none',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) rotate(-90deg)'
-              }}
-              viewBox="0 0 36 36"
-            >
-              <circle
-                cx="18"
-                cy="18"
-                r="15"
-                fill="none"
-                stroke="rgba(212, 175, 55, 0.25)"
-                strokeWidth="2.5"
-              />
-              <circle
-                cx="18"
-                cy="18"
-                r="15"
-                fill="none"
-                stroke="var(--gold-primary, #D4AF37)"
-                strokeWidth="2.5"
-                strokeDasharray="94.2"
-                strokeDashoffset="94.2"
-                strokeLinecap="round"
-                style={{
-                  animation: 'lokhaHoldProgress 3s linear forwards'
-                }}
-              />
-            </svg>
-          )}
-
           <Icon size={20} color={isActive ? 'var(--gold-primary)' : 'currentColor'} />
 
           {isExpanded && (
@@ -221,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </button>
 
-        {/* Tooltip in Collapsed Mode with 3s hold hint */}
+        {/* Clean Tooltip in Collapsed Mode on desktop */}
         {!isExpanded && isHovered && (
           <div style={{
             position: 'absolute',
@@ -237,17 +156,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             fontSize: '0.75rem',
             fontWeight: 600,
             whiteSpace: 'nowrap',
-            zIndex: 200,
+            zIndex: 250,
             pointerEvents: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2px',
             animation: 'fadeIn 120ms ease-out forwards'
           }}>
-            <span>{item.label}</span>
-            <span style={{ fontSize: '0.62rem', color: 'var(--gold-primary)', fontWeight: 500, opacity: 0.9 }}>
-              Hold 3s to expand
-            </span>
+            {item.label}
           </div>
         )}
       </div>
@@ -257,12 +170,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       <style>{`
-        @keyframes lokhaHoldProgress {
-          0% { stroke-dashoffset: 94.2; }
-          100% { stroke-dashoffset: 0; }
+        @media (max-width: 768px) {
+          .lokha-sidebar {
+            width: min(290px, 85vw) !important;
+            z-index: 300 !important;
+            box-shadow: 16px 0 40px rgba(0, 0, 0, 0.85) !important;
+            transform: ${isExpanded ? 'translateX(0)' : 'translateX(-100%)'} !important;
+            transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+          }
+          .sidebar-mobile-header {
+            display: flex !important;
+          }
+        }
+        @media (min-width: 769px) {
+          .lokha-sidebar {
+            transform: translateX(0) !important;
+          }
+          .sidebar-mobile-header {
+            display: none !important;
+          }
         }
       `}</style>
       <aside
+        className="lokha-sidebar"
+        onMouseEnter={handleSidebarMouseEnter}
         onMouseLeave={handleSidebarMouseLeave}
         style={{
           position: 'fixed',
@@ -276,12 +207,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           zIndex: 150,
           display: 'flex',
           flexDirection: 'column',
-          transition: 'width 280ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'width 240ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 240ms cubic-bezier(0.4, 0, 0.2, 1)',
           overflowX: 'hidden',
           userSelect: 'none'
         }}
         aria-label="Main Sidebar Navigation"
       >
+        {/* Mobile Header with Close Button */}
+        <div className="sidebar-mobile-header" style={{
+          display: 'none',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '1rem 1.25rem 0.75rem',
+          borderBottom: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.08))'
+        }}>
+          <div style={{
+            fontSize: '0.85rem',
+            fontWeight: 800,
+            color: 'var(--gold-primary)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase'
+          }}>
+            Navigation Menu
+          </div>
+          <button
+            onClick={() => onToggleExpanded(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              color: 'var(--gold-primary)',
+              cursor: 'pointer'
+            }}
+            title="Close Menu"
+            aria-label="Close Menu"
+          >
+            <X size={16} />
+          </button>
+        </div>
 
         {/* Navigation Groups List */}
         <div style={{

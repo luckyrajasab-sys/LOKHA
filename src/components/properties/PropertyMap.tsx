@@ -439,7 +439,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       <div ref={mapContainerRef} style={{ width: '100%', height: '100%', zIndex: 1 }} />
 
       {/* 1. TOP-LEFT: Color Legend Overlay (Rent, Lease, Stay, Sale) */}
-      <div style={{
+      <div className="map-legend-overlay" style={{
         position: 'absolute',
         top: '1rem',
         left: '1rem',
@@ -468,7 +468,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
           <span>Category Map Pins</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
           {(['rent', 'lease', 'stay', 'sale'] as PropertyPurposeCategory[]).map(cat => {
             const conf = PURPOSE_COLORS[cat];
             return (
@@ -490,7 +490,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       </div>
 
       {/* 2. TOP-RIGHT: Searching Circle Radius Radar Controls */}
-      <div style={{
+      <div className="map-radius-overlay" style={{
         position: 'absolute',
         top: '1rem',
         right: '1rem',
@@ -541,7 +541,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       </div>
 
       {/* 3. BOTTOM-LEFT: Searching Circle Status */}
-      <div style={{
+      <div className="map-status-overlay" style={{
         position: 'absolute',
         bottom: '1rem',
         left: '1rem',
@@ -579,6 +579,28 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
           100% {
             transform: scale(2.8);
             opacity: 0;
+          }
+        }
+        @media (max-width: 640px) {
+          .map-legend-overlay {
+            top: 0.5rem !important;
+            left: 0.5rem !important;
+            padding: 0.35rem 0.6rem !important;
+            gap: 0.25rem !important;
+          }
+          .map-radius-overlay {
+            top: auto !important;
+            bottom: 3.25rem !important;
+            left: 0.5rem !important;
+            right: auto !important;
+            padding: 0.25rem 0.5rem !important;
+          }
+          .map-status-overlay {
+            bottom: 0.5rem !important;
+            left: 0.5rem !important;
+            right: 0.5rem !important;
+            font-size: 0.68rem !important;
+            padding: 0.25rem 0.55rem !important;
           }
         }
         .leaflet-popup-content-wrapper, .leaflet-popup-tip {

@@ -140,7 +140,7 @@ export const App: React.FC = () => {
                     bottom: 0,
                     backgroundColor: 'rgba(0, 0, 0, 0.65)',
                     backdropFilter: 'blur(4px)',
-                    zIndex: 140
+                    zIndex: 290
                   }}
                   className="mobile-backdrop"
                 />
@@ -175,14 +175,18 @@ export const App: React.FC = () => {
             @media (max-width: 768px) {
               .main-content-layout {
                 margin-left: 0 !important;
+                padding-bottom: 4.75rem !important;
+                width: 100% !important;
+                min-width: 0 !important;
               }
               .mobile-backdrop {
-                display: block;
+                display: block !important;
+                z-index: 290 !important;
               }
             }
             @media (min-width: 769px) {
               .mobile-backdrop {
-                display: none;
+                display: none !important;
               }
             }
           `}</style>
