@@ -67,6 +67,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   // Filters State
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [locationQuery, setLocationQuery] = useState(initialLocationQuery);
+  const [userCoordinates, setUserCoordinates] = useState<[number, number] | undefined>(undefined);
   const [isDetectingLoc, setIsDetectingLoc] = useState(false);
   const [selectedCity, setSelectedCity] = useState('All');
   const [selectedType, setSelectedType] = useState<PropertyType | 'All'>('All');
@@ -196,6 +197,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       setLocationQuery(place);
       const cityName = loc.city || 'Bengaluru';
       setSelectedCity(cityName);
+      setUserCoordinates([loc.latitude, loc.longitude]);
 
       // On Vercel link, immediately load abundant houses and stays for this auto-detected area
       if (isVercelOnly()) {
@@ -871,6 +873,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 <PropertyMap
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
+                  userCoordinates={userCoordinates}
                   onSelectProperty={(p) => setSelectedProperty(p)}
                   onInquireProperty={(p) => setInquiryTarget(p)}
                   height="640px"
@@ -908,6 +911,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               <PropertyMap
                 properties={filteredProperties}
                 selectedProperty={selectedProperty}
+                userCoordinates={userCoordinates}
                 onSelectProperty={(p) => setSelectedProperty(p)}
                 onInquireProperty={(p) => setInquiryTarget(p)}
                 height="740px"
