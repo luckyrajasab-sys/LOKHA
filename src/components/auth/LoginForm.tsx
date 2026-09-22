@@ -11,7 +11,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToSignUp }) => {
-  const { setUserDirectly } = useAuth();
+  const { setUserDirectly, loginAsDemoMember } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,25 +22,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToSig
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
 
   const handleInstantMemberLogin = () => {
-    setUserDirectly({
-      id: 'member_' + Math.random().toString(36).substring(2, 9),
-      displayName: 'Alexander Wright',
-      email: 'alexander.wright@lokha.com',
-      phone: '+91 98765 43210',
-      photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-      country: 'India',
-      preferredLanguage: 'en',
-      preferredCurrency: 'INR',
-      roles: ['member'],
-      accountType: 'Verified Member',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-      emailVerified: true,
-      phoneVerified: true,
-      profileCompleted: true,
-      status: 'active'
-    });
+    loginAsDemoMember();
     onSuccess();
   };
 

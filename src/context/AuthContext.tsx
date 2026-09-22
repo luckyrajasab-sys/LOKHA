@@ -6,6 +6,26 @@ import { logOut } from '../firebase/auth';
 import type { UserDocument, FirebaseUserRole } from '../types/firebaseModels';
 import type { UserProfile } from '../types/auth';
 
+export const DEMO_VERIFIED_MEMBER: UserProfile = {
+  id: 'member_alexander_wright',
+  displayName: 'Alexander Wright',
+  email: 'alexander.wright@lokha.com',
+  phone: '+91 98765 43210',
+  photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+  country: 'India',
+  preferredLanguage: 'en',
+  preferredCurrency: 'INR',
+  roles: ['member'],
+  accountType: 'Verified Member',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: new Date().toISOString(),
+  lastLoginAt: new Date().toISOString(),
+  emailVerified: true,
+  phoneVerified: true,
+  profileCompleted: true,
+  status: 'active'
+};
+
 interface AuthContextType {
   user: UserProfile | null;
   userDoc: UserDocument | null;
@@ -21,6 +41,7 @@ interface AuthContextType {
   hasRole: (role: string) => boolean;
   isPrivileged: boolean;
   setUserDirectly: (user: UserProfile | null) => void;
+  loginAsDemoMember: () => void;
   refreshProfile: () => Promise<void>;
 }
 
@@ -93,11 +114,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         );
       } else {
         setUserDoc(null);
-        setDirectUser(null);
+        // Do NOT unconditionally wipe directUser or localStorage!
+        // Rehydrate directUser from localStorage if present (for Instant Demo access)
         try {
-          localStorage.removeItem('lokha_cached_user');
+          const cached = localStorage.getItem('lokha_cached_user');
+          if (cached) {
+            setDirectUser(JSON.parse(cached));
+          } else {
+            setDirectUser(null);
+          }
         } catch {
-          // ignore
+          setDirectUser(null);
         }
         setLoading(false);
       }
@@ -195,6 +222,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   };
 
+  const loginAsDemoMember = () => {
+    setUserDirectly(DEMO_VERIFIED_MEMBER);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -212,6 +243,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         hasRole,
         isPrivileged,
         setUserDirectly,
+        loginAsDemoMember,
         refreshProfile: async () => {}
       }}
     >
