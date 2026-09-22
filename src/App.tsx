@@ -15,6 +15,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { AddPropertyPage } from './pages/AddPropertyPage';
 
 export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
@@ -67,6 +68,14 @@ export const App: React.FC = () => {
         return (
           <ProtectedRoute onRedirectToLogin={() => handleNavigate('login')}>
             <DashboardPage onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'add-property':
+      case 'list-property':
+        return (
+          <ProtectedRoute onRedirectToLogin={() => handleNavigate('login')}>
+            <AddPropertyPage onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

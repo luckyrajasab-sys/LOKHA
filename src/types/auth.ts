@@ -1,4 +1,5 @@
 export type UserRole =
+  | 'member'
   | 'buyer'
   | 'renter'
   | 'seller'
@@ -14,6 +15,7 @@ export type UserRole =
   | 'moderator';
 
 export type AccountPurpose =
+  | 'Verified Member'
   | 'Looking to Buy'
   | 'Looking to Rent'
   | 'Looking to Lease'

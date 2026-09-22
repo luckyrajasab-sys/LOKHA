@@ -50,7 +50,7 @@ interface DashboardPageProps {
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
-  const { user, role, isOwner, isAgent, isAdmin } = useAuth();
+  const { user, isOwner, isAgent, isAdmin } = useAuth();
   const { showToast } = useToast();
 
   // Active view tab
@@ -83,24 +83,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     propertyTitle: ''
   });
 
-  // 1. Subscribe to owner/agent properties in real time
+  // 1. Subscribe to member's listed properties in real time
   useEffect(() => {
-    if (!user || (!isOwner && !isAgent && !isAdmin)) return;
+    if (!user) return;
     const unsub = subscribeToOwnerProperties(user.id, (liveProps) => {
       setMyProperties(liveProps);
     });
     return () => unsub();
-  }, [user, isOwner, isAgent, isAdmin]);
+  }, [user]);
 
   // 2. Subscribe to inquiries in real time
   useEffect(() => {
     if (!user) return;
-    const isSellerSide = isOwner || isAgent || isAdmin;
+    const isSellerSide = true;
     const unsub = subscribeToInquiries(user.id, isSellerSide, (liveInquiries) => {
       setInquiries(liveInquiries);
     });
     return () => unsub();
-  }, [user, isOwner, isAgent, isAdmin]);
+  }, [user]);
 
   // 3. Subscribe to conversations in real time
   useEffect(() => {
@@ -240,7 +240,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               </h1>
               <span className="badge badge-verified">
                 <ShieldCheck size={12} />
-                {role.toUpperCase()}
+                LOKHA VERIFIED MEMBER
               </span>
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
@@ -251,16 +251,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
         {/* Action Controls */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {(isOwner || isAgent || isAdmin) && (
-            <button
-              onClick={() => { setEditingProperty(null); setIsPropertyModalOpen(true); }}
-              className="btn btn-primary btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-            >
-              <Plus size={16} />
-              List New Property
-            </button>
-          )}
+          <button
+            onClick={() => onNavigate('list-property')}
+            className="btn btn-primary btn-sm"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Plus size={16} />
+            Give / List Property
+          </button>
 
           <button
             onClick={() => onNavigate('properties')}
@@ -287,14 +285,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           Overview & Metrics
         </button>
 
-        {(isOwner || isAgent || isAdmin) && (
-          <button
-            onClick={() => setActiveTab('properties')}
-            className={`btn btn-sm ${activeTab === 'properties' ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            My Listings ({myProperties.length})
-          </button>
-        )}
+        <button
+          onClick={() => setActiveTab('properties')}
+          className={`btn btn-sm ${activeTab === 'properties' ? 'btn-primary' : 'btn-ghost'}`}
+        >
+          My Listed Properties ({myProperties.length})
+        </button>
 
         <button
           onClick={() => setActiveTab('inquiries')}

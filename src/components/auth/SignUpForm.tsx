@@ -46,6 +46,29 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
     }
   };
 
+  const handleInstantMemberAccess = () => {
+    setUserDirectly({
+      id: 'member_' + Math.random().toString(36).substring(2, 9),
+      displayName: fullName.trim() || 'Alexander Wright',
+      email: email.trim() || 'alexander.wright@lokha.com',
+      phone: phoneNumber.trim() || '+91 98765 43210',
+      photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+      country: country || 'India',
+      preferredLanguage: 'en',
+      preferredCurrency: 'INR',
+      roles: ['member'],
+      accountType: 'Verified Member',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString(),
+      emailVerified: true,
+      phoneVerified: true,
+      profileCompleted: true,
+      status: 'active'
+    });
+    onSuccess();
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,12 +97,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
         phoneNumber,
         password,
         country,
-        'Looking to Buy' // default buyer role
+        'Verified Member'
       );
       setUserDirectly(profile);
       onSuccess();
     } catch (err: any) {
-      setError(getFriendlyAuthErrorMessage(err.code || ''));
+      const msg = err.code ? getFriendlyAuthErrorMessage(err.code) : (err.message || 'Registration failed. Please try again.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -93,7 +117,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
       setUserDirectly(profile);
       onSuccess();
     } catch (err: any) {
-      setError(getFriendlyAuthErrorMessage(err.code || ''));
+      const msg = err.code ? getFriendlyAuthErrorMessage(err.code) : (err.message || 'Google sign-up failed.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -107,7 +132,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
       setUserDirectly(profile);
       onSuccess();
     } catch (err: any) {
-      setError(getFriendlyAuthErrorMessage(err.code || ''));
+      const msg = err.code ? getFriendlyAuthErrorMessage(err.code) : (err.message || 'Apple sign-up failed.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -138,6 +164,28 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onNavigateToL
         <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
           Join high-net-worth buyers, investors, and certified developers globally
         </p>
+      </div>
+
+      {/* 1-Click Instant Member Access for Vercel/Testing */}
+      <div style={{
+        marginBottom: '1.5rem',
+        padding: '0.875rem 1rem',
+        background: 'linear-gradient(135deg, rgba(201, 162, 77, 0.15), rgba(201, 162, 77, 0.05))',
+        border: '1px dashed var(--gold-primary)',
+        borderRadius: 'var(--radius-lg)',
+        textAlign: 'center'
+      }}>
+        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gold-light)', marginBottom: '0.5rem', letterSpacing: '0.02em' }}>
+          ⚡ 1-CLICK INSTANT MEMBER ACCESS
+        </div>
+        <button
+          type="button"
+          onClick={handleInstantMemberAccess}
+          className="btn btn-primary btn-sm btn-full"
+          style={{ justifyContent: 'center', fontWeight: 700, letterSpacing: '0.01em' }}
+        >
+          Enter as Verified Member (Instant)
+        </button>
       </div>
 
       {error && (

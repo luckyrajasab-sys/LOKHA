@@ -1,4 +1,4 @@
-export type FirebaseUserRole = 'buyer' | 'owner' | 'agent' | 'admin';
+export type FirebaseUserRole = 'member' | 'buyer' | 'owner' | 'agent' | 'admin';
 
 export interface UserDocument {
   uid: string;
@@ -22,12 +22,15 @@ export type PropertyType =
   | 'Apartment'
   | 'Villa'
   | 'House'
+  | 'Penthouse'
   | 'Plot'
   | 'Commercial'
   | 'Office'
-  | 'Shop';
+  | 'Shop'
+  | 'Farmhouse'
+  | 'Resort / Homestay';
 
-export type PropertyListingType = 'Sale' | 'Rent' | 'Lease';
+export type PropertyListingType = 'Sale' | 'Rent' | 'Lease' | 'Stay';
 
 export type PropertyStatusType = 'available' | 'sold' | 'rented' | 'inactive';
 
@@ -36,6 +39,18 @@ export type FurnishedStatus = 'Unfurnished' | 'Semi-Furnished' | 'Fully Furnishe
 export interface PropertyDocument {
   propertyId: string;
   ownerId: string;
+  ownerName?: string;
+  listedByName?: string;
+  ownershipType?: 'Self' | 'Family Member' | 'self' | 'family';
+  familyMemberName?: string;
+  familyRelation?: string;
+  familyContactPhone?: string;
+  ebConsumerNumber?: string;
+  ebProvider?: string;
+  ebTariff?: string;
+  govDocType?: string;
+  govDocNumber?: string;
+  isGovEbVerified?: boolean;
   agentId?: string;
   title: string;
   description: string;
@@ -44,6 +59,8 @@ export interface PropertyDocument {
   price: number;
   rentAmount?: number;
   leaseAmount?: number;
+  stayNightlyRate?: number;
+  stayMaxGuests?: number;
   securityDeposit?: number;
   bedrooms: number;
   bathrooms: number;

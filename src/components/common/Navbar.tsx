@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       display: 'flex',
       alignItems: 'center'
     }}>
-      <div style={{
+      <div className="navbar-container" style={{
         width: '100%',
         padding: '0 1.5rem',
         display: 'flex',
@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         gap: '1.25rem'
       }}>
         {/* 1. App Logo & Optional Sidebar Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
           {onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
@@ -136,7 +136,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 border: '1px solid rgba(212, 175, 55, 0.2)',
                 color: 'var(--gold-primary)',
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                flexShrink: 0
               }}
               title="Toggle Sidebar Navigation"
               aria-label="Toggle Sidebar"
@@ -149,7 +150,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onNavigate('home')}
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
-            <LokhaLogo variant="full" size="md" />
+            <div className="navbar-logo-desktop">
+              <LokhaLogo variant="full" size="md" />
+            </div>
+            <div className="navbar-logo-mobile">
+              <LokhaLogo variant="compact" size="sm" />
+            </div>
           </div>
         </div>
 
@@ -780,7 +786,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}>
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'L'}
                 </div>
-                <span style={{
+                <span className="navbar-username" style={{
                   fontSize: '0.85rem',
                   fontWeight: 600,
                   color: '#FFFFFF',
@@ -920,12 +926,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             display: none !important;
           }
         }
+        @media (max-width: 640px) {
+          .navbar-container {
+            padding: 0 0.75rem !important;
+            gap: 0.5rem !important;
+          }
+          .navbar-logo-desktop {
+            display: none !important;
+          }
+          .navbar-logo-mobile {
+            display: flex !important;
+          }
+          .navbar-username {
+            display: none !important;
+          }
+        }
+        @media (min-width: 641px) {
+          .navbar-logo-desktop {
+            display: flex !important;
+          }
+          .navbar-logo-mobile {
+            display: none !important;
+          }
+        }
         @media (max-width: 580px) {
           .navbar-alerts-label {
             display: none !important;
           }
           .navbar-alerts-btn {
-            padding: 0 0.65rem !important;
+            padding: 0 0.6rem !important;
+            height: 36px !important;
           }
           .navbar-join-btn {
             display: none !important;
@@ -933,6 +963,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           .navbar-signin-btn {
             padding: 0.35rem 0.75rem !important;
             font-size: 0.75rem !important;
+            height: 36px !important;
           }
         }
       `}</style>

@@ -11,10 +11,10 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  requiredRole,
+  requiredRole: _requiredRole,
   onRedirectToLogin
 }) => {
-  const { user, loading, hasRole } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -67,44 +67,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           className="btn btn-primary btn-full"
         >
           Sign In to Continue
-        </button>
-      </div>
-    );
-  }
-
-  if (requiredRole && !hasRole(requiredRole)) {
-    return (
-      <div style={{
-        maxWidth: '520px',
-        margin: '5rem auto',
-        padding: '2.5rem',
-        textAlign: 'center',
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-medium)',
-        borderRadius: 'var(--radius-xl)'
-      }}>
-        <ShieldAlert size={48} color="var(--warning)" style={{ margin: '0 auto 1rem' }} />
-        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-          Restricted Portal Access
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-          This area is designated for verified <strong>{requiredRole}s</strong>. Your account status is currently standard member.
-        </p>
-        <div style={{
-          padding: '1rem',
-          backgroundColor: 'var(--bg-tertiary)',
-          borderRadius: 'var(--radius-md)',
-          fontSize: '0.85rem',
-          color: 'var(--text-secondary)',
-          marginBottom: '1.5rem'
-        }}>
-          To request developer or agent accreditation, submit your corporate license and tax ID in Account Settings.
-        </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="btn btn-secondary btn-full"
-        >
-          Return to Overview
         </button>
       </div>
     );

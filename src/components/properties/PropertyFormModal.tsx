@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, ShieldCheck, Zap, Users } from 'lucide-react';
 import { createProperty, updateProperty } from '../../firebase/firestore';
 import { uploadPropertyImage } from '../../firebase/storage';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +20,7 @@ interface PropertyFormModalProps {
 }
 
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'House', 'Plot', 'Commercial', 'Office', 'Shop'];
-const LISTING_TYPES: PropertyListingType[] = ['Sale', 'Rent', 'Lease'];
+const LISTING_TYPES: PropertyListingType[] = ['Rent', 'Lease', 'Stay', 'Sale'];
 const FURNISHED_STATUSES: FurnishedStatus[] = ['Unfurnished', 'Semi-Furnished', 'Fully Furnished'];
 const COMMON_AMENITIES = [
   'Swimming Pool', 'Private Garden', 'Gym / Fitness Center', 'Clubhouse',
@@ -42,22 +42,39 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
   const [title, setTitle] = useState(existingProperty?.title || '');
   const [description, setDescription] = useState(existingProperty?.description || '');
   const [propertyType, setPropertyType] = useState<PropertyType>(existingProperty?.propertyType || 'Apartment');
-  const [listingType, setListingType] = useState<PropertyListingType>(existingProperty?.listingType || 'Sale');
+  const [listingType, setListingType] = useState<PropertyListingType>(existingProperty?.listingType || 'Rent');
   const [status, setStatus] = useState<PropertyStatusType>(existingProperty?.status || 'available');
   const [price, setPrice] = useState<number>(existingProperty?.price || 15000000);
   const [rentAmount, setRentAmount] = useState<number>(existingProperty?.rentAmount || 75000);
   const securityDeposit = existingProperty?.securityDeposit || 200000;
+  const [stayNightlyRate, setStayNightlyRate] = useState<number>(existingProperty?.stayNightlyRate || 4500);
+  const [stayMaxGuests, setStayMaxGuests] = useState<number>(existingProperty?.stayMaxGuests || 4);
+
+  // Ownership & Family
+  const initialOwnership: 'self' | 'family' = existingProperty?.ownershipType === 'Family Member' || existingProperty?.ownershipType === 'family' ? 'family' : 'self';
+  const [ownershipType, setOwnershipType] = useState<'self' | 'family'>(initialOwnership);
+  const [ownerName, setOwnerName] = useState(existingProperty?.ownerName || user?.displayName || '');
+  const [familyMemberName, setFamilyMemberName] = useState(existingProperty?.familyMemberName || '');
+  const [familyRelation, setFamilyRelation] = useState(existingProperty?.familyRelation || 'Father');
+  const [familyContactPhone, setFamilyContactPhone] = useState(existingProperty?.familyContactPhone || '');
+
+  // Government & EB Verification
+  const [ebConsumerNumber, setEbConsumerNumber] = useState(existingProperty?.ebConsumerNumber || '');
+  const [ebProvider, setEbProvider] = useState(existingProperty?.ebProvider || 'TANGEDCO / State EB');
+  const [govDocType, setGovDocType] = useState(existingProperty?.govDocType || 'Patta / Chitta');
+  const [govDocNumber, setGovDocNumber] = useState(existingProperty?.govDocNumber || '');
+
   const [bedrooms, setBedrooms] = useState<number>(existingProperty?.bedrooms || 3);
   const [bathrooms, setBathrooms] = useState<number>(existingProperty?.bathrooms || 3);
   const [area, setArea] = useState<number>(existingProperty?.area || 2200);
   const areaUnit = existingProperty?.areaUnit || 'sq.ft';
   const [furnishedStatus, setFurnishedStatus] = useState<FurnishedStatus>(existingProperty?.furnishedStatus || 'Fully Furnished');
   const [address, setAddress] = useState(existingProperty?.address || '');
-  const [city, setCity] = useState(existingProperty?.city || 'Mumbai');
-  const [state, setState] = useState(existingProperty?.state || 'Maharashtra');
-  const [pincode, setPincode] = useState(existingProperty?.pincode || '400050');
-  const latitude = existingProperty?.latitude || 19.076;
-  const longitude = existingProperty?.longitude || 72.8777;
+  const [city, setCity] = useState(existingProperty?.city || 'Chennai');
+  const [state, setState] = useState(existingProperty?.state || 'Tamil Nadu');
+  const [pincode, setPincode] = useState(existingProperty?.pincode || '600001');
+  const latitude = existingProperty?.latitude || 13.0827;
+  const longitude = existingProperty?.longitude || 80.2707;
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(existingProperty?.amenities || ['Swimming Pool', 'Covered Parking']);
   const [existingImages, setExistingImages] = useState<string[]>(existingProperty?.images || []);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -117,54 +134,48 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
         finalImages.push('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80');
       }
 
+      const propertyData = {
+        title: title.trim(),
+        description: description.trim(),
+        propertyType,
+        listingType,
+        status,
+        price: Number(price),
+        rentAmount: listingType === 'Rent' ? Number(rentAmount) : undefined,
+        securityDeposit: Number(securityDeposit),
+        bedrooms: Number(bedrooms),
+        bathrooms: Number(bathrooms),
+        area: Number(area),
+        areaUnit,
+        furnishedStatus,
+        address: address.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        pincode: pincode.trim(),
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        amenities: selectedAmenities,
+        images: finalImages,
+        ownerName: ownershipType === 'family' ? (familyMemberName.trim() || 'Family Member') : (ownerName.trim() || user.displayName || 'Verified Member'),
+        ownershipType,
+        familyMemberName: ownershipType === 'family' ? familyMemberName.trim() : undefined,
+        familyRelation: ownershipType === 'family' ? familyRelation : undefined,
+        familyContactPhone: ownershipType === 'family' ? familyContactPhone.trim() : undefined,
+        ebConsumerNumber: ebConsumerNumber.trim() || undefined,
+        ebProvider: ebProvider.trim() || undefined,
+        govDocType: govDocType || undefined,
+        govDocNumber: govDocNumber.trim() || undefined,
+        isGovEbVerified: Boolean(ebConsumerNumber.trim() && govDocNumber.trim()),
+        stayNightlyRate: listingType === 'Stay' ? Number(stayNightlyRate) : undefined,
+        stayMaxGuests: listingType === 'Stay' ? Number(stayMaxGuests) : undefined
+      };
+
       if (existingProperty) {
-        await updateProperty(existingProperty.propertyId, {
-          title: title.trim(),
-          description: description.trim(),
-          propertyType,
-          listingType,
-          status,
-          price: Number(price),
-          rentAmount: listingType === 'Rent' ? Number(rentAmount) : undefined,
-          securityDeposit: Number(securityDeposit),
-          bedrooms: Number(bedrooms),
-          bathrooms: Number(bathrooms),
-          area: Number(area),
-          areaUnit,
-          furnishedStatus,
-          address: address.trim(),
-          city: city.trim(),
-          state: state.trim(),
-          pincode: pincode.trim(),
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          amenities: selectedAmenities,
-          images: finalImages
-        });
+        await updateProperty(existingProperty.propertyId, propertyData);
       } else {
         await createProperty({
+          ...propertyData,
           ownerId: user.id,
-          title: title.trim(),
-          description: description.trim(),
-          propertyType,
-          listingType,
-          status,
-          price: Number(price),
-          rentAmount: listingType === 'Rent' ? Number(rentAmount) : undefined,
-          securityDeposit: Number(securityDeposit),
-          bedrooms: Number(bedrooms),
-          bathrooms: Number(bathrooms),
-          area: Number(area),
-          areaUnit,
-          furnishedStatus,
-          address: address.trim(),
-          city: city.trim(),
-          state: state.trim(),
-          pincode: pincode.trim(),
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          amenities: selectedAmenities,
-          images: finalImages,
           isFeatured: false
         });
       }
@@ -290,6 +301,30 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
             </div>
           )}
 
+          {listingType === 'Stay' && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Nightly Rate (INR)</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={stayNightlyRate}
+                  onChange={(e) => setStayNightlyRate(Number(e.target.value))}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Max Guests</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={stayMaxGuests}
+                  min={1}
+                  onChange={(e) => setStayMaxGuests(Number(e.target.value))}
+                />
+              </div>
+            </>
+          )}
+
           <div className="form-group">
             <label className="form-label">Furnishing</label>
             <select
@@ -299,6 +334,182 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
             >
               {FURNISHED_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+        </div>
+
+        {/* Ownership Verification */}
+        <div style={{
+          padding: '1.25rem',
+          backgroundColor: 'var(--bg-secondary)',
+          border: '1px solid var(--border-light)',
+          borderRadius: 'var(--radius-lg)',
+          marginBottom: '1.25rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <Users size={16} color="var(--gold-primary)" />
+            <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Ownership Authorization (Self or Family Member)
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="modalOwnershipType"
+                value="self"
+                checked={ownershipType === 'self'}
+                onChange={() => setOwnershipType('self')}
+              />
+              In My Name ({user?.displayName || 'Self'})
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="modalOwnershipType"
+                value="family"
+                checked={ownershipType === 'family'}
+                onChange={() => setOwnershipType('family')}
+              />
+              In Family Member's Name
+            </label>
+          </div>
+
+          {ownershipType === 'family' ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+              <div>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>Family Member Name *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Rajesh Sharma"
+                  value={familyMemberName}
+                  onChange={(e) => setFamilyMemberName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>Relationship *</label>
+                <select
+                  className="form-input"
+                  value={familyRelation}
+                  onChange={(e) => setFamilyRelation(e.target.value)}
+                >
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Brother">Brother</option>
+                  <option value="Sister">Sister</option>
+                  <option value="Son">Son</option>
+                  <option value="Daughter">Daughter</option>
+                  <option value="Joint Family">Joint Family</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>Contact Phone *</label>
+                <input
+                  type="tel"
+                  className="form-input"
+                  placeholder="+91 98765 43210"
+                  value={familyContactPhone}
+                  onChange={(e) => setFamilyContactPhone(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>Owner Full Name *</label>
+              <input
+                type="text"
+                className="form-input"
+                value={ownerName}
+                onChange={(e) => setOwnerName(e.target.value)}
+                placeholder="Full Legal Name"
+                required
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Government & EB Connection Verification */}
+        <div style={{
+          padding: '1.25rem',
+          backgroundColor: 'rgba(201, 162, 77, 0.05)',
+          border: '1px solid rgba(201, 162, 77, 0.25)',
+          borderRadius: 'var(--radius-lg)',
+          marginBottom: '1.25rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ShieldCheck size={16} color="var(--gold-primary)" />
+              <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                Government Identification & EB Service Connection
+              </span>
+            </div>
+            {ebConsumerNumber && govDocNumber && (
+              <span style={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                color: '#22c55e',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                padding: '0.2rem 0.6rem',
+                borderRadius: '999px',
+                border: '1px solid rgba(34, 197, 94, 0.3)'
+              }}>
+                ✓ Government & EB Verified
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>Gov Document Type</label>
+              <select
+                className="form-input"
+                value={govDocType}
+                onChange={(e) => setGovDocType(e.target.value)}
+              >
+                <option value="Patta / Chitta">Patta / Chitta</option>
+                <option value="Khata Certificate">Khata Certificate</option>
+                <option value="Property Tax Assessment No">Property Tax Assessment No</option>
+                <option value="Sale Deed Registration">Registered Sale Deed</option>
+              </select>
+            </div>
+            <div>
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>Document / Assessment No *</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="e.g. TN/CH/2024/9842"
+                value={govDocNumber}
+                onChange={(e) => setGovDocNumber(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="form-label" style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Zap size={12} color="var(--gold-primary)" />
+                EB Consumer / Service No *
+              </label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="e.g. 04-022-005-194"
+                value={ebConsumerNumber}
+                onChange={(e) => setEbConsumerNumber(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>Electricity Board / DISCOM</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="e.g. TANGEDCO / BESCOM"
+                value={ebProvider}
+                onChange={(e) => setEbProvider(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 

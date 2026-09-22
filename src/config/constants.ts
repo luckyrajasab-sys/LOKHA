@@ -25,7 +25,8 @@ export const PURPOSE_TO_ROLES_MAP: Record<AccountPurpose, UserRole[]> = {
   'Landlord': ['landlord'],
   'Agent': ['agent'], // Privileged: pending approval
   'Builder / Developer': ['builder', 'developer'], // Privileged: pending approval
-  'Hotel / PG / Hostel Manager': ['hotel_manager', 'property_manager']
+  'Hotel / PG / Hostel Manager': ['hotel_manager', 'property_manager'],
+  'Verified Member': ['member', 'buyer', 'seller', 'landlord', 'renter']
 };
 
 export const PRIVILEGED_ROLES: UserRole[] = [

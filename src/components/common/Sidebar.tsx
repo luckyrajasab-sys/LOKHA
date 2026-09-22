@@ -13,7 +13,8 @@ import {
   Moon,
   LogOut,
   LogIn,
-  X
+  X,
+  PlusCircle
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -31,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isExpanded,
   onToggleExpanded
 }) => {
-  const { user, logout, role } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'properties', label: 'Buy & Rent', icon: Building, badge: 'Live' },
     { id: 'stays', label: 'Stays & Hospitality', icon: Bed },
     { id: 'projects', label: 'New Developments', icon: Layers },
+    { id: 'list-property', label: 'Give / List Property', icon: PlusCircle, badge: 'Verified' },
   ];
 
   const userNav = [
@@ -319,7 +321,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              {renderNavButton({ id: 'dashboard', label: `Dashboard (${role || 'Guest'})`, icon: LayoutDashboard }, currentView === 'dashboard')}
+              {renderNavButton({ id: 'dashboard', label: 'My Dashboard & Listings', icon: LayoutDashboard }, currentView === 'dashboard')}
               {renderNavButton({ id: 'settings', label: 'Account Settings', icon: Settings }, currentView === 'settings')}
             </div>
           </div>

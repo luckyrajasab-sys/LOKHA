@@ -137,8 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     country: 'India',
     preferredLanguage: 'en',
     preferredCurrency: 'INR',
-    roles: ['buyer'],
-    accountType: 'Looking to Buy',
+    roles: ['member'],
+    accountType: 'Verified Member',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     lastLoginAt: new Date().toISOString(),
@@ -158,8 +158,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     country: 'India',
     preferredLanguage: 'en',
     preferredCurrency: 'INR',
-    roles: [userDoc.role as any],
-    accountType: userDoc.role === 'owner' ? 'Property Owner' : userDoc.role === 'agent' ? 'Agent' : 'Looking to Buy',
+    roles: ['member'],
+    accountType: 'Verified Member',
     createdAt: userDoc.createdAt,
     updatedAt: userDoc.updatedAt,
     lastLoginAt: userDoc.updatedAt,
@@ -169,18 +169,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     status: userDoc.isActive ? 'active' : 'suspended'
   } : (directUser || computedFromFb);
 
-  const role: FirebaseUserRole = userDoc?.role || (user?.roles?.[0] as FirebaseUserRole) || 'buyer';
-  const isBuyer = role === 'buyer';
-  const isOwner = role === 'owner';
-  const isAgent = role === 'agent';
-  const isAdmin = role === 'admin';
+  const role: FirebaseUserRole = userDoc?.role === 'admin' ? 'admin' : 'member';
+  // All verified members can buy, rent, lease, stay, and list/give their properties!
+  const isBuyer = Boolean(user);
+  const isOwner = Boolean(user);
+  const isAgent = Boolean(user);
+  const isAdmin = role === 'admin' || userDoc?.role === 'admin';
+  const isPrivileged = Boolean(user);
 
-  const hasRole = (r: string): boolean => {
-    if (!user) return false;
-    return role === r || role === 'admin' || Boolean(user.roles?.includes(r as any));
+  const hasRole = (_r: string): boolean => {
+    return Boolean(user);
   };
-
-  const isPrivileged = isOwner || isAgent || isAdmin;
 
   const setUserDirectly = (newUser: UserProfile | null) => {
     setDirectUser(newUser);

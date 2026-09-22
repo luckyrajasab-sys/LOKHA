@@ -52,8 +52,8 @@ function userDocToProfile(doc: UserDocument): UserProfile {
     country: 'India',
     preferredLanguage: 'en',
     preferredCurrency: 'INR',
-    roles: [doc.role as any],
-    accountType: doc.role === 'owner' ? 'Property Owner' : doc.role === 'agent' ? 'Agent' : 'Looking to Buy',
+    roles: ['member' as any, doc.role as any],
+    accountType: 'Verified Member',
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
     lastLoginAt: doc.updatedAt,
@@ -70,16 +70,9 @@ export async function registerWithEmail(
   phone: string,
   pass: string,
   _country: string,
-  accountType: AccountPurpose
+  _accountType?: AccountPurpose | string
 ): Promise<UserProfile> {
-  // Map account purpose to requested role
-  let role: FirebaseUserRole = 'buyer';
-  if (accountType === 'Property Owner' || accountType === 'Seller' || accountType === 'Landlord') {
-    role = 'owner';
-  } else if (accountType === 'Agent' || accountType === 'Builder / Developer') {
-    role = 'agent';
-  }
-
+  const role: FirebaseUserRole = 'member';
   const doc = await signUpWithEmail(fullName, email, pass, phone, role);
   return userDocToProfile(doc);
 }
