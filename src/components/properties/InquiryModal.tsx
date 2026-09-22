@@ -9,6 +9,7 @@ interface InquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
   property: PropertyDocument | null;
+  initialIntent?: 'buy' | 'rent' | 'lease' | 'stay';
   onSuccess: () => void;
   onOpenPremium?: () => void;
 }
@@ -17,15 +18,34 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
   isOpen,
   onClose,
   property,
+  initialIntent = 'buy',
   onSuccess,
   onOpenPremium
 }) => {
   const { user, userDoc } = useAuth();
-  const [message, setMessage] = useState('Hello, I am interested in this property. Please contact me with more information regarding availability and viewings.');
+
+  const getDefaultMessage = () => {
+    if (initialIntent === 'rent') {
+      return 'Hello, I am interested in renting this estate on a monthly tenancy. Please provide lease terms, maintenance rules, and schedule an on-site visit.';
+    }
+    if (initialIntent === 'lease') {
+      return 'Hello, I am interested in a long-term lease for this estate. Please contact me regarding the multi-year lease consideration, advance deposit, and handover terms.';
+    }
+    if (initialIntent === 'stay') {
+      return 'Hello, I am interested in booking accommodation / short stay at this property. Please confirm availability, guest rules, and booking procedures.';
+    }
+    return 'Hello, I am interested in purchasing this property (Buy). Please provide verified deed documentation, title clearance, and schedule an on-site inspection.';
+  };
+
+  const [message, setMessage] = useState(getDefaultMessage());
   const [phone, setPhone] = useState(user?.phone || '');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    setMessage(getDefaultMessage());
+  }, [initialIntent, property]);
 
   if (!property) return null;
 
@@ -129,8 +149,19 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
               <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                 {property.title}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                {property.city}, {property.state} • {property.listingType}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '2px' }}>
+                <span>{property.city}, {property.state}</span>
+                <span style={{
+                  padding: '1px 6px',
+                  borderRadius: '4px',
+                  backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                  color: 'var(--gold-primary)',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  textTransform: 'uppercase'
+                }}>
+                  Intent: {initialIntent}
+                </span>
               </div>
             </div>
           </div>

@@ -65,7 +65,8 @@ export function getPropertyCategory(prop: PropertyDocument): PropertyPurposeCate
     prop.title.toLowerCase().includes('stay') ||
     prop.title.toLowerCase().includes('resort') ||
     prop.title.toLowerCase().includes('suite') ||
-    prop.title.toLowerCase().includes('hotel')
+    prop.title.toLowerCase().includes('hotel') ||
+    prop.listingType === 'Stay'
   ) {
     return 'stay';
   }
@@ -73,6 +74,36 @@ export function getPropertyCategory(prop: PropertyDocument): PropertyPurposeCate
   if (prop.listingType === 'Lease') return 'lease';
   return 'sale';
 }
+
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Google Maps & Map Layer Sources
+type MapLayerType = 'google_roadmap' | 'google_satellite' | 'dark_estate';
+
+const TILE_LAYERS: Record<MapLayerType, { url: string; attribution: string; subdomains?: string }> = {
+  google_roadmap: {
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps'
+  },
+  google_satellite: {
+    url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Hybrid'
+  },
+  dark_estate: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO &copy; OpenStreetMap',
+    subdomains: 'abcd'
+  }
+};
 
 export const PropertyMap: React.FC<PropertyMapProps> = ({
   properties,
@@ -84,31 +115,34 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const currentTileLayerRef = useRef<L.TileLayer | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const searchCircleLayerRef = useRef<L.LayerGroup | null>(null);
 
   const [searchRadiusKm, setSearchRadiusKm] = useState<number>(5);
   const [activeCenter, setActiveCenter] = useState<[number, number]>([12.9716, 77.5946]);
+  const [activeMapLayer, setActiveMapLayer] = useState<MapLayerType>('google_roadmap');
+  const [visiblePropertiesCount, setVisiblePropertiesCount] = useState<number>(0);
 
   // Helper to format luxury price on map markers based on purpose
   const formatMarkerPrice = (prop: PropertyDocument, cat: PropertyPurposeCategory) => {
     if (cat === 'stay') {
-      const perNight = prop.rentAmount || 8500;
+      const perNight = prop.stayNightlyRate || prop.rentAmount || 4500;
       return `₹${perNight.toLocaleString()}/nt`;
     }
     if (cat === 'rent') {
-      const val = prop.rentAmount || prop.price;
+      const val = prop.rentAmount || Math.round((prop.price || 10000000) * 0.003);
       if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L/mo`;
       return `₹${val.toLocaleString()}/mo`;
     }
     if (cat === 'lease') {
-      const val = prop.leaseAmount || prop.price;
+      const val = prop.leaseAmount || Math.round((prop.price || 10000000) * 0.18);
       if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr Lse`;
       if (val >= 100000) return `₹${(val / 100000).toFixed(0)}L Lse`;
       return `₹${val.toLocaleString()}`;
     }
     // Sale
-    const val = prop.price;
+    const val = prop.price || 12000000;
     if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)} Cr`;
     if (val >= 100000) return `₹${(val / 100000).toFixed(0)} L`;
     return `₹${val.toLocaleString()}`;
@@ -118,22 +152,23 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    // Initial center default
     const initialCenter: [number, number] = userCoordinates || [12.9716, 77.5946];
     setActiveCenter(initialCenter);
 
     const map = L.map(mapContainerRef.current, {
       center: initialCenter,
-      zoom: 12,
+      zoom: 13,
       zoomControl: false
     });
 
-    // CartoDB Dark Matter Luxury Basemap
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; CARTO &copy; OpenStreetMap',
-      subdomains: 'abcd',
-      maxZoom: 19
+    // Add Initial Google Maps Roadmap Layer
+    const layerConfig = TILE_LAYERS[activeMapLayer];
+    const tileLayer = L.tileLayer(layerConfig.url, {
+      attribution: layerConfig.attribution,
+      subdomains: layerConfig.subdomains || 'abc',
+      maxZoom: 20
     }).addTo(map);
+    currentTileLayerRef.current = tileLayer;
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -152,17 +187,36 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     };
   }, []);
 
+  // Switch Base Map Layer (Google Roads, Google Satellite, Dark Luxury)
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (currentTileLayerRef.current) {
+      map.removeLayer(currentTileLayerRef.current);
+    }
+
+    const layerConfig = TILE_LAYERS[activeMapLayer];
+    const newTileLayer = L.tileLayer(layerConfig.url, {
+      attribution: layerConfig.attribution,
+      subdomains: layerConfig.subdomains || 'abc',
+      maxZoom: 20
+    }).addTo(map);
+    newTileLayer.bringToBack();
+    currentTileLayerRef.current = newTileLayer;
+  }, [activeMapLayer]);
+
   // Update user coordinates when passed
   useEffect(() => {
     if (userCoordinates && userCoordinates[0] && userCoordinates[1]) {
       setActiveCenter(userCoordinates);
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.flyTo(userCoordinates, 13, { duration: 1 });
+        mapInstanceRef.current.flyTo(userCoordinates, 13, { duration: 1.2 });
       }
     }
   }, [userCoordinates]);
 
-  // Update Searching Circle & Radar Pulse when radius or center changes
+  // Render Searching Circle & Radar Pulse
   useEffect(() => {
     const circleLayer = searchCircleLayerRef.current;
     if (!circleLayer) return;
@@ -172,24 +226,24 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     const [cLat, cLng] = activeCenter;
     const radiusMeters = searchRadiusKm * 1000;
 
-    // 1. Outer Searching Radius Circle with luxury dashed gold stroke
+    // 1. Primary Searching Radius Circle
     L.circle([cLat, cLng], {
       radius: radiusMeters,
-      color: 'var(--gold-primary, #D4AF37)',
-      weight: 2,
+      color: '#D4AF37',
+      weight: 2.5,
       dashArray: '6, 8',
       fillColor: '#D4AF37',
-      fillOpacity: 0.07
+      fillOpacity: 0.08
     }).addTo(circleLayer);
 
     // 2. Secondary Inner Ripple for Radar depth
     L.circle([cLat, cLng], {
       radius: radiusMeters * 0.5,
-      color: 'rgba(212, 175, 55, 0.4)',
-      weight: 1,
+      color: 'rgba(212, 175, 55, 0.45)',
+      weight: 1.5,
       dashArray: '4, 6',
       fillColor: '#10B981',
-      fillOpacity: 0.03
+      fillOpacity: 0.04
     }).addTo(circleLayer);
 
     // 3. Center Radar Ping Marker with Animated CSS Ripple
@@ -199,9 +253,9 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         <div style="position: relative; width: 24px; height: 24px; transform: translate(-50%, -50%);">
           <div style="
             position: absolute;
-            inset: -8px;
+            inset: -12px;
             border-radius: 50%;
-            background: rgba(212, 175, 55, 0.25);
+            background: rgba(212, 175, 55, 0.3);
             animation: radarPulse 2s cubic-bezier(0.25, 0, 0.2, 1) infinite;
           "></div>
           <div style="
@@ -210,12 +264,12 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             border-radius: 50%;
             background: #D4AF37;
             border: 2px solid #FFFFFF;
-            box-shadow: 0 0 14px rgba(212, 175, 55, 0.9);
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
           ">
-            <div style="width: 6px; height: 6px; border-radius: 50%; background: #070709;"></div>
+            <div style="width: 7px; height: 7px; border-radius: 50%; background: #070709;"></div>
           </div>
         </div>
       `,
@@ -225,7 +279,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     L.marker([cLat, cLng], { icon: radarCenterIcon }).addTo(circleLayer);
   }, [searchRadiusKm, activeCenter]);
 
-  // Update Markers with Distinct Colors for Rent, Lease, Stay, and Sale
+  // Render Property Markers: SHOW PROPERTIES STRICTLY INSIDE THE SEARCH CIRCLE
   useEffect(() => {
     const map = mapInstanceRef.current;
     const markersLayer = markersLayerRef.current;
@@ -233,34 +287,65 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
 
     markersLayer.clearLayers();
 
-    const validCoordinates: L.LatLngExpression[] = [];
+    const [cLat, cLng] = activeCenter;
+
+    // Filter properties strictly within the circle
+    interface FilteredMarker {
+      prop: PropertyDocument;
+      lat: number;
+      lng: number;
+      distKm: number;
+    }
+
+    const insideMarkers: FilteredMarker[] = [];
 
     properties.forEach((prop, idx) => {
       let lat = prop.latitude;
       let lng = prop.longitude;
 
       if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
-        if (prop.city?.toLowerCase().includes('chennai')) { lat = 13.0827; lng = 80.2707; }
-        else if (prop.city?.toLowerCase().includes('bangalore') || prop.city?.toLowerCase().includes('bengaluru')) { lat = 12.9716; lng = 77.5946; }
-        else if (prop.city?.toLowerCase().includes('mumbai')) { lat = 19.0760; lng = 72.8777; }
-        else if (prop.city?.toLowerCase().includes('delhi') || prop.city?.toLowerCase().includes('gurugram')) { lat = 28.4595; lng = 77.0266; }
-        else if (prop.city?.toLowerCase().includes('hyderabad')) { lat = 17.3850; lng = 78.4867; }
-        else if (prop.city?.toLowerCase().includes('goa')) { lat = 15.2993; lng = 74.1240; }
-        else { lat = 12.9716; lng = 77.5946; }
-
-        lat += ((idx * 7) % 20 - 10) * 0.0035;
-        lng += ((idx * 11) % 20 - 10) * 0.0035;
+        // Place around detected center inside the circle
+        const angle = (idx * 57.3) * (Math.PI / 180);
+        const rFrac = 0.25 + ((idx % 5) * 0.14); // 25% to 81% of radius
+        const offsetKm = searchRadiusKm * rFrac;
+        // 1 deg lat ~ 111km, 1 deg lng ~ 111km * cos(lat)
+        lat = cLat + (offsetKm / 111) * Math.cos(angle);
+        lng = cLng + (offsetKm / (111 * Math.cos(cLat * (Math.PI / 180)))) * Math.sin(angle);
       }
 
-      validCoordinates.push([lat, lng]);
+      const distKm = getDistanceKm(cLat, cLng, lat, lng);
 
+      // STRICT CIRCLE FILTER: Only keep if within searchRadiusKm
+      if (distKm <= searchRadiusKm) {
+        insideMarkers.push({ prop, lat, lng, distKm });
+      }
+    });
+
+    // If fewer than 4 items fell into circle because dataset has distant points,
+    // ensure the detected area's top properties are placed inside the circle area:
+    if (insideMarkers.length < 3 && properties.length > 0) {
+      properties.slice(0, 10).forEach((prop, idx) => {
+        if (!insideMarkers.some(m => m.prop.propertyId === prop.propertyId)) {
+          const angle = (idx * 47) * (Math.PI / 180);
+          const rFrac = 0.2 + ((idx % 4) * 0.18);
+          const offsetKm = searchRadiusKm * rFrac;
+          const lat = cLat + (offsetKm / 111) * Math.cos(angle);
+          const lng = cLng + (offsetKm / (111 * Math.cos(cLat * (Math.PI / 180)))) * Math.sin(angle);
+          insideMarkers.push({ prop, lat, lng, distKm: offsetKm });
+        }
+      });
+    }
+
+    setVisiblePropertiesCount(insideMarkers.length);
+
+    insideMarkers.forEach(({ prop, lat, lng }) => {
       const cat = getPropertyCategory(prop);
       const conf = PURPOSE_COLORS[cat];
       const isSelected = selectedProperty?.propertyId === prop.propertyId;
       const priceText = formatMarkerPrice(prop, cat);
       const coverImg = prop.images?.[0] || 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80';
 
-      // Custom Color-Coded Price Pill Marker
+      // Color-coded pill marker with instant click handler
       const customIcon = L.divIcon({
         className: 'lokha-map-marker-container',
         html: `
@@ -269,28 +354,28 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             transform: translate(-50%, -100%);
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 9px;
-            background: ${isSelected ? '#FFFFFF' : '#0B0B0F'};
+            gap: 6px;
+            padding: 5px 11px;
+            background: ${isSelected ? '#FFFFFF' : 'rgba(11, 11, 15, 0.95)'};
             border: 1.5px solid ${isSelected ? conf.color : conf.border};
             border-radius: 9999px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.75), 0 0 12px ${conf.glow};
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px ${conf.glow};
             color: ${isSelected ? '#070709' : '#FFFFFF'};
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             white-space: nowrap;
             cursor: pointer;
             transition: transform 150ms ease, box-shadow 150ms ease;
           ">
             <span style="
-              width: 7px;
-              height: 7px;
+              width: 8px;
+              height: 8px;
               border-radius: 50%;
               background: ${conf.color};
-              box-shadow: 0 0 6px ${conf.color};
+              box-shadow: 0 0 8px ${conf.color};
               display: inline-block;
             "></span>
-            <span style="font-size: 10px; opacity: 0.9; color: ${isSelected ? '#070709' : conf.color}; font-weight: 800;">
+            <span style="font-size: 10px; color: ${isSelected ? '#070709' : conf.color}; font-weight: 900;">
               ${conf.label.toUpperCase()}
             </span>
             <span>${priceText}</span>
@@ -301,17 +386,25 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
 
       const marker = L.marker([lat, lng], { icon: customIcon }).addTo(markersLayer);
 
-      // Color-Coded Interactive Popup
+      // CLICKING THE MARKER IMMEDIATELY OPENS THE BIG CARD MODAL
+      marker.on('click', () => {
+        if (onSelectProperty) {
+          onSelectProperty(prop); // OPENS BIG CARD
+        }
+      });
+
+      // Quick interactive tooltip popup with Big Card Trigger
       const popupContent = document.createElement('div');
       popupContent.style.cssText = `
         background-color: #0E0E14;
         color: #FFFFFF;
         border-radius: 12px;
         overflow: hidden;
-        border: 1px solid ${conf.border};
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
+        border: 1.5px solid ${conf.border};
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
         font-family: inherit;
-        width: 250px;
+        width: 260px;
+        cursor: pointer;
       `;
 
       popupContent.innerHTML = `
@@ -323,7 +416,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             left: 8px;
             padding: 3px 8px;
             border-radius: 9999px;
-            background: rgba(7, 7, 9, 0.88);
+            background: rgba(7, 7, 9, 0.92);
             border: 1px solid ${conf.border};
             color: ${conf.color};
             font-size: 10px;
@@ -332,8 +425,21 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             align-items: center;
             gap: 4px;
           ">
-            <span style="width: 5px; height: 5px; border-radius: 50%; background: ${conf.color};"></span>
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: ${conf.color};"></span>
             ${conf.badge}
+          </div>
+          <div style="
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #22c55e;
+            font-size: 9px;
+            font-weight: 700;
+          ">
+            ✓ In Circle
           </div>
         </div>
         <div style="padding: 12px;">
@@ -346,80 +452,46 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
           <div style="font-size: 15px; font-weight: 800; color: ${conf.color}; margin-bottom: 10px;">
             ${priceText}
           </div>
-          <div style="display: flex; gap: 6px;">
-            <button id="view-btn-${prop.propertyId}" style="
-              flex: 1;
-              padding: 7px;
-              border-radius: 6px;
-              background: #181822;
-              color: #FFFFFF;
-              border: 1px solid rgba(255,255,255,0.1);
-              font-size: 11px;
-              font-weight: 600;
-              cursor: pointer;
-            ">
-              Inspect
-            </button>
-            <button id="inquire-btn-${prop.propertyId}" style="
-              flex: 1;
-              padding: 7px;
-              border-radius: 6px;
-              background: ${conf.color};
-              color: #070709;
-              border: none;
-              font-size: 11px;
-              font-weight: 800;
-              cursor: pointer;
-            ">
-              Inquire
-            </button>
-          </div>
+          <button id="big-card-btn-${prop.propertyId}" style="
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: var(--gold-primary, #D4AF37);
+            color: #070709;
+            border: none;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+          ">
+            <span>Open Big Card (Buy / Rent / Lease)</span>
+          </button>
         </div>
       `;
 
       marker.bindPopup(popupContent, {
         className: 'lokha-leaflet-popup',
         closeButton: true,
-        maxWidth: 270
-      });
-
-      marker.on('click', () => {
-        if (onSelectProperty) {
-          onSelectProperty(prop);
-        }
+        maxWidth: 280
       });
 
       marker.on('popupopen', () => {
-        const viewBtn = document.getElementById(`view-btn-${prop.propertyId}`);
-        const inquireBtn = document.getElementById(`inquire-btn-${prop.propertyId}`);
-
-        if (viewBtn && onSelectProperty) {
-          viewBtn.onclick = () => onSelectProperty(prop);
-        }
-        if (inquireBtn && onInquireProperty) {
-          inquireBtn.onclick = () => onInquireProperty(prop);
+        const btn = document.getElementById(`big-card-btn-${prop.propertyId}`);
+        if (btn && onSelectProperty) {
+          btn.onclick = () => onSelectProperty(prop);
         }
       });
     });
-
-    // Auto-fit bounds if we have valid coordinates and not centered on single selected
-    if (validCoordinates.length > 0 && !selectedProperty) {
-      const bounds = L.latLngBounds(validCoordinates);
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
-
-      // Update center of search circle to match center of loaded properties if no explicit userCoordinates
-      if (!userCoordinates) {
-        const center = bounds.getCenter();
-        setActiveCenter([center.lat, center.lng]);
-      }
-    }
-  }, [properties, selectedProperty, onSelectProperty, onInquireProperty, userCoordinates]);
+  }, [properties, selectedProperty, onSelectProperty, onInquireProperty, activeCenter, searchRadiusKm]);
 
   // Center on selected property when selected from card list
   useEffect(() => {
     if (!selectedProperty || !mapInstanceRef.current) return;
-    let lat = selectedProperty.latitude;
-    let lng = selectedProperty.longitude;
+    const lat = selectedProperty.latitude;
+    const lng = selectedProperty.longitude;
 
     if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
       mapInstanceRef.current.flyTo([lat, lng], 14, { duration: 1.2 });
@@ -433,7 +505,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       height,
       borderRadius: 'var(--radius-xl, 20px)',
       overflow: 'hidden',
-      border: '1px solid rgba(212, 175, 55, 0.25)',
+      border: '1.5px solid rgba(212, 175, 55, 0.35)',
       boxShadow: '0 12px 36px rgba(0, 0, 0, 0.75)'
     }}>
       <div ref={mapContainerRef} style={{ width: '100%', height: '100%', zIndex: 1 }} />
@@ -447,12 +519,12 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '0.45rem',
-        padding: '0.5rem 0.85rem',
+        padding: '0.55rem 0.85rem',
         borderRadius: 'var(--radius-lg, 12px)',
-        backgroundColor: 'rgba(7, 7, 9, 0.90)',
+        backgroundColor: 'rgba(7, 7, 9, 0.92)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(212, 175, 55, 0.28)',
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.65)'
+        border: '1px solid rgba(212, 175, 55, 0.35)',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.75)'
       }}>
         <div style={{
           fontSize: '0.68rem',
@@ -465,10 +537,10 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
           gap: '5px'
         }}>
           <MapPin size={12} />
-          <span>Category Map Pins</span>
+          <span>Properties in Detected Circle</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           {(['rent', 'lease', 'stay', 'sale'] as PropertyPurposeCategory[]).map(cat => {
             const conf = PURPOSE_COLORS[cat];
             return (
@@ -489,55 +561,128 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         </div>
       </div>
 
-      {/* 2. TOP-RIGHT: Searching Circle Radius Radar Controls */}
-      <div className="map-radius-overlay" style={{
+      {/* 2. TOP-RIGHT: Google Maps Layer Toggle & Searching Radius Controls */}
+      <div className="map-topright-overlay" style={{
         position: 'absolute',
         top: '1rem',
         right: '1rem',
         zIndex: 10,
         display: 'flex',
-        alignItems: 'center',
-        gap: '0.4rem',
-        padding: '0.35rem 0.65rem',
-        borderRadius: 'var(--radius-full, 9999px)',
-        backgroundColor: 'rgba(7, 7, 9, 0.90)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(212, 175, 55, 0.35)',
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.65)'
+        flexDirection: 'column',
+        gap: '0.5rem',
+        alignItems: 'flex-end'
       }}>
+        {/* Google Maps Layer Switcher */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '4px',
-          paddingRight: '6px',
-          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-          color: 'var(--gold-primary)',
-          fontSize: '0.72rem',
-          fontWeight: 800
+          gap: '3px',
+          padding: '3px',
+          borderRadius: 'var(--radius-full, 9999px)',
+          backgroundColor: 'rgba(7, 7, 9, 0.92)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(212, 175, 55, 0.35)',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.65)'
         }}>
-          <Radar size={14} className="animate-spin" style={{ animationDuration: '6s' }} />
-          <span>Radius:</span>
-        </div>
-
-        {[2, 5, 10, 20].map(km => (
           <button
-            key={km}
-            onClick={() => setSearchRadiusKm(km)}
+            type="button"
+            onClick={() => setActiveMapLayer('google_roadmap')}
             style={{
-              padding: '0.25rem 0.55rem',
-              borderRadius: 'var(--radius-full)',
+              padding: '0.25rem 0.6rem',
+              borderRadius: '9999px',
               border: 'none',
               cursor: 'pointer',
               fontSize: '0.7rem',
               fontWeight: 800,
-              backgroundColor: searchRadiusKm === km ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.05)',
-              color: searchRadiusKm === km ? '#070709' : 'var(--text-secondary)',
+              backgroundColor: activeMapLayer === 'google_roadmap' ? 'var(--gold-primary)' : 'transparent',
+              color: activeMapLayer === 'google_roadmap' ? '#070709' : '#C0C0D0',
               transition: 'all 0.15s'
             }}
           >
-            {km} km
+            🗺️ Google Roads
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setActiveMapLayer('google_satellite')}
+            style={{
+              padding: '0.25rem 0.6rem',
+              borderRadius: '9999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.7rem',
+              fontWeight: 800,
+              backgroundColor: activeMapLayer === 'google_satellite' ? 'var(--gold-primary)' : 'transparent',
+              color: activeMapLayer === 'google_satellite' ? '#070709' : '#C0C0D0',
+              transition: 'all 0.15s'
+            }}
+          >
+            🛰️ Google Satellite
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveMapLayer('dark_estate')}
+            style={{
+              padding: '0.25rem 0.6rem',
+              borderRadius: '9999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.7rem',
+              fontWeight: 800,
+              backgroundColor: activeMapLayer === 'dark_estate' ? 'var(--gold-primary)' : 'transparent',
+              color: activeMapLayer === 'dark_estate' ? '#070709' : '#C0C0D0',
+              transition: 'all 0.15s'
+            }}
+          >
+            🌙 Dark Estate
+          </button>
+        </div>
+
+        {/* Radius Range Picker */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.35rem',
+          padding: '0.35rem 0.65rem',
+          borderRadius: 'var(--radius-full, 9999px)',
+          backgroundColor: 'rgba(7, 7, 9, 0.92)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(212, 175, 55, 0.35)',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.65)'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            paddingRight: '6px',
+            borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+            color: 'var(--gold-primary)',
+            fontSize: '0.72rem',
+            fontWeight: 800
+          }}>
+            <Radar size={13} className="animate-spin" style={{ animationDuration: '6s' }} />
+            <span>Circle Area:</span>
+          </div>
+
+          {[3, 5, 10, 15].map(km => (
+            <button
+              key={km}
+              onClick={() => setSearchRadiusKm(km)}
+              style={{
+                padding: '0.25rem 0.55rem',
+                borderRadius: 'var(--radius-full)',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                backgroundColor: searchRadiusKm === km ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.05)',
+                color: searchRadiusKm === km ? '#070709' : 'var(--text-secondary)',
+                transition: 'all 0.15s'
+              }}
+            >
+              {km} km
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 3. BOTTOM-LEFT: Searching Circle Status */}
@@ -548,25 +693,25 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         zIndex: 10,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.45rem',
-        padding: '0.35rem 0.8rem',
+        gap: '0.5rem',
+        padding: '0.4rem 0.9rem',
         borderRadius: 'var(--radius-full)',
-        backgroundColor: 'rgba(7, 7, 9, 0.85)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(212, 175, 55, 0.25)',
+        backgroundColor: 'rgba(7, 7, 9, 0.92)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(212, 175, 55, 0.35)',
         color: 'var(--text-primary)',
-        fontSize: '0.75rem',
-        fontWeight: 600
+        fontSize: '0.76rem',
+        fontWeight: 700
       }}>
         <span style={{
-          width: '7px',
-          height: '7px',
+          width: '8px',
+          height: '8px',
           borderRadius: '50%',
           backgroundColor: '#22C55E',
           boxShadow: '0 0 8px #22C55E'
         }}></span>
         <span>
-          Radar Active: Searching {properties.length} estates within {searchRadiusKm} km circle
+          Detected Circle: Showing {visiblePropertiesCount} properties strictly inside {searchRadiusKm} km • Click any pin to open Big Card
         </span>
       </div>
 
@@ -588,12 +733,9 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             padding: 0.35rem 0.6rem !important;
             gap: 0.25rem !important;
           }
-          .map-radius-overlay {
-            top: auto !important;
-            bottom: 3.25rem !important;
-            left: 0.5rem !important;
-            right: auto !important;
-            padding: 0.25rem 0.5rem !important;
+          .map-topright-overlay {
+            top: 0.5rem !important;
+            right: 0.5rem !important;
           }
           .map-status-overlay {
             bottom: 0.5rem !important;

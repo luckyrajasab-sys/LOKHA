@@ -82,15 +82,15 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // Auto-populate abundant houses and stays for Vercel app link
+  // Auto-populate abundant houses and stays for detected area (active on Firebase & Vercel)
   useEffect(() => {
-    if (isVercelOnly()) {
-      const city = initialLocationQuery || (selectedCity !== 'All' ? selectedCity : 'Bengaluru');
-      const { properties: areaHouses, stays: areaStays } = getAreaPropertiesAndStays(city);
-      const convertedStays = convertStaysToProperties(areaStays);
-      setAreaMockProperties([...areaHouses, ...convertedStays]);
-    }
-  }, [initialLocationQuery]);
+    const city = initialLocationQuery || locationQuery || (selectedCity !== 'All' ? selectedCity : 'Bengaluru');
+    const uLat = userCoordinates?.[0];
+    const uLng = userCoordinates?.[1];
+    const { properties: areaHouses, stays: areaStays } = getAreaPropertiesAndStays(city, uLat, uLng);
+    const convertedStays = convertStaysToProperties(areaStays);
+    setAreaMockProperties([...areaHouses, ...convertedStays]);
+  }, [initialLocationQuery, locationQuery, selectedCity, userCoordinates]);
 
   // Premium Modal State
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
@@ -248,8 +248,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     }
   };
 
+  const [inquiryIntent, setInquiryIntent] = useState<'buy' | 'rent' | 'lease' | 'stay'>('buy');
+
   // Open Inquiry modal with communication limit check
-  const handleOpenInquiry = (property: PropertyDocument) => {
+  const handleOpenInquiry = (property: PropertyDocument, intent?: 'buy' | 'rent' | 'lease' | 'stay') => {
+    if (intent) {
+      setInquiryIntent(intent);
+    }
     if (!user) {
       showToast('Please sign in to inquire on this property.', 'info');
       return;
@@ -265,10 +270,11 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     setInquiryTarget(property);
   };
 
-  // Combine live properties with auto-detected area houses and stays on Vercel
-  const effectiveProperties = isVercelOnly()
-    ? (areaMockProperties.length > 0 ? areaMockProperties : properties)
-    : (properties.length > 0 ? properties : areaMockProperties);
+  // Seamlessly merge live properties from Firestore with auto-detected area houses and stays
+  const effectiveProperties = [
+    ...properties,
+    ...areaMockProperties.filter(a => !properties.some(p => p.propertyId === a.propertyId))
+  ];
 
   // Filter client-side by text query, location query, and purpose
   const filteredProperties = effectiveProperties.filter((p) => {
@@ -874,7 +880,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
                   userCoordinates={userCoordinates}
-                  onSelectProperty={(p) => setSelectedProperty(p)}
+                  onSelectProperty={(p) => {
+                    setSelectedProperty(p);
+                    setDetailModalProperty(p); // Opens Big Card Modal
+                  }}
                   onInquireProperty={(p) => setInquiryTarget(p)}
                   height="640px"
                 />
@@ -912,7 +921,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 properties={filteredProperties}
                 selectedProperty={selectedProperty}
                 userCoordinates={userCoordinates}
-                onSelectProperty={(p) => setSelectedProperty(p)}
+                onSelectProperty={(p) => {
+                  setSelectedProperty(p);
+                  setDetailModalProperty(p); // Opens Big Card Modal
+                }}
                 onInquireProperty={(p) => setInquiryTarget(p)}
                 height="740px"
               />
@@ -921,13 +933,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         </>
       )}
 
-      {/* Real-time Property Detail Modal (with Google Maps direct link) */}
+      {/* Real-time Property Detail Modal (Big Card) */}
       <PropertyDetailModal
         isOpen={Boolean(detailModalProperty)}
         property={detailModalProperty}
         onClose={() => setDetailModalProperty(null)}
         onStartChat={(p) => handleStartChat(p)}
-        onInquire={(p) => handleOpenInquiry(p)}
+        onInquire={(p, intent) => handleOpenInquiry(p, intent)}
         isSaved={detailModalProperty ? favoriteIds.includes(detailModalProperty.propertyId) : false}
         onToggleSave={(p) => handleToggleFavorite(p)}
       />
@@ -937,6 +949,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         isOpen={Boolean(inquiryTarget)}
         onClose={() => setInquiryTarget(null)}
         property={inquiryTarget}
+        initialIntent={inquiryIntent}
         onOpenPremium={() => {
           setPremiumReason('You have used your 3 free communications with property owners. Please choose a plan below to continue.');
           setPremiumModalOpen(true);

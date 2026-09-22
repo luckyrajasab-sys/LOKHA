@@ -2,9 +2,8 @@ import type { PropertyDocument, PropertyType, PropertyListingType, FurnishedStat
 import type { AccommodationListing, AccommodationCategory } from '../types/accommodation';
 
 export function isVercelOnly(): boolean {
-  if (typeof window === 'undefined') return false;
-  const host = window.location.hostname;
-  return host.includes('vercel.app') || host === 'localhost' || host === '127.0.0.1';
+  // Enabled across all live links including Firebase (web.app/firebaseapp.com) and Vercel
+  return true;
 }
 
 interface CityNeighborhood {
@@ -15,6 +14,40 @@ interface CityNeighborhood {
 }
 
 const CITY_DATABASE: Record<string, { state: string; lat: number; lng: number; neighborhoods: CityNeighborhood[] }> = {
+  chennai: {
+    state: 'Tamil Nadu',
+    lat: 13.0827,
+    lng: 80.2707,
+    neighborhoods: [
+      { name: 'Boat Club Road RA Puram', pincode: '600028', latOffset: -0.05, lngOffset: -0.02 },
+      { name: 'Poes Garden Estate', pincode: '600086', latOffset: -0.04, lngOffset: -0.01 },
+      { name: 'Besant Nagar Beach Promenade', pincode: '600090', latOffset: -0.08, lngOffset: 0.00 },
+      { name: 'Nungambakkam High Road', pincode: '600034', latOffset: -0.02, lngOffset: -0.03 },
+      { name: 'ECR Sea Cliff Enclave', pincode: '600041', latOffset: -0.11, lngOffset: 0.01 },
+      { name: 'Anna Nagar West Extension', pincode: '600101', latOffset: 0.01, lngOffset: -0.06 }
+    ]
+  },
+  delhi: {
+    state: 'Delhi NCR',
+    lat: 28.6139,
+    lng: 77.2090,
+    neighborhoods: [
+      { name: 'Lutyens Bungalow Zone', pincode: '110003', latOffset: -0.02, lngOffset: 0.01 },
+      { name: 'Shanti Niketan Diplomatic', pincode: '110021', latOffset: -0.04, lngOffset: -0.04 },
+      { name: 'Jor Bagh Estate Walk', pincode: '110003', latOffset: -0.03, lngOffset: 0.01 },
+      { name: 'Panchsheel Park North', pincode: '110017', latOffset: -0.07, lngOffset: 0.01 }
+    ]
+  },
+  pune: {
+    state: 'Maharashtra',
+    lat: 18.5204,
+    lng: 73.8567,
+    neighborhoods: [
+      { name: 'Koregaon Park Lane 1', pincode: '411001', latOffset: 0.02, lngOffset: 0.04 },
+      { name: 'Kalyani Nagar Waterfront', pincode: '411006', latOffset: 0.03, lngOffset: 0.05 },
+      { name: 'Baner Hills Promenade', pincode: '411045', latOffset: 0.04, lngOffset: -0.07 }
+    ]
+  },
   bengaluru: {
     state: 'Karnataka',
     lat: 12.9716,
