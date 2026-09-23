@@ -140,6 +140,41 @@ export const getProperties = async (filters?: {
   });
 };
 
+/** Generate SEO-friendly slug from title and propertyId */
+export function generatePropertySlug(property: PropertyDocument): string {
+  if (property.slug) return property.slug;
+  const base = property.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+  const idSnippet = property.propertyId.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toLowerCase();
+  return `${base}-${idSnippet}`;
+}
+
+export async function fetchPropertyBySlug(slug: string, _city?: string): Promise<PropertyDocument | null> {
+  // First attempt: fetch all verified properties and find match
+  const properties = await fetchAllVerifiedProperties();
+  const normalizedSlug = slug.toLowerCase();
+  
+  // 1. Direct match on propertyId
+  const directId = properties.find(p => p.propertyId.toLowerCase() === normalizedSlug);
+  if (directId) return directId;
+
+  // 2. Direct match on slug
+  const directSlug = properties.find(p => p.slug && p.slug.toLowerCase() === normalizedSlug);
+  if (directSlug) return directSlug;
+
+  // 3. Match generated slug
+  const generatedMatch = properties.find(p => {
+    const gen = generatePropertySlug(p).toLowerCase();
+    return gen === normalizedSlug || gen.endsWith(normalizedSlug) || normalizedSlug.endsWith(p.propertyId.toLowerCase());
+  });
+  if (generatedMatch) return generatedMatch;
+
+  // 4. Fallback: direct ID fetch from Firestore
+  return await fetchPropertyDocumentById(slug);
+}
+
 /** Alias for fetchPropertyDocumentById — used by PropertyDetailsPage */
 export const getPropertyById = fetchPropertyDocumentById;
 
@@ -148,3 +183,5 @@ export const incrementPropertyViews = incrementPropertyDocumentViews;
 
 /** Alias for fetchSimilarProperties — used by PropertyDetailsPage */
 export const getSimilarProperties = fetchSimilarProperties;
+
+

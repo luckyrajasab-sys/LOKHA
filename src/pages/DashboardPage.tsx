@@ -35,6 +35,7 @@ import { verifyProperty } from '../services/adminService';
 import { PropertyFormModal } from '../components/properties/PropertyFormModal';
 import { ChatDrawer } from '../components/chat/ChatDrawer';
 import { useToast } from '../components/common/Toast';
+import { getUserSavedSearches, deleteUserSavedSearch } from '../services/savedSearchService';
 import type {
   PropertyDocument,
   InquiryDocument,
@@ -43,7 +44,8 @@ import type {
   UserDocument,
   PropertyStatusType,
   InquiryStatus,
-  FirebaseUserRole
+  FirebaseUserRole,
+  SavedSearchDocument
 } from '../types/firebaseModels';
 
 interface DashboardPageProps {
@@ -55,7 +57,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   const { showToast } = useToast();
 
   // Active view tab
-  const [activeTab, setActiveTab] = useState<'overview' | 'properties' | 'inquiries' | 'favorites' | 'messages' | 'admin'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'properties' | 'inquiries' | 'favorites' | 'messages' | 'saved-searches' | 'admin'>('overview');
 
   // Real-time State
   const [myProperties, setMyProperties] = useState<PropertyDocument[]>([]);
@@ -63,6 +65,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   const [conversations, setConversations] = useState<ConversationDocument[]>([]);
   const [notifications, setNotifications] = useState<NotificationDocument[]>([]);
   const [favoriteProperties, setFavoriteProperties] = useState<PropertyDocument[]>([]);
+  const [savedSearches, setSavedSearches] = useState<SavedSearchDocument[]>([]);
   const [adminUsers, setAdminUsers] = useState<UserDocument[]>([]);
   const [adminProperties, setAdminProperties] = useState<PropertyDocument[]>([]);
 
@@ -138,6 +141,21 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     });
     return () => unsubFavIds();
   }, [user]);
+
+  // 6. Load Saved Searches (Requirement 8)
+  useEffect(() => {
+    if (!user) return;
+    getUserSavedSearches(user.id).then((items) => {
+      setSavedSearches(items);
+    });
+  }, [user]);
+
+  const handleDeleteSavedSearch = async (searchId: string) => {
+    if (!user) return;
+    await deleteUserSavedSearch(user.id, searchId);
+    setSavedSearches(prev => prev.filter(s => s.id !== searchId));
+    showToast('Saved search deleted', 'info');
+  };
 
   // 6. Admin subscriptions
   useEffect(() => {
@@ -312,6 +330,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           className={`btn btn-sm ${activeTab === 'messages' ? 'btn-primary' : 'btn-ghost'}`}
         >
           Direct Messages ({conversations.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('saved-searches')}
+          className={`btn btn-sm ${activeTab === 'saved-searches' ? 'btn-primary' : 'btn-ghost'}`}
+        >
+          Saved Searches & Alerts ({savedSearches.length})
         </button>
 
         {isAdmin && (
@@ -711,6 +736,147 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                   </span>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: SAVED SEARCHES & ALERTS (Requirement 8) */}
+      {activeTab === 'saved-searches' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.25rem 0' }}>
+                Saved Searches & Instant Inventory Alerts
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
+                Filter criteria you have bookmarked. When new luxury estates matching your parameters are listed, they surface here.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('properties')}
+              className="btn btn-primary btn-sm"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Plus size={15} /> New Search
+            </button>
+          </div>
+
+          {savedSearches.length === 0 ? (
+            <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔍</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                No Saved Searches Yet
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '440px', margin: '0 auto 1.5rem' }}>
+                Explore properties and click "Save Search" on the filter bar to monitor new luxury listings matching your bespoke criteria.
+              </p>
+              <button onClick={() => onNavigate('properties')} className="btn btn-secondary btn-sm">
+                Explore All Properties
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+              {savedSearches.map((s) => {
+                const f = s.filters;
+                const params = new URLSearchParams();
+                if (f.mode) params.set('mode', f.mode);
+                if (f.city && f.city !== 'All') params.set('city', f.city);
+                if (f.searchQuery) params.set('q', f.searchQuery);
+                if (f.minPrice) params.set('minPrice', f.minPrice.toString());
+                if (f.maxPrice) params.set('maxPrice', f.maxPrice.toString());
+                if (f.propertyType && f.propertyType.length > 0) params.set('types', f.propertyType.join(','));
+                if (f.minBedrooms) params.set('beds', f.minBedrooms.toString());
+                if (f.minArea) params.set('minArea', f.minArea.toString());
+                if (f.amenities && f.amenities.length > 0) params.set('amenities', f.amenities.join(','));
+
+                const queryStr = params.toString();
+
+                return (
+                  <div
+                    key={s.id}
+                    className="card"
+                    style={{
+                      padding: '1.5rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '1rem',
+                      border: '1px solid rgba(212, 175, 55, 0.2)'
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        <span
+                          style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '4px',
+                            backgroundColor: f.mode === 'stays' ? 'rgba(249, 115, 22, 0.15)' : f.mode === 'projects' ? 'rgba(139, 92, 246, 0.15)' : 'rgba(212, 175, 55, 0.15)',
+                            color: f.mode === 'stays' ? '#F97316' : f.mode === 'projects' ? '#8B5CF6' : 'var(--gold-primary)',
+                            textTransform: 'uppercase'
+                          }}
+                        >
+                          {f.mode || 'Real Estate'}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                          Saved {new Date(s.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.5rem 0' }}>
+                        {s.name}
+                      </h4>
+
+                      {/* Criteria Tags */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.75rem' }}>
+                        {f.city && f.city !== 'All' && (
+                          <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#FFF' }}>
+                            📍 {f.city}
+                          </span>
+                        )}
+                        {(f.minPrice || f.maxPrice) && (
+                          <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.06)', color: 'var(--gold-primary)' }}>
+                            ₹ {f.minPrice ? `${(f.minPrice / 100000).toFixed(0)}L` : '0'} - {f.maxPrice ? `${(f.maxPrice / 10000000).toFixed(1)}Cr` : 'Max'}
+                          </span>
+                        )}
+                        {f.minBedrooms ? (
+                          <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#FFF' }}>
+                            🛏️ {f.minBedrooms}+ BHK
+                          </span>
+                        ) : null}
+                        {f.propertyType && f.propertyType.length > 0 && (
+                          <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#FFF' }}>
+                            🏡 {f.propertyType.join(', ')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '0.85rem' }}>
+                      <button
+                        onClick={() => {
+                          window.history.pushState(null, '', `/properties${queryStr ? `?${queryStr}` : ''}`);
+                          onNavigate('properties');
+                        }}
+                        className="btn btn-primary btn-sm"
+                        style={{ flex: 1 }}
+                      >
+                        Launch Search
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSavedSearch(s.id)}
+                        className="btn btn-ghost btn-sm"
+                        style={{ color: '#EF4444' }}
+                        title="Delete saved search"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

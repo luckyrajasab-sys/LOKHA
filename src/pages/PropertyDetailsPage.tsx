@@ -25,13 +25,17 @@ import {
   Layers
 } from 'lucide-react';
 import type { PropertyDocument } from '../types/firebaseModels';
-import { getPropertyById, incrementPropertyViews, getSimilarProperties } from '../services/propertyService';
+import { getPropertyById, fetchPropertyBySlug, incrementPropertyViews, getSimilarProperties } from '../services/propertyService';
 import { isPropertySaved, toggleFavorite } from '../services/favoriteService';
 import { bookSiteVisit } from '../services/siteVisitService';
 import { createEnquiry } from '../services/enquiryService';
 import { submitReport } from '../services/reportService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/common/Toast';
+import { PropertyLightbox } from '../components/properties/PropertyLightbox';
+import { FloorPlanViewer } from '../components/properties/FloorPlanViewer';
+import { MortgageCalculatorWidget } from '../components/properties/MortgageCalculatorWidget';
+import { JsonLdListing } from '../components/seo/JsonLdListing';
 
 interface PropertyDetailsPageProps {
   propertyId: string;
@@ -52,6 +56,8 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const [selectedImgIndex, setSelectedImgIndex] = useState<number>(0);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [similarProperties, setSimilarProperties] = useState<PropertyDocument[]>([]);
+  const [lightboxOpen, setLightboxOpen] = useState<boolean>(false);
+  const [activeDetailTab, setActiveDetailTab] = useState<'overview' | 'floorplans' | 'amenities' | 'mortgage' | 'location'>('overview');
 
   // Modals
   const [siteVisitOpen, setSiteVisitOpen] = useState<boolean>(false);
@@ -89,12 +95,12 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
     async function loadData() {
       try {
-        const doc = await getPropertyById(propertyId);
+        const doc = (await fetchPropertyBySlug(propertyId)) || (await getPropertyById(propertyId));
         if (!isMounted) return;
 
         if (doc) {
           setProperty(doc);
-          incrementPropertyViews(propertyId);
+          incrementPropertyViews(doc.propertyId);
           // Check saved status
           if (user?.id) {
             const saved = await isPropertySaved(user.id, propertyId);
@@ -529,16 +535,20 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
         {/* 3. Luxury Gallery Visual Stage */}
         <div style={{ marginBottom: '2.5rem' }}>
           {/* Main Large Visual Stage */}
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            height: 'min(580px, 60vh)',
-            borderRadius: 'var(--radius-xl, 16px)',
-            overflow: 'hidden',
-            backgroundColor: '#0D0D11',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
-            border: '1px solid rgba(212, 175, 55, 0.2)'
-          }}>
+          <div
+            onClick={() => setLightboxOpen(true)}
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 'min(580px, 60vh)',
+              borderRadius: 'var(--radius-xl, 16px)',
+              overflow: 'hidden',
+              backgroundColor: '#0D0D11',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+              border: '1px solid rgba(212, 175, 55, 0.2)',
+              cursor: 'zoom-in'
+            }}
+          >
             <img
               src={images[selectedImgIndex]}
               alt={property.title}
@@ -561,9 +571,13 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               border: '1px solid rgba(255, 255, 255, 0.2)',
               fontSize: '0.8rem',
               fontWeight: 600,
-              color: '#FFFFFF'
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}>
-              {selectedImgIndex + 1} / {images.length} Photos
+              <span>{selectedImgIndex + 1} / {images.length} Photos</span>
+              <span style={{ color: 'var(--gold-primary)' }}>• Click for Lightbox</span>
             </div>
           </div>
 
@@ -603,15 +617,62 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           )}
         </div>
 
-        {/* 4. Two Column Layout: Main Content (Left) + Sticky Conversion Card (Right) */}
+        {/* 4. Luxury Detail Tabs (Requirement 3: floor plan tab, mortgage calculator) */}
+        <div style={{
+          display: 'flex',
+          gap: '0.65rem',
+          marginBottom: '2rem',
+          overflowX: 'auto',
+          paddingBottom: '0.5rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          {[
+            { id: 'overview', label: 'Overview & Highlights' },
+            { id: 'floorplans', label: 'Architectural Floor Plans' },
+            { id: 'mortgage', label: 'Mortgage & EMI Calculator' },
+            { id: 'amenities', label: 'Club & Signature Amenities' },
+            { id: 'location', label: 'Location & Transit' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveDetailTab(tab.id as any)}
+              style={{
+                padding: '0.65rem 1.25rem',
+                borderRadius: '8px',
+                border: activeDetailTab === tab.id ? '1px solid var(--gold-primary, #D4AF37)' : '1px solid transparent',
+                backgroundColor: activeDetailTab === tab.id ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                color: activeDetailTab === tab.id ? 'var(--gold-primary, #D4AF37)' : 'var(--text-secondary, #9CA3AF)',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 5. Two Column Layout: Main Content (Left) + Sticky Conversion Card (Right) */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
           gap: '2.5rem',
           alignItems: 'start'
         }}>
-          {/* Left Column: Specifications, Verified Documents, Amenities, Floor Plan, Map */}
+          {/* Left Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Architectural Floor Plans Tab (Requirement 3) */}
+            {activeDetailTab === 'floorplans' && (
+              <FloorPlanViewer property={property} />
+            )}
+
+            {/* Mortgage & EMI Calculator Tab (Requirement 3) */}
+            {activeDetailTab === 'mortgage' && (
+              <MortgageCalculatorWidget initialPrice={priceVal} propertyTitle={property.title} />
+            )}
+
             {/* Quick Spec Highlights Grid */}
             <div style={{
               display: 'grid',
@@ -1637,6 +1698,18 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
           </div>
         </div>
       )}
+
+      {/* JSON-LD RealEstateListing Structured Data (Requirement 7) */}
+      <JsonLdListing property={property} />
+
+      {/* Fullscreen Lightbox Image Gallery with Keyboard Nav (Requirement 3) */}
+      <PropertyLightbox
+        isOpen={lightboxOpen}
+        images={images}
+        initialIndex={selectedImgIndex}
+        propertyTitle={property.title}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 };

@@ -38,6 +38,14 @@ import type { PropertyDocument } from './types/firebaseModels';
 function parsePathToView(pathname: string): { view: string; param?: string } {
   const clean = pathname.replace(/^\/+|\/+$/g, '');
   if (!clean || clean === '') return { view: 'home' };
+
+  // Clean semantic routes: /property/:city/:slug or /properties/:city/:slug (Requirement 7)
+  const semanticMatch = clean.match(/^propert(?:y|ies)\/([^/]+)\/([^/]+)$/);
+  if (semanticMatch) {
+    const [, city, slug] = semanticMatch;
+    return { view: `property-${slug}`, param: city };
+  }
+
   if (clean.startsWith('properties/')) return { view: `property-${clean.replace('properties/', '')}` };
   if (clean.startsWith('property/')) return { view: `property-${clean.replace('property/', '')}` };
   if (clean.startsWith('agents/')) return { view: `agent-${clean.replace('agents/', '')}` };
@@ -82,7 +90,10 @@ export const App: React.FC = () => {
     // Sync browser URL
     let path = `/${view}`;
     if (view === 'home') path = '/';
-    else if (view.startsWith('property-')) path = `/properties/${view.replace('property-', '')}`;
+    else if (view.startsWith('property-')) {
+      const propId = view.replace('property-', '');
+      path = location ? `/property/${encodeURIComponent(location.toLowerCase())}/${propId}` : `/properties/${propId}`;
+    }
     else if (view.startsWith('agent-')) path = `/agents/${view.replace('agent-', '')}`;
     else if (view.startsWith('project-')) path = `/projects/${view.replace('project-', '')}`;
     else if (view.startsWith('location-')) path = `/locations/${view.replace('location-', '')}`;

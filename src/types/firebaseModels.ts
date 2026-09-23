@@ -146,6 +146,61 @@ export interface PropertyDocument {
     ebConsumerNumber?: string;
     pattaNumber?: string;
   };
+  slug?: string;
+  builderName?: string;
+  possessionTimeline?: string;
+  stayNightlyPrice?: number;
+  stayCleaningFee?: number;
+  stayHostRating?: number;
+  stayIsSuperhost?: boolean;
+  verifiedAgent?: {
+    name: string;
+    licenseId: string;
+    phone?: string;
+    rating: number;
+    avatar?: string;
+    agency?: string;
+  };
+  floorPlanUrl?: string;
+  architecturalSpecs?: {
+    rooms: { name: string; dimensions: string; areaSqFt: number }[];
+    totalFloors?: number;
+  };
+}
+
+export interface SavedSearchFilters {
+  mode?: 'real-estate' | 'projects' | 'stays' | 'all';
+  searchQuery?: string;
+  location?: string;
+  city?: string;
+  propertyType?: string[];
+  listingType?: string;
+  purpose?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minBedrooms?: number;
+  minBathrooms?: number;
+  minArea?: number;
+  maxArea?: number;
+  areaUnit?: 'sq.ft' | 'sq.m';
+  amenities?: string[];
+  builder?: string;
+  possession?: string;
+  reraApprovedOnly?: boolean;
+  checkIn?: string;
+  checkOut?: string;
+  minRating?: number;
+}
+
+export interface SavedSearchDocument {
+  id: string;
+  userId: string;
+  name: string;
+  createdAt: string;
+  filters: SavedSearchFilters;
+  matchCount?: number;
+  lastCheckedAt?: string;
+  newMatchesAvailable?: boolean;
 }
 
 export interface FavoriteDocument {

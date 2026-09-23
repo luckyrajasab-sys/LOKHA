@@ -7,9 +7,12 @@ import { Radar, MapPin } from 'lucide-react';
 interface PropertyMapProps {
   properties: PropertyDocument[];
   selectedProperty?: PropertyDocument | null;
+  hoveredPropertyId?: string | null;
   userCoordinates?: [number, number];
   onSelectProperty?: (property: PropertyDocument) => void;
   onInquireProperty?: (property: PropertyDocument) => void;
+  onBoundsChange?: (bounds: { north: number; south: number; east: number; west: number }) => void;
+  searchMode?: 'circle' | 'viewport';
   height?: string | number;
 }
 
@@ -108,9 +111,12 @@ const TILE_LAYERS: Record<MapLayerType, { url: string; attribution: string; subd
 export const PropertyMap: React.FC<PropertyMapProps> = ({
   properties,
   selectedProperty,
+  hoveredPropertyId,
   userCoordinates,
   onSelectProperty,
   onInquireProperty,
+  onBoundsChange,
+  searchMode: _searchMode = 'circle',
   height = '500px'
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +124,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const searchCircleLayerRef = useRef<L.LayerGroup | null>(null);
+  const onBoundsChangeRef = useRef(onBoundsChange);
+
+  useEffect(() => {
+    onBoundsChangeRef.current = onBoundsChange;
+  }, [onBoundsChange]);
 
   const [searchRadiusKm, setSearchRadiusKm] = useState<number>(5);
   const [activeCenter, setActiveCenter] = useState<[number, number]>([12.9716, 77.5946]);
@@ -193,6 +204,23 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     const markersLayer = L.layerGroup().addTo(map);
     markersLayerRef.current = markersLayer;
     mapInstanceRef.current = map;
+
+    // Bind viewport bounds update on pan/zoom (Requirement 1)
+    const reportBounds = () => {
+      if (onBoundsChangeRef.current) {
+        const bounds = map.getBounds();
+        onBoundsChangeRef.current({
+          north: bounds.getNorth(),
+          south: bounds.getSouth(),
+          east: bounds.getEast(),
+          west: bounds.getWest()
+        });
+      }
+    };
+    map.on('moveend', reportBounds);
+    map.on('zoomend', reportBounds);
+    // Initial call
+    reportBounds();
 
     return () => {
       map.remove();
@@ -378,6 +406,8 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       const cat = getPropertyCategory(prop);
       const conf = PURPOSE_COLORS[cat];
       const isSelected = selectedProperty?.propertyId === prop.propertyId;
+      const isHovered = hoveredPropertyId === prop.propertyId;
+      const isHighlighted = isSelected || isHovered;
       const priceText = formatMarkerPrice(prop, cat);
       const coverImg = prop.images?.[0] || 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80';
 
@@ -387,16 +417,16 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         html: `
           <div style="
             position: relative;
-            transform: translate(-50%, -100%);
+            transform: translate(-50%, -100%) scale(${isHighlighted ? 1.15 : 1});
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 5px 11px;
-            background: ${isSelected ? '#FFFFFF' : 'rgba(11, 11, 15, 0.95)'};
-            border: 1.5px solid ${isSelected ? conf.color : conf.border};
+            padding: ${isHighlighted ? '6px 13px' : '5px 11px'};
+            background: ${isHighlighted ? '#FFFFFF' : 'rgba(11, 11, 15, 0.95)'};
+            border: ${isHighlighted ? `2px solid ${conf.color}` : `1.5px solid ${conf.border}`};
             border-radius: 9999px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px ${conf.glow};
-            color: ${isSelected ? '#070709' : '#FFFFFF'};
+            box-shadow: ${isHighlighted ? `0 8px 25px rgba(0,0,0,0.9), 0 0 20px ${conf.glow}` : `0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px ${conf.glow}`};
+            color: ${isHighlighted ? '#070709' : '#FFFFFF'};
             font-size: 11px;
             font-weight: 800;
             white-space: nowrap;
@@ -522,7 +552,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
         }
       });
     });
-  }, [properties, selectedProperty, onSelectProperty, onInquireProperty, activeCenter, searchRadiusKm]);
+  }, [properties, selectedProperty, hoveredPropertyId, onSelectProperty, onInquireProperty, activeCenter, searchRadiusKm]);
 
   // Center on selected property when selected from card list
   useEffect(() => {
