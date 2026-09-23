@@ -158,8 +158,20 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     const map = L.map(mapContainerRef.current, {
       center: initialCenter,
       zoom: 13,
-      zoomControl: false
+      // Only +/- zoom control buttons can change zoom:
+      zoomControl: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      touchZoom: false,
+      boxZoom: false,
+      keyboard: false
     });
+
+    // Explicitly disable all zoom handlers after creation
+    map.scrollWheelZoom.disable();
+    map.doubleClickZoom.disable();
+    map.touchZoom.disable();
+    map.boxZoom.disable();
 
     // Add Initial Google Maps Roadmap Layer
     const layerConfig = TILE_LAYERS[activeMapLayer];
@@ -170,6 +182,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     }).addTo(map);
     currentTileLayerRef.current = tileLayer;
 
+    // Styled +/- zoom control via globals.css .leaflet-control-zoom rules
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     // Layer group for searching circle & radar ripples
@@ -247,7 +260,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       fillOpacity: 0.04
     }).addTo(circleLayer);
 
-    // 3. Center Movable Radar Handle Marker (draggable without moving map camera)
+    // 3. Center Movable Radar Handle Marker – theme-aware via .lokha-drag-disc CSS class
     const radarCenterIcon = L.divIcon({
       className: 'lokha-radar-center',
       html: `
@@ -259,18 +272,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             background: rgba(212, 175, 55, 0.25);
             animation: radarPulse 2s cubic-bezier(0.25, 0, 0.2, 1) infinite;
           "></div>
-          <div style="
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #18181B;
-            border: 2px solid #D4AF37;
-            box-shadow: 0 0 16px rgba(212, 175, 55, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #D4AF37;
-          ">
+          <div class="lokha-drag-disc">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="5 9 2 12 5 15"></polyline>
               <polyline points="9 5 12 2 15 5"></polyline>
@@ -292,9 +294,8 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     }).addTo(circleLayer);
 
     dragHandle.on('dragstart', () => {
+      // Only disable panning – zoom is permanently off (only +/- buttons)
       map.dragging.disable();
-      map.touchZoom.disable();
-      map.scrollWheelZoom.disable();
     });
 
     dragHandle.on('drag', (e: any) => {
@@ -304,9 +305,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     });
 
     dragHandle.on('dragend', (e: any) => {
-      map.dragging.enable();
-      map.touchZoom.enable();
-      map.scrollWheelZoom.enable();
+      map.dragging.enable();    // Re-enable panning only
+      // Ensure zoom remains permanently disabled after drag:
+      map.scrollWheelZoom.disable();
+      map.touchZoom.disable();
+      map.doubleClickZoom.disable();
       const pos = e.target.getLatLng();
       setActiveCenter([pos.lat, pos.lng]);
     });
@@ -429,15 +432,16 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       // Quick interactive tooltip popup with Big Card Trigger
       const popupContent = document.createElement('div');
       popupContent.style.cssText = `
-        background-color: #0E0E14;
-        color: #FFFFFF;
+        background-color: var(--map-surface, #0E0E14);
+        color: var(--map-text-primary, #FFFFFF);
         border-radius: 12px;
         overflow: hidden;
         border: 1.5px solid ${conf.border};
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
         font-family: inherit;
         width: 260px;
         cursor: pointer;
+        transition: background-color 250ms ease, color 250ms ease;
       `;
 
       popupContent.innerHTML = `
@@ -476,10 +480,10 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
           </div>
         </div>
         <div style="padding: 12px;">
-          <div style="font-size: 10px; color: #A0A0AD; margin-bottom: 2px;">
+          <div class="popup-desc" style="font-size: 10px; margin-bottom: 2px; color: var(--map-text-secondary);">
             ${prop.address ? `${prop.address}, ` : ''}${prop.city}
           </div>
-          <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; line-height: 1.3; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <div class="popup-title" style="font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--map-text-primary);">
             ${prop.title}
           </div>
           <div style="font-size: 15px; font-weight: 800; color: ${conf.color}; margin-bottom: 10px;">
@@ -490,7 +494,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
             padding: 8px;
             border-radius: 6px;
             background: var(--gold-primary, #D4AF37);
-            color: #070709;
+            color: var(--gold-text, #070709);
             border: none;
             font-size: 12px;
             font-weight: 800;

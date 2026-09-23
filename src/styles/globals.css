@@ -145,3 +145,122 @@ img {
 .border-gold {
   border-color: var(--border-gold);
 }
+
+/* ==========================================================================
+   Leaflet Map & Controls Luxury Theme Styling (Apple-Inspired Dual-Theme)
+   ========================================================================== */
+
+/* Leaflet Zoom Controls: 44px touch target, smooth theme transition, + / - buttons */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow-lg) !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  background: transparent !important;
+  margin-right: 1.5rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.leaflet-control-zoom a {
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  background-color: var(--map-control-bg, var(--bg-surface)) !important;
+  color: var(--map-control-text, var(--text-primary)) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-sm) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  transition:
+    color 250ms ease,
+    background-color 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease,
+    transform 150ms ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--gold-subtle) !important;
+  color: var(--gold-hover, var(--gold-primary)) !important;
+  border-color: var(--border-gold) !important;
+  transform: translateY(-1px) !important;
+}
+
+.leaflet-control-zoom a:active {
+  transform: translateY(0) !important;
+}
+
+.leaflet-control-zoom a.leaflet-disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-tertiary) !important;
+}
+
+/* Leaflet Popups */
+.leaflet-popup-content-wrapper {
+  background-color: var(--map-surface, var(--bg-surface)) !important;
+  color: var(--map-text-primary, var(--text-primary)) !important;
+  border: 1px solid var(--border-gold) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 4px !important;
+  transition:
+    background-color 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  line-height: 1.45 !important;
+  color: var(--map-text-primary, var(--text-primary)) !important;
+}
+
+.leaflet-popup-content h4,
+.leaflet-popup-content .popup-title {
+  color: var(--map-text-primary, var(--text-primary)) !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+}
+
+.leaflet-popup-content p,
+.leaflet-popup-content .popup-desc {
+  color: var(--map-text-secondary, var(--text-secondary)) !important;
+  font-size: 0.8rem !important;
+}
+
+.leaflet-popup-tip {
+  background-color: var(--map-surface, var(--bg-surface)) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--border-gold) !important;
+  transition: background-color 250ms ease !important;
+}
+
+.leaflet-popup-close-button {
+  color: var(--map-text-secondary, var(--text-secondary)) !important;
+  padding: 6px !important;
+  transition: color 250ms ease !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--gold-primary) !important;
+}
+
+/* Custom Marker Pins & Overlays */
+.lokha-map-pin {
+  transition: transform 150ms ease !important;
+}
+
+.lokha-map-pin:hover {
+  transform: scale(1.06) !important;
+}
+

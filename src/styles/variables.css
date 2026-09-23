@@ -80,6 +80,14 @@
   --input-border: rgba(0, 0, 0, 0.12);
   --input-focus-border: #C6A15B;
   --input-focus-ring: rgba(198, 161, 91, 0.20);
+
+  /* Map Discovery Theme Variables (Light) */
+  --map-text-primary: #171717;
+  --map-text-secondary: #6B6B6B;
+  --map-surface: #FFFFFF;
+  --map-border: rgba(0, 0, 0, 0.08);
+  --map-control-bg: #FFFFFF;
+  --map-control-text: #171717;
 }
 
 /* Explicit Light Theme (Matches default :root) */
@@ -122,6 +130,14 @@ html[data-theme="light"], [data-theme="light"] {
   --input-border: rgba(0, 0, 0, 0.12);
   --input-focus-border: #C6A15B;
   --input-focus-ring: rgba(198, 161, 91, 0.20);
+
+  /* Map Discovery Theme Variables (Light) */
+  --map-text-primary: #171717;
+  --map-text-secondary: #6B6B6B;
+  --map-surface: #FFFFFF;
+  --map-border: rgba(0, 0, 0, 0.08);
+  --map-control-bg: #FFFFFF;
+  --map-control-text: #171717;
 }
 
 /* Explicit Dark Theme */
@@ -164,5 +180,13 @@ html[data-theme="dark"], [data-theme="dark"] {
   --input-border: rgba(255, 255, 255, 0.12);
   --input-focus-border: #D4AF37;
   --input-focus-ring: rgba(212, 175, 55, 0.25);
+
+  /* Map Discovery Theme Variables (Dark) */
+  --map-text-primary: #FFFFFF;
+  --map-text-secondary: rgba(255, 255, 255, 0.65);
+  --map-surface: #151515;
+  --map-border: rgba(255, 255, 255, 0.12);
+  --map-control-bg: #18181B;
+  --map-control-text: #FFFFFF;
 }
 

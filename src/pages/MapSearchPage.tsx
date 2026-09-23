@@ -188,16 +188,29 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
         const map = L.map(mapContainerRef.current, {
           center: initialCenter,
           zoom: 14,
-          zoomControl: false,
+          // Disable ALL zoom methods except + / − buttons:
+          zoomControl: false,        // We add our own styled control below
+          scrollWheelZoom: false,    // Mouse wheel zoom: OFF
+          doubleClickZoom: false,    // Double-click zoom: OFF
+          touchZoom: false,          // Pinch-to-zoom: OFF
+          boxZoom: false,            // Shift-drag box zoom: OFF
+          keyboard: false,           // Keyboard zoom (+/-/arrow): OFF
           tapTolerance: 15
         });
 
-        // Add premium tile layer
+        // Explicitly disable all zoom interaction handlers after creation
+        map.scrollWheelZoom.disable();
+        map.doubleClickZoom.disable();
+        map.touchZoom.disable();
+        map.boxZoom.disable();
+
+        // Add premium CartoDB Voyager tile layer
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; CartoDB &copy; OpenStreetMap contributors',
           maxZoom: 19
         }).addTo(map);
 
+        // Add styled zoom control – bottomright, themed via globals.css
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         // Layer group for property markers
@@ -250,24 +263,7 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
             ">
               <div style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF;"></div>
             </div>
-            <div style="
-              position: absolute;
-              top: -24px;
-              left: 50%;
-              transform: translateX(-50%);
-              background: #18181B;
-              color: #FFFFFF;
-              font-size: 10px;
-              font-weight: 700;
-              padding: 2px 7px;
-              border-radius: 6px;
-              white-space: nowrap;
-              border: 1px solid rgba(255,255,255,0.2);
-              box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-              pointer-events: none;
-            ">
-              Your Location
-            </div>
+            <div class="lokha-user-label">Your Location</div>
           </div>
         `,
         iconSize: [0, 0]
@@ -351,20 +347,8 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
             animation: handlePulse 2s ease-in-out infinite;
           "></div>
 
-          <!-- Main Luxury Handle Disc -->
-          <div style="
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #18181B;
-            border: 2px solid #C6A15B;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 10px rgba(198, 161, 91, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #C6A15B;
-            transition: transform 0.15s ease, background 0.15s ease;
-          ">
+          <!-- Main Luxury Handle Disc: theme-aware via .lokha-drag-disc -->
+          <div class="lokha-drag-disc">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="5 9 2 12 5 15"></polyline>
               <polyline points="9 5 12 2 15 5"></polyline>
@@ -375,27 +359,8 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
             </svg>
           </div>
 
-          <!-- Drag Badge Tooltip -->
-          <div style="
-            position: absolute;
-            bottom: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(24, 24, 27, 0.95);
-            color: #C6A15B;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            padding: 2px 7px;
-            border-radius: 6px;
-            white-space: nowrap;
-            border: 1px solid rgba(198, 161, 91, 0.4);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            pointer-events: none;
-          ">
-            Drag Area
-          </div>
+          <!-- Drag Badge Tooltip: theme-aware via .lokha-drag-badge -->
+          <div class="lokha-drag-badge">Drag Area</div>
         </div>
       `,
       iconSize: [0, 0]
@@ -409,17 +374,13 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
     handleMarkerRef.current = handleMarker;
 
     // DRAGGING LOGIC:
-    // When dragging begins:
-    // - Disable map panning temporarily.
-    // - Keep map camera completely stationary.
-    // - Move only the search circle.
-    // - Update circle center coordinates continuously.
+    // MAP CAMERA STAYS FIXED while circle is dragged.
+    // Only map.dragging (panning) is temporarily disabled during circle drag.
+    // Zoom methods (scrollWheelZoom, touchZoom, doubleClickZoom) are NEVER re-enabled —
+    // only +/- buttons can zoom.
     handleMarker.on('dragstart', () => {
       setIsDraggingCircle(true);
-      map.dragging.disable();
-      map.touchZoom.disable();
-      map.scrollWheelZoom.disable();
-      map.doubleClickZoom.disable();
+      map.dragging.disable();    // Prevent accidental map pan during circle drag
     });
 
     handleMarker.on('drag', (e: any) => {
@@ -431,10 +392,12 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
 
     handleMarker.on('dragend', (e: any) => {
       setIsDraggingCircle(false);
-      map.dragging.enable();
-      map.touchZoom.enable();
-      map.scrollWheelZoom.enable();
-      map.doubleClickZoom.enable();
+      map.dragging.enable();     // Re-enable panning only
+
+      // All zoom methods remain permanently disabled – only +/- buttons can zoom:
+      map.scrollWheelZoom.disable();
+      map.doubleClickZoom.disable();
+      map.touchZoom.disable();
 
       const finalPos = e.target.getLatLng();
       const newCoords: [number, number] = [finalPos.lat, finalPos.lng];
@@ -469,27 +432,7 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
 
       const customIcon = L.divIcon({
         className: 'lokha-map-pin',
-        html: `
-          <div style="
-            background-color: ${isSelected ? '#C6A15B' : '#18181B'};
-            color: ${isSelected ? '#171717' : '#C6A15B'};
-            border: 2px solid #C6A15B;
-            padding: 4px 9px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 800;
-            white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            transform: ${isSelected ? 'scale(1.1)' : 'scale(1)'};
-            transition: all 0.2s ease;
-          ">
-            <span>●</span> ${priceLabel}
-          </div>
-        `,
+        html: `<div class="lokha-price-pin${isSelected ? ' selected' : ''}"><span>●</span> ${priceLabel}</div>`,
         iconSize: [70, 26],
         iconAnchor: [35, 13]
       });
@@ -587,6 +530,80 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
         @keyframes handlePulse {
           0%, 100% { transform: scale(1); opacity: 0.3; }
           50% { transform: scale(1.4); opacity: 0.7; }
+        }
+        /* Theme-aware classes for Leaflet divIcon HTML content */
+        .lokha-user-label {
+          background: var(--map-control-bg, #18181B);
+          color: var(--map-control-text, #FFFFFF);
+          border: 1px solid var(--border-subtle);
+          font-size: 10px;
+          font-weight: 700;
+          padding: 2px 7px;
+          border-radius: 6px;
+          white-space: nowrap;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+          pointer-events: none;
+          position: absolute;
+          top: -24px;
+          left: 50%;
+          transform: translateX(-50%);
+          transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+        }
+        .lokha-drag-disc {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: var(--map-control-bg, #18181B);
+          border: 2px solid var(--gold-primary, #C6A15B);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.45), 0 0 10px rgba(198,161,91,0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--gold-primary, #C6A15B);
+          transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+        }
+        .lokha-drag-badge {
+          position: absolute;
+          bottom: -22px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--map-control-bg, rgba(24,24,27,0.95));
+          color: var(--gold-primary, #C6A15B);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          padding: 2px 7px;
+          border-radius: 6px;
+          white-space: nowrap;
+          border: 1px solid var(--border-gold, rgba(198,161,91,0.4));
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          pointer-events: none;
+          transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+        }
+        .lokha-price-pin {
+          background: var(--map-control-bg, #18181B);
+          color: var(--gold-primary, #C6A15B);
+          border: 2px solid var(--gold-primary, #C6A15B);
+          padding: 4px 9px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 800;
+          white-space: nowrap;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, transform 150ms ease;
+        }
+        .lokha-price-pin.selected {
+          background: var(--gold-primary, #C6A15B);
+          color: var(--gold-text, #171717);
+          transform: scale(1.1);
+        }
+        .lokha-price-pin:hover {
+          transform: scale(1.06);
         }
       `}</style>
 
