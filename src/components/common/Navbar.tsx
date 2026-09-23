@@ -68,6 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme !== 'light';
 
   // Scroll state for dynamic Apple navbar sizing
   const [scrolled, setScrolled] = useState(false);
@@ -227,13 +228,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         top: 0,
         width: '100%',
         zIndex: 250,
-        backgroundColor: 'rgba(11, 11, 14, 0.88)',
+        backgroundColor: isDark
+          ? (scrolled ? 'rgba(11, 11, 14, 0.92)' : 'rgba(11, 11, 14, 0.85)')
+          : (scrolled ? 'rgba(250, 249, 246, 0.94)' : 'rgba(250, 249, 246, 0.88)'),
         backdropFilter: scrolled ? 'blur(28px)' : 'blur(20px)',
         WebkitBackdropFilter: scrolled ? 'blur(28px)' : 'blur(20px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: scrolled
-          ? '0 12px 36px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(212, 175, 55, 0.12)'
-          : '0 4px 24px rgba(0, 0, 0, 0.35)',
+        borderBottom: isDark
+          ? '1px solid rgba(255, 255, 255, 0.08)'
+          : '1px solid rgba(0, 0, 0, 0.07)',
+        boxShadow: isDark
+          ? (scrolled
+              ? '0 12px 36px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(212, 175, 55, 0.12)'
+              : '0 4px 24px rgba(0, 0, 0, 0.35)')
+          : (scrolled
+              ? '0 8px 28px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(184, 134, 11, 0.15)'
+              : '0 2px 14px rgba(0, 0, 0, 0.04)'),
         transition: 'all 260ms cubic-bezier(0.16, 1, 0.3, 1)',
         height: scrolled ? '3.75rem' : '4.5rem'
       }}
@@ -248,11 +257,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: '1rem',
         position: 'relative'
       }}>
 
-        {/* ================= LEFT SECTION: LOKHA LOGO & BRAND ================= */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
+        {/* ================= LEFT SECTION: LOKHA BRANDING ================= */}
+        {/* Structure: [ Lokha Logo ] [ LOKHA ] \n REAL ESTATE & STAYS */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          minWidth: '200px',
+          flexShrink: 0
+        }}>
           <button
             onClick={() => {
               closeAllMenus();
@@ -263,36 +279,50 @@ export const Navbar: React.FC<NavbarProps> = ({
               border: 'none',
               padding: 0,
               cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.75rem',
-              color: '#FFFFFF',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              outline: 'none'
             }}
-            aria-label="Lokha Home"
+            aria-label="Lokha Home - Real Estate & Stays"
           >
-            <LokhaLogo variant="full" size={scrolled ? 34 : 38} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            {/* Lokha Armillary Emblem (Icon-Only from existing Lokha design) */}
+            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+              <LokhaLogo variant="icon-only" size={scrolled ? 34 : 38} />
+            </div>
+
+            {/* Typography: [ LOKHA ] with subtle [ REAL ESTATE & STAYS ] below */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              textAlign: 'left'
+            }}>
               <span style={{
-                fontSize: scrolled ? '1.05rem' : '1.18rem',
+                fontSize: scrolled ? '1.18rem' : '1.28rem',
                 fontWeight: 800,
-                letterSpacing: '0.08em',
-                background: 'linear-gradient(135deg, #FFFFFF 0%, #F5E6BE 60%, #D4AF37 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                lineHeight: 1.1,
-                fontFamily: 'serif'
+                letterSpacing: '0.14em',
+                color: isDark ? '#FFFFFF' : '#18181B',
+                lineHeight: 1.05,
+                textTransform: 'uppercase',
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+                transition: 'color 200ms ease'
               }}>
                 LOKHA
               </span>
               <span style={{
-                fontSize: '0.58rem',
-                letterSpacing: '0.22em',
-                color: 'rgba(212, 175, 55, 0.85)',
+                fontSize: '0.54rem',
                 fontWeight: 700,
-                textTransform: 'uppercase'
+                letterSpacing: '0.22em',
+                color: isDark ? 'rgba(212, 175, 55, 0.9)' : '#B8860B',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+                marginTop: '3px',
+                transition: 'color 200ms ease'
               }}>
-                Luxury Estates
+                REAL ESTATE & STAYS
               </span>
             </div>
           </button>
@@ -304,8 +334,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.25rem',
-            height: '100%'
+            justifyContent: 'center',
+            gap: '0.2rem',
+            height: '100%',
+            flex: 1,
+            maxWidth: '740px'
           }}
           aria-label="Primary Navigation"
         >
@@ -321,10 +354,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              padding: '0.5rem 0.85rem',
+              padding: '0.5rem 0.8rem',
               fontSize: '0.86rem',
               fontWeight: currentView === 'home' ? 600 : 400,
-              color: currentView === 'home' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+              color: currentView === 'home'
+                ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
               transition: 'all 200ms ease',
               borderRadius: '8px',
               position: 'relative'
@@ -360,10 +395,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'properties' || currentView === 'properties' ? 600 : 400,
-                color: activeMenu === 'properties' ? '#FFFFFF' : currentView === 'properties' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'properties'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : currentView === 'properties'
+                  ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -398,10 +437,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'buy' || currentView === 'buy' ? 600 : 400,
-                color: activeMenu === 'buy' ? '#FFFFFF' : currentView === 'buy' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'buy'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : currentView === 'buy'
+                  ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -436,10 +479,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'rent' || currentView === 'rent' ? 600 : 400,
-                color: activeMenu === 'rent' ? '#FFFFFF' : currentView === 'rent' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'rent'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : currentView === 'rent'
+                  ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -474,10 +521,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'lease' ? 600 : 400,
-                color: activeMenu === 'lease' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'lease'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -512,10 +561,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'hotels-pg' ? 600 : 400,
-                color: activeMenu === 'hotels-pg' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'hotels-pg'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -550,10 +601,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'builders' || currentView === 'projects' ? 600 : 400,
-                color: activeMenu === 'builders' ? '#FFFFFF' : currentView === 'projects' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'builders'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : currentView === 'projects'
+                  ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -588,10 +643,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '0.5rem 0.85rem',
+                padding: '0.5rem 0.8rem',
                 fontSize: '0.86rem',
                 fontWeight: activeMenu === 'about' || currentView === 'about' ? 600 : 400,
-                color: activeMenu === 'about' ? '#FFFFFF' : currentView === 'about' ? '#F5E6BE' : 'rgba(255, 255, 255, 0.78)',
+                color: activeMenu === 'about'
+                  ? (isDark ? '#FFFFFF' : '#18181B')
+                  : currentView === 'about'
+                  ? (isDark ? '#F5E6BE' : 'var(--gold-primary, #B8860B)')
+                  : (isDark ? 'rgba(255, 255, 255, 0.78)' : '#52525B'),
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
@@ -627,9 +686,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              backgroundColor: searchOpen ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              border: searchOpen ? '1px solid rgba(212, 175, 55, 0.45)' : '1px solid rgba(255, 255, 255, 0.08)',
-              color: searchOpen ? '#F5E6BE' : 'rgba(255, 255, 255, 0.8)',
+              backgroundColor: searchOpen
+                ? 'rgba(212, 175, 55, 0.18)'
+                : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'),
+              border: searchOpen
+                ? '1px solid rgba(212, 175, 55, 0.45)'
+                : (isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'),
+              color: searchOpen
+                ? 'var(--gold-primary, #D4AF37)'
+                : (isDark ? 'rgba(255, 255, 255, 0.8)' : '#3F3F46'),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -656,9 +721,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                backgroundColor: notifOpen ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                border: notifOpen ? '1px solid rgba(212, 175, 55, 0.45)' : '1px solid rgba(255, 255, 255, 0.08)',
-                color: notifOpen ? '#F5E6BE' : 'rgba(255, 255, 255, 0.8)',
+                backgroundColor: notifOpen
+                  ? 'rgba(212, 175, 55, 0.18)'
+                  : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'),
+                border: notifOpen
+                  ? '1px solid rgba(212, 175, 55, 0.45)'
+                  : (isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'),
+                color: notifOpen
+                  ? 'var(--gold-primary, #D4AF37)'
+                  : (isDark ? 'rgba(255, 255, 255, 0.8)' : '#3F3F46'),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -703,10 +774,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   width: '420px',
                   maxWidth: '92vw',
                   maxHeight: '560px',
-                  backgroundColor: '#0F0F14',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  backgroundColor: isDark ? '#0F0F14' : '#FFFFFF',
+                  border: isDark ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid rgba(184, 134, 11, 0.3)',
                   borderRadius: '16px',
-                  boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+                  boxShadow: isDark
+                    ? '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06)'
+                    : '0 20px 48px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   zIndex: 320,
@@ -717,13 +790,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {/* Popover Header */}
                 <div style={{
                   padding: '1rem 1.15rem 0.75rem',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                  backgroundColor: 'rgba(212, 175, 55, 0.04)'
+                  borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
+                  backgroundColor: isDark ? 'rgba(212, 175, 55, 0.04)' : 'rgba(184, 134, 11, 0.05)'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Sparkles size={16} color="var(--gold-primary, #D4AF37)" />
-                      <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#FFFFFF', letterSpacing: '0.02em' }}>
+                      <span style={{
+                        fontWeight: 800,
+                        fontSize: '0.88rem',
+                        color: isDark ? '#FFFFFF' : '#18181B',
+                        letterSpacing: '0.02em'
+                      }}>
                         LOKHA Radar & Alerts
                       </span>
                     </div>
@@ -754,7 +832,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.35rem',
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)',
                     padding: '0.25rem',
                     borderRadius: '8px'
                   }}>
@@ -770,7 +848,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         cursor: 'pointer',
                         transition: 'all 0.15s',
                         backgroundColor: activeNotifTab === 'rent' ? 'var(--gold-primary, #D4AF37)' : 'transparent',
-                        color: activeNotifTab === 'rent' ? '#070709' : 'rgba(255, 255, 255, 0.65)'
+                        color: activeNotifTab === 'rent' ? '#070709' : (isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B')
                       }}
                     >
                       Rent / Lease
@@ -787,7 +865,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         cursor: 'pointer',
                         transition: 'all 0.15s',
                         backgroundColor: activeNotifTab === 'offers' ? 'var(--gold-primary, #D4AF37)' : 'transparent',
-                        color: activeNotifTab === 'offers' ? '#070709' : 'rgba(255, 255, 255, 0.65)'
+                        color: activeNotifTab === 'offers' ? '#070709' : (isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B')
                       }}
                     >
                       Offers
@@ -804,7 +882,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         cursor: 'pointer',
                         transition: 'all 0.15s',
                         backgroundColor: activeNotifTab === 'updates' ? 'var(--gold-primary, #D4AF37)' : 'transparent',
-                        color: activeNotifTab === 'updates' ? '#070709' : 'rgba(255, 255, 255, 0.65)'
+                        color: activeNotifTab === 'updates' ? '#070709' : (isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B')
                       }}
                     >
                       Platform
@@ -822,7 +900,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           cursor: 'pointer',
                           transition: 'all 0.15s',
                           backgroundColor: activeNotifTab === 'personal' ? 'var(--gold-primary, #D4AF37)' : 'transparent',
-                          color: activeNotifTab === 'personal' ? '#070709' : 'rgba(255, 255, 255, 0.65)'
+                          color: activeNotifTab === 'personal' ? '#070709' : (isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B')
                         }}
                       >
                         Personal {unreadPersonalCount > 0 ? `(${unreadPersonalCount})` : ''}
@@ -847,13 +925,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                             gap: '0.75rem',
                             padding: '0.65rem',
                             borderRadius: '10px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                            border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)',
                             cursor: 'pointer',
                             transition: 'all 0.15s'
                           }}
-                          onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.35)')}
-                          onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)')}
+                          onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.45)')}
+                          onMouseLeave={e => (e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)')}
                         >
                           <img
                             src={item.imageUrl}
@@ -865,18 +943,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                               <span style={{ fontSize: '0.62rem', padding: '1px 6px', borderRadius: '4px', backgroundColor: 'rgba(212, 175, 55, 0.18)', color: 'var(--gold-primary, #D4AF37)', fontWeight: 700 }}>
                                 {item.bhk}
                               </span>
-                              <span style={{ fontSize: '0.62rem', color: 'rgba(255, 255, 255, 0.45)' }}>{item.postedAt}</span>
+                              <span style={{ fontSize: '0.62rem', color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A' }}>{item.postedAt}</span>
                             </div>
-                            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFFFFF', marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isDark ? '#FFFFFF' : '#18181B', marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {item.title}
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.6)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '0.15rem' }}>
+                            <div style={{ fontSize: '0.7rem', color: isDark ? 'rgba(255, 255, 255, 0.6)' : '#52525B', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '0.15rem' }}>
                               <MapPin size={11} color="var(--gold-primary, #D4AF37)" />
                               <span>{item.locality}, {item.city}</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.35rem' }}>
                               <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--gold-primary, #D4AF37)' }}>{item.rentAmount}</span>
-                              <span style={{ fontSize: '0.65rem', color: 'rgba(255, 255, 255, 0.45)' }}>Dep: {item.depositAmount}</span>
+                              <span style={{ fontSize: '0.65rem', color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A' }}>Dep: {item.depositAmount}</span>
                             </div>
                           </div>
                         </div>
@@ -892,8 +970,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           style={{
                             padding: '0.8rem',
                             borderRadius: '10px',
-                            backgroundColor: 'rgba(212, 175, 55, 0.05)',
-                            border: '1px solid rgba(212, 175, 55, 0.22)',
+                            backgroundColor: isDark ? 'rgba(212, 175, 55, 0.05)' : 'rgba(184, 134, 11, 0.05)',
+                            border: isDark ? '1px solid rgba(212, 175, 55, 0.22)' : '1px solid rgba(184, 134, 11, 0.22)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0.4rem'
@@ -904,12 +982,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                               <Flame size={12} />
                               {offer.badge}
                             </span>
-                            <span style={{ fontSize: '0.65rem', color: 'rgba(255, 255, 255, 0.45)' }}>{offer.validUntil}</span>
+                            <span style={{ fontSize: '0.65rem', color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A' }}>{offer.validUntil}</span>
                           </div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#FFFFFF' }}>{offer.title}</div>
-                          <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.68)', lineHeight: 1.35 }}>{offer.description}</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isDark ? '#FFFFFF' : '#18181B' }}>{offer.title}</div>
+                          <div style={{ fontSize: '0.74rem', color: isDark ? 'rgba(255, 255, 255, 0.68)' : '#52525B', lineHeight: 1.35 }}>{offer.description}</div>
                           {offer.code && (
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px dashed rgba(212, 175, 55, 0.35)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.04)', padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px dashed rgba(212, 175, 55, 0.4)' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <Tag size={13} color="var(--gold-primary, #D4AF37)" />
                                 <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--gold-primary, #D4AF37)' }}>{offer.code}</span>
@@ -935,8 +1013,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           style={{
                             padding: '0.8rem',
                             borderRadius: '10px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                            border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0.35rem'
@@ -946,10 +1024,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--gold-primary, #D4AF37)', backgroundColor: 'rgba(212, 175, 55, 0.15)', padding: '1px 6px', borderRadius: '4px' }}>
                               {up.version}
                             </span>
-                            <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.45)' }}>{up.date}</span>
+                            <span style={{ fontSize: '0.7rem', color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A' }}>{up.date}</span>
                           </div>
-                          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFFFFF' }}>{up.title}</div>
-                          <ul style={{ margin: '0.2rem 0 0', paddingLeft: '1.1rem', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.45 }}>
+                          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isDark ? '#FFFFFF' : '#18181B' }}>{up.title}</div>
+                          <ul style={{ margin: '0.2rem 0 0', paddingLeft: '1.1rem', fontSize: '0.72rem', color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', lineHeight: 1.45 }}>
                             {up.highlights.map((n: string, idx: number) => (
                               <li key={idx}>{n}</li>
                             ))}
@@ -962,7 +1040,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {activeNotifTab === 'personal' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                       {personalNotifications.length === 0 ? (
-                        <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'rgba(255, 255, 255, 0.45)', fontSize: '0.8rem' }}>
+                        <div style={{ padding: '2rem 1rem', textAlign: 'center', color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A', fontSize: '0.8rem' }}>
                           No personal notifications at this time.
                         </div>
                       ) : (
@@ -973,13 +1051,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                             style={{
                               padding: '0.75rem',
                               borderRadius: '10px',
-                              backgroundColor: notif.isRead ? 'rgba(255, 255, 255, 0.02)' : 'rgba(212, 175, 55, 0.08)',
-                              border: notif.isRead ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(212, 175, 55, 0.25)',
+                              backgroundColor: notif.isRead
+                                ? (isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)')
+                                : 'rgba(212, 175, 55, 0.08)',
+                              border: notif.isRead
+                                ? (isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)')
+                                : '1px solid rgba(212, 175, 55, 0.3)',
                               cursor: 'pointer'
                             }}
                           >
-                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFFFFF' }}>{notif.title}</div>
-                            <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '0.2rem' }}>{notif.message}</div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: isDark ? '#FFFFFF' : '#18181B' }}>{notif.title}</div>
+                            <div style={{ fontSize: '0.72rem', color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', marginTop: '0.2rem' }}>{notif.message}</div>
                           </div>
                         ))
                       )}
@@ -988,7 +1070,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Popover Footer */}
-                <div style={{ padding: '0.65rem 0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', backgroundColor: '#09090C' }}>
+                <div style={{
+                  padding: '0.65rem 0.85rem',
+                  borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)',
+                  backgroundColor: isDark ? '#09090C' : '#FAF9F6'
+                }}>
                   <button
                     onClick={() => {
                       setNotifOpen(false);
@@ -1026,9 +1112,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: 'rgba(255, 255, 255, 0.85)',
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+              border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
+              color: isDark ? 'rgba(255, 255, 255, 0.85)' : '#27272A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1051,8 +1137,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 style={{
                   background: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#FFFFFF',
+                  border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 0, 0, 0.15)',
+                  color: isDark ? '#FFFFFF' : '#18181B',
                   padding: '0.4rem 0.95rem',
                   borderRadius: '999px',
                   fontSize: '0.82rem',
@@ -1062,11 +1148,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'var(--gold-primary, #D4AF37)';
-                  e.currentTarget.style.color = '#F5E6BE';
+                  e.currentTarget.style.color = isDark ? '#F5E6BE' : '#B8860B';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.color = '#FFFFFF';
+                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)';
+                  e.currentTarget.style.color = isDark ? '#FFFFFF' : '#18181B';
                 }}
               >
                 Sign In
@@ -1109,8 +1195,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   gap: '0.55rem',
                   padding: '0.3rem 0.75rem 0.3rem 0.35rem',
                   borderRadius: '999px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: profileOpen ? '1px solid rgba(212, 175, 55, 0.45)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                  border: profileOpen
+                    ? '1px solid rgba(212, 175, 55, 0.45)'
+                    : (isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)'),
                   cursor: 'pointer',
                   transition: 'all 200ms ease'
                 }}
@@ -1133,7 +1221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="apple-profile-name" style={{
                   fontSize: '0.82rem',
                   fontWeight: 600,
-                  color: '#FFFFFF',
+                  color: isDark ? '#FFFFFF' : '#18181B',
                   maxWidth: '90px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -1152,20 +1240,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                     top: 'calc(100% + 0.75rem)',
                     right: 0,
                     width: '240px',
-                    backgroundColor: '#0F0F14',
-                    border: '1px solid rgba(212, 175, 55, 0.28)',
+                    backgroundColor: isDark ? '#0F0F14' : '#FFFFFF',
+                    border: isDark ? '1px solid rgba(212, 175, 55, 0.28)' : '1px solid rgba(184, 134, 11, 0.25)',
                     borderRadius: '16px',
-                    boxShadow: '0 20px 48px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+                    boxShadow: isDark
+                      ? '0 20px 48px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06)'
+                      : '0 16px 36px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
                     padding: '0.5rem',
                     zIndex: 320,
                     animation: 'appleMenuIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards'
                   }}
                 >
-                  <div style={{ padding: '0.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '0.35rem' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.86rem', color: '#FFFFFF' }}>
+                  <div style={{ padding: '0.75rem', borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)', marginBottom: '0.35rem' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.86rem', color: isDark ? '#FFFFFF' : '#18181B' }}>
                       {user.displayName || 'Lokha Client'}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: '0.15rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontSize: '0.72rem', color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A', marginTop: '0.15rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {user.email}
                     </div>
                   </div>
@@ -1176,7 +1266,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setProfileOpen(false);
                         onNavigate('dashboard');
                       }}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                     >
                       <User size={15} color="var(--gold-primary, #D4AF37)" />
                       <span>Profile & Overview</span>
@@ -1187,7 +1277,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setProfileOpen(false);
                         onNavigate('dashboard');
                       }}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                     >
                       <Building size={15} />
                       <span>My Properties</span>
@@ -1198,7 +1288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setProfileOpen(false);
                         onNavigate('saved');
                       }}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                     >
                       <Heart size={15} />
                       <span>Saved Properties</span>
@@ -1209,7 +1299,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setProfileOpen(false);
                         onNavigate('dashboard');
                       }}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                     >
                       <CalendarCheck size={15} />
                       <span>Inquiries & Chats</span>
@@ -1220,17 +1310,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setProfileOpen(false);
                         onNavigate('settings');
                       }}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                     >
                       <Settings size={15} />
                       <span>Settings</span>
                     </button>
 
-                    <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', margin: '0.35rem 0' }} />
+                    <div style={{ borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)', margin: '0.35rem 0' }} />
 
                     <button
                       onClick={handleLogout}
-                      className="apple-profile-link"
+                      className={`apple-profile-link ${isDark ? 'dark' : 'light'}`}
                       style={{ color: '#EF4444' }}
                     >
                       <LogOut size={15} />
@@ -1256,9 +1346,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              backgroundColor: mobileMenuOpen ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.05)',
-              border: mobileMenuOpen ? '1px solid rgba(212, 175, 55, 0.45)' : '1px solid rgba(255, 255, 255, 0.08)',
-              color: mobileMenuOpen ? '#F5E6BE' : '#FFFFFF',
+              backgroundColor: mobileMenuOpen
+                ? 'rgba(212, 175, 55, 0.18)'
+                : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'),
+              border: mobileMenuOpen
+                ? '1px solid rgba(212, 175, 55, 0.45)'
+                : (isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'),
+              color: mobileMenuOpen ? 'var(--gold-primary, #D4AF37)' : (isDark ? '#FFFFFF' : '#18181B'),
               display: 'none',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1279,25 +1373,25 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('properties')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Property Types</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Property Types</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">All Properties</span>
                   <span className="apple-link-sub">Browse total curated inventory</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Apartment' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Apartment' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Apartments</span>
                   <span className="apple-link-sub">Penthouses, high-rises & duplexes</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Villa' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Villa' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Villas</span>
                   <span className="apple-link-sub">Independent luxury gated estates</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'House' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'House' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Houses</span>
                   <span className="apple-link-sub">Private bungalows & townhomes</span>
                 </button>
@@ -1305,36 +1399,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Commercial & Land</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Commercial & Land</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Plots</span>
                   <span className="apple-link-sub">Freehold plots & corner parcels</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Commercial' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Commercial' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Commercial</span>
                   <span className="apple-link-sub">Retail, tech hubs & showrooms</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Office' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Office' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Offices</span>
                   <span className="apple-link-sub">Grade-A corporate office suites</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Shop' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Shop' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Shops</span>
                   <span className="apple-link-sub">High footfall retail storefronts</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <Sparkles size={14} />
                 <span>RADAR SPOTLIGHT</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Interactive Map Radar
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Locate premium properties with GPS precision, metro proximity, and school zones.
               </p>
               <button
@@ -1354,21 +1448,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('buy')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Buy Residential</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Buy Residential</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('buy'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('buy'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Buy Property</span>
                   <span className="apple-link-sub">Complete buying directory</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Apartment' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Apartment' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Apartments for Sale</span>
                   <span className="apple-link-sub">Ready to move & under construction</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Villa' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Villa' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Villas for Sale</span>
                   <span className="apple-link-sub">Exclusive gated villa communities</span>
                 </button>
@@ -1376,32 +1470,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Land & Commercial Sale</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Land & Commercial Sale</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'House' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'House' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Houses for Sale</span>
                   <span className="apple-link-sub">Independent duplexes and homes</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Plots' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Plots' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Plots for Sale</span>
                   <span className="apple-link-sub">Approved residential parcels</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Commercial' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Commercial' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Commercial for Sale</span>
                   <span className="apple-link-sub">Pre-leased high yield commercial assets</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <Calculator size={14} />
                 <span>BUYER TOOLS</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Home Loan EMI Calculator
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Calculate monthly installments, interest rates, and loan eligibility instantly.
               </p>
               <button
@@ -1421,21 +1515,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('rent')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Rent Homes</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Rent Homes</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('rent'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('rent'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Rent Property</span>
                   <span className="apple-link-sub">Curated verified luxury rentals</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Apartment' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Apartment' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Apartments for Rent</span>
                   <span className="apple-link-sub">Fully furnished & semi-furnished flats</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'House' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'House' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Houses for Rent</span>
                   <span className="apple-link-sub">Spacious family houses with lawns</span>
                 </button>
@@ -1443,28 +1537,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Villas & Commercial</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Villas & Commercial</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Villa' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Villa' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Villas for Rent</span>
                   <span className="apple-link-sub">Private pool villas & club access</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Commercial' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Commercial' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Commercial Rentals</span>
                   <span className="apple-link-sub">Furnished offices & shop units</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <KeyRound size={14} />
                 <span>EXECUTIVE LEASING</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Rent Radar & Inspections
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Schedule personal visits and explore live rental yield heatmaps.
               </p>
               <button
@@ -1484,17 +1578,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('lease')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Lease Opportunities</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Lease Opportunities</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Lease Property</span>
                   <span className="apple-link-sub">Structured long-term lease estates</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Long-term Lease</span>
                   <span className="apple-link-sub">3-year to 9-year locked terms</span>
                 </button>
@@ -1502,28 +1596,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Commercial & Land</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Commercial & Land</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Commercial' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Commercial' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Commercial Lease</span>
                   <span className="apple-link-sub">Corporate HQs & tech park spaces</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Plots' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Plots' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Land Lease</span>
                   <span className="apple-link-sub">Industrial, solar & farm leases</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <ShieldCheck size={14} />
                 <span>LEGAL ASSURANCE</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Corporate Advisory
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Vetted lease agreements, stamp duty assistance & legal compliance check.
               </p>
               <button
@@ -1543,17 +1637,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('hotels-pg')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Hospitality & Short Stays</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Hospitality & Short Stays</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Hotels</span>
                   <span className="apple-link-sub">Boutique luxury resorts and hotel suites</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays', type: 'Apartment' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays', type: 'Apartment' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Serviced Apartments</span>
                   <span className="apple-link-sub">Kitchen equipped extended stays</span>
                 </button>
@@ -1561,28 +1655,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Shared & Student Living</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Shared & Student Living</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">PG</span>
                   <span className="apple-link-sub">Co-living paying guest accommodations</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Hostels</span>
                   <span className="apple-link-sub">Youth & professional hostels with WiFi & food</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <Hotel size={14} />
                 <span>FLEXIBLE LIVING</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Instant Verified Stays
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Zero brokerage, high speed fiber internet, verified housekeepers, and flexible deposit terms.
               </p>
               <button
@@ -1602,17 +1696,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('builders')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Developer Ecosystem</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Developer Ecosystem</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('agencies'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('agencies'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Builder Listings</span>
                   <span className="apple-link-sub">Top tier RERA approved developers</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('projects'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('projects'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">New Projects</span>
                   <span className="apple-link-sub">Townships, high-rise launches & phases</span>
                 </button>
@@ -1620,28 +1714,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Land & Allotments</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Land & Allotments</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Land Offers</span>
                   <span className="apple-link-sub">Joint ventures & prime parcel acquisitions</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('list-property'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('list-property'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Available Slots</span>
                   <span className="apple-link-sub">List developer project units on Lokha</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <Building2 size={14} />
                 <span>RERA VERIFIED</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 Certified Real Estate Advisors
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Connect directly with authorized project consultants and builder relationship managers.
               </p>
               <button
@@ -1661,17 +1755,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div
           onMouseEnter={() => handleMenuMouseEnter('about')}
           onMouseLeave={handleMenuMouseLeave}
-          className="apple-mega-panel"
+          className={`apple-mega-panel ${isDark ? 'dark' : 'light'}`}
         >
           <div className="apple-mega-inner">
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">The Brand</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>The Brand</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('about'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('about'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">About Lokha</span>
                   <span className="apple-link-sub">Our vision for ultra-luxury real estate</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('contact'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('contact'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Private Concierge Hotline</span>
                   <span className="apple-link-sub">Dedicated high-net-worth client support</span>
                 </button>
@@ -1679,28 +1773,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="apple-mega-column">
-              <span className="apple-mega-heading">Intelligence & Hubs</span>
+              <span className={`apple-mega-heading ${isDark ? 'dark' : 'light'}`}>Intelligence & Hubs</span>
               <div className="apple-mega-links">
-                <button onClick={() => { closeAllMenus(); onNavigate('insights'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('insights'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">Legal Guides & Stamp Duty</span>
                   <span className="apple-link-sub">State regulations, RERA guidelines & tax rules</span>
                 </button>
-                <button onClick={() => { closeAllMenus(); onNavigate('locations'); }} className="apple-mega-link">
+                <button onClick={() => { closeAllMenus(); onNavigate('locations'); }} className={`apple-mega-link ${isDark ? 'dark' : 'light'}`}>
                   <span className="apple-link-title">City Hubs & Circle Rates</span>
                   <span className="apple-link-sub">Micro-market reports for premier metro areas</span>
                 </button>
               </div>
             </div>
 
-            <div className="apple-mega-feature-card">
+            <div className={`apple-mega-feature-card ${isDark ? 'dark' : 'light'}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--gold-primary, #D4AF37)', fontSize: '0.72rem', fontWeight: 800 }}>
                 <TrendingUp size={14} />
                 <span>VALUATION ENGINE</span>
               </div>
-              <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
+              <h4 style={{ color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.25rem' }}>
                 AI Home Valuation
               </h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
+              <p style={{ color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#52525B', fontSize: '0.75rem', lineHeight: 1.4, margin: '0 0 0.75rem' }}>
                 Estimate fair market value for any luxury property based on current registration registry data.
               </p>
               <button
@@ -1724,9 +1818,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             top: '100%',
             left: 0,
             right: 0,
-            backgroundColor: '#0A0A0E',
-            borderBottom: '1px solid rgba(212, 175, 55, 0.35)',
-            boxShadow: '0 28px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+            backgroundColor: isDark ? '#0A0A0E' : '#FFFFFF',
+            borderBottom: isDark ? '1px solid rgba(212, 175, 55, 0.35)' : '1px solid rgba(184, 134, 11, 0.35)',
+            boxShadow: isDark
+              ? '0 28px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              : '0 20px 48px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04)',
             padding: '1.5rem 1.5rem 1.75rem',
             animation: 'appleSearchSlideDown 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
             zIndex: 300
@@ -1743,11 +1839,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(212, 175, 55, 0.4)',
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.03)',
+                border: isDark ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(184, 134, 11, 0.4)',
                 borderRadius: '14px',
                 padding: '0.75rem 1.15rem',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)'
+                boxShadow: isDark ? '0 4px 20px rgba(0, 0, 0, 0.4)' : '0 2px 10px rgba(0, 0, 0, 0.06)'
               }}
             >
               <Search size={20} color="var(--gold-primary, #D4AF37)" />
@@ -1761,7 +1857,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   flex: 1,
                   background: 'none',
                   border: 'none',
-                  color: '#FFFFFF',
+                  color: isDark ? '#FFFFFF' : '#18181B',
                   fontSize: '1.05rem',
                   outline: 'none',
                   fontWeight: 500
@@ -1771,7 +1867,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer', padding: 0 }}
+                  style={{ background: 'none', border: 'none', color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A', cursor: 'pointer', padding: 0 }}
                 >
                   <X size={16} />
                 </button>
@@ -1795,7 +1891,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Quick Suggestion Pills */}
             <div style={{ marginTop: '1.15rem' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255, 255, 255, 0.45)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: isDark ? 'rgba(255, 255, 255, 0.45)' : '#71717A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Quick Suggestions & Categories
               </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -1814,9 +1910,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       executeSearch(sug.q);
                     }}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: 'rgba(255, 255, 255, 0.8)',
+                      background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
+                      border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+                      color: isDark ? 'rgba(255, 255, 255, 0.8)' : '#3F3F46',
                       padding: '0.35rem 0.8rem',
                       borderRadius: '999px',
                       fontSize: '0.78rem',
@@ -1825,11 +1921,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.borderColor = 'var(--gold-primary, #D4AF37)';
-                      e.currentTarget.style.color = '#F5E6BE';
+                      e.currentTarget.style.color = isDark ? '#F5E6BE' : '#B8860B';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                      e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
+                      e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+                      e.currentTarget.style.color = isDark ? 'rgba(255, 255, 255, 0.8)' : '#3F3F46';
                     }}
                   >
                     {sug.label}
@@ -1850,9 +1946,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             top: '100%',
             left: 0,
             right: 0,
-            backgroundColor: '#0C0C10',
-            borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
-            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.9)',
+            backgroundColor: isDark ? '#0C0C10' : '#FAF9F6',
+            borderBottom: isDark ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid rgba(184, 134, 11, 0.25)',
+            boxShadow: isDark ? '0 30px 60px rgba(0, 0, 0, 0.9)' : '0 20px 40px rgba(0, 0, 0, 0.15)',
             maxHeight: 'calc(100vh - 4.5rem)',
             overflowY: 'auto',
             padding: '1.25rem 1rem 2rem',
@@ -1871,8 +1967,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(0, 0, 0, 0.08)',
                 borderRadius: '10px',
                 padding: '0.55rem 0.85rem'
               }}
@@ -1883,7 +1979,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 placeholder="Search properties, builders, stays..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ flex: 1, background: 'none', border: 'none', color: '#FFFFFF', fontSize: '0.88rem', outline: 'none' }}
+                style={{ flex: 1, background: 'none', border: 'none', color: isDark ? '#FFFFFF' : '#18181B', fontSize: '0.88rem', outline: 'none' }}
               />
             </form>
           </div>
@@ -1895,205 +1991,206 @@ export const Navbar: React.FC<NavbarProps> = ({
               onNavigate('home');
             }}
             className="apple-mobile-link-main"
+            style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <Home size={17} color="var(--gold-primary, #D4AF37)" />
-              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Home</span>
+              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Home</span>
             </div>
-            <ArrowRight size={14} color="rgba(255, 255, 255, 0.4)" />
+            <ArrowRight size={14} color={isDark ? 'rgba(255, 255, 255, 0.4)' : '#71717A'} />
           </button>
 
           {/* Group 2: Properties Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'properties' ? null : 'properties')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Layers size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Properties</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Properties</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'properties' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'properties' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties'); }} className="apple-mobile-sublink">All Properties</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Apartment' }); }} className="apple-mobile-sublink">Apartments</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Villa' }); }} className="apple-mobile-sublink">Villas</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'House' }); }} className="apple-mobile-sublink">Houses</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className="apple-mobile-sublink">Plots</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Commercial' }); }} className="apple-mobile-sublink">Commercial</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Office' }); }} className="apple-mobile-sublink">Offices</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Shop' }); }} className="apple-mobile-sublink">Shops</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>All Properties</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Apartment' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Apartments</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Villa' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Villas</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'House' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Houses</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Plots</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Commercial' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Commercial</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Office' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Offices</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Shop' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Shops</button>
               </div>
             )}
           </div>
 
           {/* Group 3: Buy Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'buy' ? null : 'buy')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Building size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Buy</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Buy</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'buy' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'buy' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('buy'); }} className="apple-mobile-sublink">Buy Property</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Apartment' }); }} className="apple-mobile-sublink">Apartments for Sale</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Villa' }); }} className="apple-mobile-sublink">Villas for Sale</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'House' }); }} className="apple-mobile-sublink">Houses for Sale</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Plots' }); }} className="apple-mobile-sublink">Plots for Sale</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Commercial' }); }} className="apple-mobile-sublink">Commercial for Sale</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('buy'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Buy Property</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Apartment' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Apartments for Sale</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Villa' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Villas for Sale</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'House' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Houses for Sale</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Plots' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Plots for Sale</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Buy', type: 'Commercial' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Commercial for Sale</button>
               </div>
             )}
           </div>
 
           {/* Group 4: Rent Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'rent' ? null : 'rent')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <KeyRound size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Rent</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Rent</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'rent' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'rent' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('rent'); }} className="apple-mobile-sublink">Rent Property</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Apartment' }); }} className="apple-mobile-sublink">Apartments for Rent</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'House' }); }} className="apple-mobile-sublink">Houses for Rent</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Villa' }); }} className="apple-mobile-sublink">Villas for Rent</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Commercial' }); }} className="apple-mobile-sublink">Commercial Rentals</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('rent'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Rent Property</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Apartment' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Apartments for Rent</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'House' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Houses for Rent</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Villa' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Villas for Rent</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Rent', type: 'Commercial' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Commercial Rentals</button>
               </div>
             )}
           </div>
 
           {/* Group 5: Lease Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'lease' ? null : 'lease')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Briefcase size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Lease</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Lease</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'lease' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'lease' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className="apple-mobile-sublink">Lease Property</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className="apple-mobile-sublink">Long-term Lease</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Commercial' }); }} className="apple-mobile-sublink">Commercial Lease</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Plots' }); }} className="apple-mobile-sublink">Land Lease</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Lease Property</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Long-term Lease</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Commercial' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Commercial Lease</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Lease', type: 'Plots' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Land Lease</button>
               </div>
             )}
           </div>
 
           {/* Group 6: Hotels & PG Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'hotels-pg' ? null : 'hotels-pg')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Hotel size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Hotels & PG</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Hotels & PG</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'hotels-pg' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'hotels-pg' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mobile-sublink">Hotels</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mobile-sublink">PG</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className="apple-mobile-sublink">Hostels</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays', type: 'Apartment' }); }} className="apple-mobile-sublink">Serviced Apartments</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Hotels</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>PG</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Hostels</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { purpose: 'Stays', type: 'Apartment' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Serviced Apartments</button>
               </div>
             )}
           </div>
 
           {/* Group 7: Builders Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'builders' ? null : 'builders')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Building2 size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>Builders</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>Builders</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'builders' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'builders' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('agencies'); }} className="apple-mobile-sublink">Builder Listings</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('projects'); }} className="apple-mobile-sublink">New Projects</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className="apple-mobile-sublink">Land Offers</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('list-property'); }} className="apple-mobile-sublink">Available Slots</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('agencies'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Builder Listings</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('projects'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>New Projects</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('properties', undefined, { type: 'Plots' }); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Land Offers</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('list-property'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Available Slots</button>
               </div>
             )}
           </div>
 
           {/* Group 8: About Accordion */}
-          <div className="apple-mobile-accordion">
+          <div className="apple-mobile-accordion" style={{ borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'about' ? null : 'about')}
               className="apple-mobile-accordion-header"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Compass size={17} color="var(--gold-primary, #D4AF37)" />
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>About</span>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isDark ? '#FFFFFF' : '#18181B' }}>About</span>
               </div>
               <ChevronDown
                 size={16}
-                color="rgba(255, 255, 255, 0.5)"
+                color={isDark ? 'rgba(255, 255, 255, 0.5)' : '#71717A'}
                 style={{ transform: mobileExpandedGroup === 'about' ? 'rotate(180deg)' : 'rotate(0)' }}
               />
             </button>
             {mobileExpandedGroup === 'about' && (
               <div className="apple-mobile-sublinks">
-                <button onClick={() => { closeAllMenus(); onNavigate('about'); }} className="apple-mobile-sublink">About Lokha</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('contact'); }} className="apple-mobile-sublink">Private Concierge Hotline</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('insights'); }} className="apple-mobile-sublink">Legal Guides & Stamp Duty</button>
-                <button onClick={() => { closeAllMenus(); onNavigate('locations'); }} className="apple-mobile-sublink">City Hubs & Rates</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('about'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>About Lokha</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('contact'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Private Concierge Hotline</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('insights'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>Legal Guides & Stamp Duty</button>
+                <button onClick={() => { closeAllMenus(); onNavigate('locations'); }} className={`apple-mobile-sublink ${isDark ? 'dark' : 'light'}`}>City Hubs & Rates</button>
               </div>
             )}
           </div>
 
           {/* Mobile Auth Actions */}
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)' }}>
             {!user ? (
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
@@ -2102,9 +2199,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                     flex: 1,
                     padding: '0.65rem',
                     borderRadius: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(0, 0, 0, 0.12)',
+                    color: isDark ? '#FFFFFF' : '#18181B',
                     fontWeight: 600,
                     fontSize: '0.85rem'
                   }}
@@ -2181,13 +2278,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           top: 100%;
           left: 0;
           right: 0;
-          background-color: rgba(14, 14, 18, 0.96);
           backdrop-filter: blur(28px);
           -webkit-backdrop-filter: blur(28px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.04);
           animation: appleMegaIn 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
           z-index: 240;
+        }
+
+        .apple-mega-panel.dark {
+          background-color: rgba(14, 14, 18, 0.96);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .apple-mega-panel.light {
+          background-color: rgba(255, 255, 255, 0.98);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+          box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.03);
         }
 
         .apple-mega-inner {
@@ -2210,9 +2316,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: rgba(255, 255, 255, 0.45);
           padding-bottom: 0.4rem;
+        }
+
+        .apple-mega-heading.dark {
+          color: rgba(255, 255, 255, 0.45);
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .apple-mega-heading.light {
+          color: #71717A;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         .apple-mega-links {
@@ -2234,36 +2348,62 @@ export const Navbar: React.FC<NavbarProps> = ({
           text-align: left;
         }
 
-        .apple-mega-link:hover {
+        .apple-mega-link.dark:hover {
           background-color: rgba(255, 255, 255, 0.05);
           transform: translateX(3px);
         }
 
-        .apple-mega-link .apple-link-title {
+        .apple-mega-link.light:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+          transform: translateX(3px);
+        }
+
+        .apple-mega-link.dark .apple-link-title {
           font-size: 0.88rem;
           font-weight: 600;
           color: #FFFFFF;
           transition: color 180ms ease;
         }
 
-        .apple-mega-link:hover .apple-link-title {
-          color: var(--gold-primary, #D4AF37);
+        .apple-mega-link.light .apple-link-title {
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: #18181B;
+          transition: color 180ms ease;
         }
 
-        .apple-mega-link .apple-link-sub {
+        .apple-mega-link:hover .apple-link-title {
+          color: var(--gold-primary, #D4AF37) !important;
+        }
+
+        .apple-mega-link.dark .apple-link-sub {
           font-size: 0.72rem;
           color: rgba(255, 255, 255, 0.5);
           margin-top: 0.15rem;
         }
 
+        .apple-mega-link.light .apple-link-sub {
+          font-size: 0.72rem;
+          color: #71717A;
+          margin-top: 0.15rem;
+        }
+
         .apple-mega-feature-card {
-          background: linear-gradient(145deg, rgba(212, 175, 55, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-          border: 1px solid rgba(212, 175, 55, 0.22);
           border-radius: 14px;
           padding: 1.25rem;
           display: flex;
           flex-direction: column;
           justifyContent: space-between;
+        }
+
+        .apple-mega-feature-card.dark {
+          background: linear-gradient(145deg, rgba(212, 175, 55, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+          border: 1px solid rgba(212, 175, 55, 0.22);
+        }
+
+        .apple-mega-feature-card.light {
+          background: linear-gradient(145deg, rgba(184, 134, 11, 0.06) 0%, rgba(0, 0, 0, 0.02) 100%);
+          border: 1px solid rgba(184, 134, 11, 0.22);
         }
 
         .apple-mega-feature-btn {
@@ -2291,7 +2431,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           gap: 0.75rem;
           padding: 0.55rem 0.75rem;
           border-radius: 8px;
-          color: rgba(255, 255, 255, 0.8);
           background-color: transparent;
           border: none;
           cursor: pointer;
@@ -2301,9 +2440,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           transition: all 150ms ease;
         }
 
-        .apple-profile-link:hover {
+        .apple-profile-link.dark {
+          color: rgba(255, 255, 255, 0.8);
+        }
+        .apple-profile-link.dark:hover {
           background-color: rgba(255, 255, 255, 0.06);
           color: #FFFFFF;
+        }
+
+        .apple-profile-link.light {
+          color: #3F3F46;
+        }
+        .apple-profile-link.light:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+          color: #18181B;
         }
 
         /* Mobile Accordion Links */
@@ -2314,7 +2464,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           padding: 0.85rem 0.65rem;
           background: none;
           border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           width: 100%;
           cursor: pointer;
         }
@@ -2345,11 +2494,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           text-align: left;
           padding: 0.45rem 0.65rem;
           border-radius: 6px;
+          font-size: 0.8rem;
+          cursor: pointer;
+        }
+
+        .apple-mobile-sublink.dark {
           background-color: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.05);
           color: rgba(255, 255, 255, 0.75);
-          font-size: 0.8rem;
-          cursor: pointer;
+        }
+
+        .apple-mobile-sublink.light {
+          background-color: rgba(0, 0, 0, 0.03);
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          color: #3F3F46;
         }
 
         /* Keyframe Animations */
@@ -2387,7 +2545,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         }
 
         /* Responsive Breakpoints */
-        @media (max-width: 1024px) {
+        @media (max-width: 1100px) {
           .apple-center-nav {
             gap: 0.1rem !important;
           }
@@ -2403,7 +2561,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
         }
 
-        @media (max-width: 860px) {
+        @media (max-width: 890px) {
           .apple-center-nav {
             display: none !important;
           }
