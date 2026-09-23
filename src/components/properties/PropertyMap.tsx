@@ -216,10 +216,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     }
   }, [userCoordinates]);
 
-  // Render Searching Circle & Radar Pulse
+  // Render Searching Circle & Movable Drag Handle
   useEffect(() => {
     const circleLayer = searchCircleLayerRef.current;
-    if (!circleLayer) return;
+    const map = mapInstanceRef.current;
+    if (!circleLayer || !map) return;
 
     circleLayer.clearLayers();
 
@@ -227,18 +228,18 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
     const radiusMeters = searchRadiusKm * 1000;
 
     // 1. Primary Searching Radius Circle
-    L.circle([cLat, cLng], {
+    const primaryCircle = L.circle([cLat, cLng], {
       radius: radiusMeters,
       color: '#D4AF37',
-      weight: 2.5,
+      weight: 2.2,
       dashArray: '6, 8',
       fillColor: '#D4AF37',
       fillOpacity: 0.08
     }).addTo(circleLayer);
 
     // 2. Secondary Inner Ripple for Radar depth
-    L.circle([cLat, cLng], {
-      radius: radiusMeters * 0.5,
+    const innerCircle = L.circle([cLat, cLng], {
+      radius: radiusMeters * 0.45,
       color: 'rgba(212, 175, 55, 0.45)',
       weight: 1.5,
       dashArray: '4, 6',
@@ -246,37 +247,69 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({
       fillOpacity: 0.04
     }).addTo(circleLayer);
 
-    // 3. Center Radar Ping Marker with Animated CSS Ripple
+    // 3. Center Movable Radar Handle Marker (draggable without moving map camera)
     const radarCenterIcon = L.divIcon({
       className: 'lokha-radar-center',
       html: `
-        <div style="position: relative; width: 24px; height: 24px; transform: translate(-50%, -50%);">
+        <div style="position: relative; width: 40px; height: 40px; transform: translate(-50%, -50%); cursor: grab; display: flex; align-items: center; justify-content: center; touch-action: none;">
           <div style="
             position: absolute;
-            inset: -12px;
+            inset: -6px;
             border-radius: 50%;
-            background: rgba(212, 175, 55, 0.3);
+            background: rgba(212, 175, 55, 0.25);
             animation: radarPulse 2s cubic-bezier(0.25, 0, 0.2, 1) infinite;
           "></div>
           <div style="
-            position: absolute;
-            inset: 0;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            background: #D4AF37;
-            border: 2px solid #FFFFFF;
+            background: #18181B;
+            border: 2px solid #D4AF37;
             box-shadow: 0 0 16px rgba(212, 175, 55, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #D4AF37;
           ">
-            <div style="width: 7px; height: 7px; border-radius: 50%; background: #070709;"></div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="5 9 2 12 5 15"></polyline>
+              <polyline points="9 5 12 2 15 5"></polyline>
+              <polyline points="15 19 12 22 9 19"></polyline>
+              <polyline points="19 9 22 12 19 15"></polyline>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <line x1="12" y1="2" x2="12" y2="22"></line>
+            </svg>
           </div>
         </div>
       `,
       iconSize: [0, 0]
     });
 
-    L.marker([cLat, cLng], { icon: radarCenterIcon }).addTo(circleLayer);
+    const dragHandle = L.marker([cLat, cLng], {
+      icon: radarCenterIcon,
+      draggable: true,
+      zIndexOffset: 2500
+    }).addTo(circleLayer);
+
+    dragHandle.on('dragstart', () => {
+      map.dragging.disable();
+      map.touchZoom.disable();
+      map.scrollWheelZoom.disable();
+    });
+
+    dragHandle.on('drag', (e: any) => {
+      const pos = e.target.getLatLng();
+      primaryCircle.setLatLng(pos);
+      innerCircle.setLatLng(pos);
+    });
+
+    dragHandle.on('dragend', (e: any) => {
+      map.dragging.enable();
+      map.touchZoom.enable();
+      map.scrollWheelZoom.enable();
+      const pos = e.target.getLatLng();
+      setActiveCenter([pos.lat, pos.lng]);
+    });
   }, [searchRadiusKm, activeCenter]);
 
   // Render Property Markers: SHOW PROPERTIES STRICTLY INSIDE THE SEARCH CIRCLE
