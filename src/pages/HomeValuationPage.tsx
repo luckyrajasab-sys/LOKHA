@@ -128,16 +128,16 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -162,7 +162,7 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Instant Luxury Property Market Valuation
           </h1>
@@ -188,13 +188,13 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
         }}>
           {/* Valuation Input Form */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.2)',
+            border: '1px solid var(--border)',
             padding: '2rem',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+            boxShadow: 'var(--shadow-card)'
           }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>
               Enter Property Specifications
             </h2>
 
@@ -215,9 +215,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                     width: '100%',
                     padding: '0.75rem',
                     borderRadius: '8px',
-                    backgroundColor: '#181824',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary)',
                     fontSize: '0.9rem'
                   }}
                 >
@@ -237,9 +237,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                     width: '100%',
                     padding: '0.75rem',
                     borderRadius: '8px',
-                    backgroundColor: '#181824',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary)',
                     fontSize: '0.9rem'
                   }}
                 >
@@ -260,9 +260,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.85rem'
                     }}
                   >
@@ -287,9 +287,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.85rem'
                     }}
                   />
@@ -341,12 +341,13 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                   padding: '0.95rem',
                   borderRadius: 'var(--radius-full)',
                   backgroundColor: 'var(--gold-primary)',
-                  color: '#070709',
+                  color: 'var(--gold-text)',
                   fontWeight: 800,
                   fontSize: '0.95rem',
                   border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 16px rgba(212, 175, 55, 0.35)'
+                  boxShadow: '0 4px 16px rgba(198, 161, 91, 0.35)',
+                  transition: 'background-color 250ms ease, transform 200ms ease'
                 }}
               >
                 Calculate Valuation Estimate
@@ -358,11 +359,11 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {valuationResult ? (
               <div style={{
-                backgroundColor: '#101018',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '16px',
-                border: '1px solid rgba(212, 175, 55, 0.3)',
+                border: '1px solid var(--border)',
                 padding: '2rem',
-                boxShadow: '0 12px 32px rgba(0,0,0,0.6)'
+                boxShadow: 'var(--shadow-card)'
               }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   Estimated Fair Market Value Range
@@ -374,44 +375,45 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                   Derived from {city} ({microMarket}) benchmark rate of ~₹{valuationResult.ratePerSqft.toLocaleString()}/sq.ft.
                 </p>
 
-                <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.08)', marginBottom: '1.5rem' }} />
+                <div style={{ height: '1px', backgroundColor: 'var(--border)', marginBottom: '1.5rem' }} />
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                  <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                  <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Estimated Monthly Rent</span>
-                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#60A5FA' }}>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                       ₹{(valuationResult.monthlyRentMin / 1000).toFixed(0)}k – ₹{(valuationResult.monthlyRentMax / 1000).toFixed(0)}k/mo
                     </span>
                   </div>
 
-                  <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                  <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Expected Gross Rental Yield</span>
-                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#22C55E' }}>3.2% – 3.8% p.a.</span>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#16A34A' }}>3.2% – 3.8% p.a.</span>
                   </div>
                 </div>
 
                 <div style={{
                   padding: '1rem',
                   borderRadius: '10px',
-                  backgroundColor: 'rgba(34, 197, 94, 0.06)',
+                  backgroundColor: 'rgba(34, 197, 94, 0.08)',
                   border: '1px solid rgba(34, 197, 94, 0.2)',
                   fontSize: '0.8rem',
                   color: 'var(--text-secondary)',
                   lineHeight: 1.5
                 }}>
-                  <strong style={{ color: '#22C55E' }}>✓ 5-Year Appreciation Track Record:</strong> Historical transaction data in {microMarket} reflects a steady 8.2% compound annual capital appreciation.
+                  <strong style={{ color: '#16A34A' }}>✓ 5-Year Appreciation Track Record:</strong> Historical transaction data in {microMarket} reflects a steady 8.2% compound annual capital appreciation.
                 </div>
               </div>
             ) : (
               <div style={{
-                backgroundColor: '#101018',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '16px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--border)',
                 padding: '2.5rem',
-                textAlign: 'center'
+                textAlign: 'center',
+                boxShadow: 'var(--shadow-card)'
               }}>
-                <Sparkles size={40} color="var(--gold-primary)" style={{ opacity: 0.6, marginBottom: '1rem' }} />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.5rem' }}>
+                <Sparkles size={40} color="var(--gold-primary)" style={{ opacity: 0.8, marginBottom: '1rem' }} />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                   Ready to Value Your Residence
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', maxWidth: '360px', margin: '0 auto' }}>
@@ -422,14 +424,15 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
 
             {/* Official Surveyor Valuation Form */}
             <div style={{
-              backgroundColor: '#101018',
+              backgroundColor: 'var(--bg-card)',
               borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              padding: '2rem'
+              border: '1px solid var(--border)',
+              padding: '2rem',
+              boxShadow: 'var(--shadow-card)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <ShieldCheck size={20} color="var(--gold-primary)" />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   Request Certified Field Valuation
                 </h3>
               </div>
@@ -445,8 +448,8 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                   border: '1px solid rgba(34, 197, 94, 0.3)',
                   textAlign: 'center'
                 }}>
-                  <CheckCircle2 size={36} color="#22C55E" style={{ margin: '0 auto 0.5rem' }} />
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#22C55E', marginBottom: '0.35rem' }}>
+                  <CheckCircle2 size={36} color="#16A34A" style={{ margin: '0 auto 0.5rem' }} />
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#16A34A', marginBottom: '0.35rem' }}>
                     Request Confirmed
                   </h4>
                   <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
@@ -466,9 +469,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '8px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.85rem'
                       }}
                     />
@@ -485,9 +488,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '8px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.85rem'
                       }}
                     />
@@ -502,9 +505,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '8px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.85rem'
                       }}
                     />
@@ -519,9 +522,9 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.85rem',
                       resize: 'none'
                     }}
@@ -533,12 +536,13 @@ export const HomeValuationPage: React.FC<HomeValuationPageProps> = ({ onNavigate
                     style={{
                       padding: '0.85rem',
                       borderRadius: 'var(--radius-full)',
-                      backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                      backgroundColor: 'var(--bg-secondary)',
                       border: '1px solid var(--gold-primary)',
                       color: 'var(--gold-primary)',
                       fontWeight: 700,
                       fontSize: '0.85rem',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
                     }}
                   >
                     {submitting ? 'Submitting...' : 'Book Certified Physical Valuation'}

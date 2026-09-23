@@ -55,16 +55,16 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -89,7 +89,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Connect with LOKHA Private Advisory
           </h1>
@@ -128,17 +128,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                 style={{
                   padding: '1.25rem',
                   borderRadius: '12px',
-                  backgroundColor: 'rgba(37, 211, 102, 0.1)',
-                  border: '1px solid rgba(37, 211, 102, 0.3)',
+                  backgroundColor: 'rgba(37, 211, 102, 0.08)',
+                  border: '1px solid rgba(37, 211, 102, 0.25)',
                   color: '#25D366',
                   textDecoration: 'none',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.4rem'
+                  gap: '0.4rem',
+                  boxShadow: 'var(--shadow-sm)'
                 }}
               >
                 <MessageCircle size={24} />
-                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#FFFFFF' }}>Instant WhatsApp</span>
+                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Instant WhatsApp</span>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Immediate live concierge response</span>
               </a>
 
@@ -147,39 +148,41 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                 style={{
                   padding: '1.25rem',
                   borderRadius: '12px',
-                  backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  backgroundColor: 'rgba(212, 175, 55, 0.08)',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                   color: 'var(--gold-primary)',
                   textDecoration: 'none',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.4rem'
+                  gap: '0.4rem',
+                  boxShadow: 'var(--shadow-sm)'
                 }}
               >
                 <Phone size={24} />
-                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#FFFFFF' }}>Direct Hotline</span>
+                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Direct Hotline</span>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>+91 98401 82990</span>
               </a>
             </div>
 
             {/* Regional Addresses */}
             <div style={{
-              backgroundColor: '#101018',
+              backgroundColor: 'var(--bg-card)',
               borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: '1px solid var(--border)',
               padding: '1.75rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '1.25rem'
+              gap: '1.25rem',
+              boxShadow: 'var(--shadow-card)'
             }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 Principal Offices
               </h3>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
                 <MapPin size={18} color="var(--gold-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                  <strong style={{ color: '#FFFFFF', fontSize: '0.9rem', display: 'block' }}>Chennai Headquarters</strong>
+                  <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'block' }}>Chennai Headquarters</strong>
                   <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     No. 14, Boat Club Road, Raja Annamalaipuram, Chennai - 600028
                   </span>
@@ -189,7 +192,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
                 <MapPin size={18} color="var(--gold-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                  <strong style={{ color: '#FFFFFF', fontSize: '0.9rem', display: 'block' }}>Bengaluru Client Lounge</strong>
+                  <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'block' }}>Bengaluru Client Lounge</strong>
                   <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     UB City Concorde Towers, Level 11, Vittal Mallya Road, Bengaluru - 560001
                   </span>
@@ -199,14 +202,14 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
                 <MapPin size={18} color="var(--gold-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                  <strong style={{ color: '#FFFFFF', fontSize: '0.9rem', display: 'block' }}>Mumbai Financial Suite</strong>
+                  <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'block' }}>Mumbai Financial Suite</strong>
                   <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     One World Center, Tower 2, Lower Parel, Mumbai - 400013
                   </span>
                 </div>
               </div>
 
-              <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.08)' }} />
+              <div style={{ height: '1px', backgroundColor: 'var(--border)' }} />
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-tertiary)', fontSize: '0.8rem' }}>
                 <Clock size={14} color="var(--gold-primary)" />
@@ -234,13 +237,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
 
           {/* Right Column: Confidential Contact Form */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            border: '1px solid var(--border)',
             padding: '2rem',
-            boxShadow: '0 12px 32px rgba(0,0,0,0.6)'
+            boxShadow: 'var(--shadow-card)'
           }}>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.4rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
               Send a Confidential Communication
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
@@ -255,8 +258,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                 borderRadius: '12px',
                 border: '1px solid rgba(34, 197, 94, 0.25)'
               }}>
-                <CheckCircle2 size={48} color="#22C55E" style={{ margin: '0 auto 0.75rem' }} />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#22C55E', marginBottom: '0.5rem' }}>
+                <CheckCircle2 size={48} color="#16A34A" style={{ margin: '0 auto 0.75rem' }} />
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#16A34A', marginBottom: '0.5rem' }}>
                   Communication Received
                 </h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '360px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
@@ -268,7 +271,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                     padding: '0.65rem 1.5rem',
                     borderRadius: 'var(--radius-full)',
                     backgroundColor: 'var(--gold-primary)',
-                    color: '#070709',
+                    color: 'var(--gold-text)',
                     fontWeight: 700,
                     fontSize: '0.85rem',
                     border: 'none',
@@ -294,9 +297,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.9rem'
                     }}
                   />
@@ -317,9 +320,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '8px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.9rem'
                       }}
                     />
@@ -339,9 +342,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '8px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.9rem'
                       }}
                     />
@@ -359,9 +362,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.9rem'
                     }}
                   >
@@ -388,9 +391,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                       width: '100%',
                       padding: '0.75rem',
                       borderRadius: '8px',
-                      backgroundColor: '#181824',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.875rem',
                       resize: 'none'
                     }}
@@ -404,7 +407,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                     padding: '0.95rem',
                     borderRadius: 'var(--radius-full)',
                     backgroundColor: 'var(--gold-primary)',
-                    color: '#070709',
+                    color: 'var(--gold-text)',
                     fontWeight: 800,
                     fontSize: '0.95rem',
                     border: 'none',
@@ -413,8 +416,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate: _onNavigat
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.4rem',
-                    boxShadow: '0 4px 16px rgba(212, 175, 55, 0.35)',
-                    marginTop: '0.5rem'
+                    boxShadow: '0 4px 16px rgba(198, 161, 91, 0.35)',
+                    marginTop: '0.5rem',
+                    transition: 'background-color 250ms ease, transform 200ms ease'
                   }}
                 >
                   <Send size={16} /> {submitting ? 'Dispatching...' : 'Submit Confidential Inquiry'}

@@ -70,16 +70,16 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
   if (selectedAgentId && currentAgent) {
     return (
       <div style={{
-        backgroundColor: 'var(--bg-primary, #070709)',
-        color: 'var(--text-primary, #FFFFFF)',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
         minHeight: '100vh',
         paddingBottom: '5rem'
       }}>
         {/* Breadcrumb */}
         <div style={{
           padding: '0.85rem 1.5rem',
-          backgroundColor: '#0A0A0F',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: 'var(--bg-card)',
+          borderBottom: '1px solid var(--border)',
           fontSize: '0.825rem',
           display: 'flex',
           justifyContent: 'space-between'
@@ -94,16 +94,16 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2.5rem 1.25rem' }}>
           {/* Agent Profile Banner */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            border: '1px solid var(--border)',
             padding: '2rem',
             display: 'flex',
             flexWrap: 'wrap',
             gap: '2rem',
             alignItems: 'center',
             marginBottom: '3rem',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.6)'
+            boxShadow: 'var(--shadow-card)'
           }}>
             <img
               src={currentAgent.photoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80'}
@@ -122,7 +122,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                   padding: '0.2rem 0.6rem',
                   borderRadius: 'var(--radius-full)',
                   backgroundColor: 'rgba(34, 197, 94, 0.15)',
-                  color: '#22C55E'
+                  color: '#16A34A'
                 }}>
                   <ShieldCheck size={13} /> RERA Certified Partner
                 </span>
@@ -131,7 +131,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 </span>
               </div>
 
-              <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.3rem' }}>
+              <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.3rem' }}>
                 {currentAgent.fullName}
               </h1>
 
@@ -160,8 +160,8 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 style={{
                   padding: '0.75rem 1.4rem',
                   borderRadius: 'var(--radius-full)',
-                  backgroundColor: 'rgba(37, 211, 102, 0.15)',
-                  border: '1px solid rgba(37, 211, 102, 0.4)',
+                  backgroundColor: 'rgba(37, 211, 102, 0.1)',
+                  border: '1px solid rgba(37, 211, 102, 0.3)',
                   color: '#25D366',
                   fontSize: '0.85rem',
                   fontWeight: 700,
@@ -169,7 +169,8 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  boxShadow: 'var(--shadow-sm)'
                 }}
               >
                 <MessageCircle size={16} /> WhatsApp Advisory
@@ -181,14 +182,16 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                   padding: '0.75rem 1.4rem',
                   borderRadius: 'var(--radius-full)',
                   backgroundColor: 'var(--gold-primary)',
-                  color: '#070709',
+                  color: 'var(--gold-text)',
                   fontSize: '0.85rem',
                   fontWeight: 800,
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                  transition: 'background-color 250ms ease, transform 200ms ease'
                 }}
               >
                 <Phone size={16} /> Direct Call
@@ -198,13 +201,14 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
 
           {/* Agent Bio & Specialties */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border)',
             padding: '1.75rem',
-            marginBottom: '3rem'
+            marginBottom: '3rem',
+            boxShadow: 'var(--shadow-card)'
           }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.85rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.85rem' }}>
               Professional Profile & Track Record
             </h2>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.925rem', marginBottom: '1.25rem' }}>
@@ -238,7 +242,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
 
           {/* Active Portfolio Listings */}
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.25rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
               Active Estates Represented by {currentAgent.fullName}
             </h2>
 
@@ -257,11 +261,23 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                     key={prop.propertyId}
                     onClick={() => onNavigate(`property-${prop.propertyId}`)}
                     style={{
-                      backgroundColor: '#101018',
+                      backgroundColor: 'var(--bg-card)',
                       borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      border: '1px solid var(--border)',
                       overflow: 'hidden',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      boxShadow: 'var(--shadow-card)',
+                      transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                      e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.borderColor = 'var(--border)';
+                      e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                     }}
                   >
                     <img
@@ -273,7 +289,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--gold-primary)', marginBottom: '0.25rem' }}>
                         ₹{(prop.price ? prop.price / 10000000 : 1.5).toFixed(2)} Cr
                       </div>
-                      <div style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '0.925rem' }}>{prop.title}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.925rem' }}>{prop.title}</div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                         {prop.location?.city} • {prop.specifications?.bedrooms || 3} BHK
                       </div>
@@ -301,16 +317,16 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -335,7 +351,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Verified Luxury Real Estate Advisors
           </h1>
@@ -354,13 +370,13 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#12121A',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: 'var(--radius-full)',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            border: '1px solid var(--border)',
             padding: '0.4rem 0.6rem 0.4rem 1.25rem',
             maxWidth: '600px',
             margin: '0 auto',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.5)'
+            boxShadow: 'var(--shadow-card)'
           }}>
             <Search size={18} color="var(--gold-primary)" style={{ flexShrink: 0, marginRight: '0.65rem' }} />
             <input
@@ -372,7 +388,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 flex: 1,
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: '#FFFFFF',
+                color: 'var(--text-primary)',
                 fontSize: '0.9rem',
                 outline: 'none'
               }}
@@ -395,10 +411,10 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
                 cursor: 'pointer',
-                backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-                color: activeCity === c ? '#070709' : 'var(--text-secondary)',
-                border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
-                transition: 'all 0.2s'
+                backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'var(--bg-card)',
+                color: activeCity === c ? 'var(--gold-text)' : 'var(--text-secondary)',
+                border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'var(--border)'}`,
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               {c}
@@ -422,12 +438,13 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
           <div style={{
             padding: '4rem 2rem',
             textAlign: 'center',
-            backgroundColor: '#0F0F16',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)'
           }}>
             <Users size={48} color="var(--gold-primary)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>No Advisors Found</h3>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>No Advisors Found</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Try clearing the search query or selecting &quot;All&quot; cities.</p>
           </div>
         ) : (
@@ -441,24 +458,26 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 key={agent.agentId}
                 onClick={() => onNavigate(`agent-${agent.agentId}`)}
                 style={{
-                  backgroundColor: '#101018',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '16px',
-                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  border: '1px solid var(--border)',
                   padding: '1.75rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '1.25rem',
                   cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                  transition: 'all 0.2s ease'
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -468,7 +487,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                     style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-primary)' }}
                   />
                   <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.2rem' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
                       {agent.fullName}
                     </h3>
                     <div style={{ fontSize: '0.8rem', color: 'var(--gold-primary)', fontWeight: 600 }}>
@@ -483,8 +502,8 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                 <div style={{
                   padding: '0.75rem',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -515,7 +534,7 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                       flex: 1,
                       padding: '0.65rem',
                       borderRadius: 'var(--radius-md)',
-                      backgroundColor: 'rgba(37, 211, 102, 0.12)',
+                      backgroundColor: 'rgba(37, 211, 102, 0.1)',
                       border: '1px solid rgba(37, 211, 102, 0.3)',
                       color: '#25D366',
                       fontSize: '0.8rem',
@@ -540,11 +559,13 @@ export const AgentsPage: React.FC<AgentsPageProps> = ({ selectedAgentId, onNavig
                       padding: '0.65rem',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: 'var(--gold-primary)',
-                      color: '#070709',
+                      color: 'var(--gold-text)',
                       fontSize: '0.8rem',
                       fontWeight: 800,
                       border: 'none',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                      transition: 'background-color 250ms ease, transform 200ms ease'
                     }}
                   >
                     View Profile

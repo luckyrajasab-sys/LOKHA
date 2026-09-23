@@ -100,12 +100,12 @@ Key Micro-Market CAGR Performance (2022-2025):
   if (selectedArticle) {
     return (
       <div style={{
-        backgroundColor: 'var(--bg-primary, #070709)',
-        color: 'var(--text-primary, #FFFFFF)',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
         minHeight: '100vh',
         paddingBottom: '5rem'
       }}>
-        <div style={{ padding: '0.85rem 1.5rem', backgroundColor: '#0A0A0F', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ padding: '0.85rem 1.5rem', backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
           <button
             onClick={() => onNavigate('insights')}
             style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
@@ -131,11 +131,11 @@ Key Micro-Market CAGR Performance (2022-2025):
             {selectedArticle.category} Guide
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.25, marginBottom: '0.85rem' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.25, marginBottom: '0.85rem' }}>
             {selectedArticle.title}
           </h1>
 
-          <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '2.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '2.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
             <span>{selectedArticle.date}</span>
             <span>•</span>
             <span>{selectedArticle.readTime}</span>
@@ -154,8 +154,9 @@ Key Micro-Market CAGR Performance (2022-2025):
             marginTop: '3rem',
             padding: '2rem',
             borderRadius: '16px',
-            backgroundColor: '#101018',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -163,7 +164,7 @@ Key Micro-Market CAGR Performance (2022-2025):
             gap: '1rem'
           }}>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                 Need Legal Due Diligence Assistance?
               </h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -176,11 +177,13 @@ Key Micro-Market CAGR Performance (2022-2025):
                 padding: '0.75rem 1.5rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontWeight: 800,
                 fontSize: '0.85rem',
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                transition: 'background-color 250ms ease, transform 200ms ease'
               }}
             >
               Contact Legal Desk
@@ -193,16 +196,16 @@ Key Micro-Market CAGR Performance (2022-2025):
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -227,7 +230,7 @@ Key Micro-Market CAGR Performance (2022-2025):
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             LOKHA Real Estate Intelligence
           </h1>
@@ -260,14 +263,14 @@ Key Micro-Market CAGR Performance (2022-2025):
               style={{
                 padding: '0.5rem 1.2rem',
                 borderRadius: 'var(--radius-full)',
-                backgroundColor: activeTab === tab.id ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-                color: activeTab === tab.id ? '#070709' : 'var(--text-secondary)',
-                border: `1px solid ${activeTab === tab.id ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
+                backgroundColor: activeTab === tab.id ? 'var(--gold-primary)' : 'var(--bg-card)',
+                color: activeTab === tab.id ? 'var(--gold-text)' : 'var(--text-secondary)',
+                border: `1px solid ${activeTab === tab.id ? 'var(--gold-primary)' : 'var(--border)'}`,
                 fontSize: '0.85rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                transition: 'all 0.2s'
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               {tab.label}
@@ -286,24 +289,26 @@ Key Micro-Market CAGR Performance (2022-2025):
               key={art.slug}
               onClick={() => onNavigate(`insight-${art.slug}`)}
               style={{
-                backgroundColor: '#101018',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '16px',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
+                border: '1px solid var(--border)',
                 padding: '1.75rem',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1rem',
                 cursor: 'pointer',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                transition: 'all 0.2s ease'
+                boxShadow: 'var(--shadow-card)',
+                transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.45)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -323,7 +328,7 @@ Key Micro-Market CAGR Performance (2022-2025):
                 </span>
               </div>
 
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.3 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                 {art.title}
               </h3>
 
@@ -336,7 +341,7 @@ Key Micro-Market CAGR Performance (2022-2025):
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 paddingTop: '0.85rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+                borderTop: '1px solid var(--border)'
               }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>
                   {art.date}

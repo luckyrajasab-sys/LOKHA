@@ -66,13 +66,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
   if (selectedProjectId && currentProject) {
     return (
       <div style={{
-        backgroundColor: 'var(--bg-primary, #070709)',
-        color: 'var(--text-primary, #FFFFFF)',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
         minHeight: '100vh',
         paddingBottom: '5rem'
       }}>
         {/* Top Back bar */}
-        <div style={{ padding: '0.85rem 1.5rem', backgroundColor: '#0A0A0F', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ padding: '0.85rem 1.5rem', backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
           <button
             onClick={() => onNavigate('projects')}
             style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
@@ -89,7 +89,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
             borderRadius: '16px',
             overflow: 'hidden',
             marginBottom: '2rem',
-            border: '1px solid rgba(212, 175, 55, 0.25)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)'
           }}>
             <img
               src={currentProject.images?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80'}
@@ -99,7 +100,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(7,7,9,0.92) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10,10,12,0.85) 100%)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
@@ -138,7 +139,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                 {currentProject.title}
               </h1>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>
                 <MapPin size={15} color="var(--gold-primary)" />
                 {currentProject.address || currentProject.locality}, {currentProject.city}
               </div>
@@ -152,8 +153,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
             gap: '1rem',
             padding: '1.5rem',
             borderRadius: '12px',
-            backgroundColor: '#101018',
-            border: '1px solid rgba(212, 175, 55, 0.2)',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)',
             marginBottom: '2.5rem'
           }}>
             <div>
@@ -165,14 +167,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
 
             <div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Possession Date</span>
-              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF' }}>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {currentProject.possessionDate || 'Ready to Move / Dec 2026'}
               </div>
             </div>
 
             <div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Configurations</span>
-              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF' }}>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {currentProject.configurations?.join(', ') || '3, 4 BHK & Penthouses'}
               </div>
             </div>
@@ -188,11 +190,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                   padding: '0.4rem 0.95rem',
                   borderRadius: 'var(--radius-full)',
                   backgroundColor: 'var(--gold-primary)',
-                  color: '#070709',
+                  color: 'var(--gold-text)',
                   fontWeight: 800,
                   fontSize: '0.8rem',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                  transition: 'background-color 250ms ease, transform 200ms ease'
                 }}
               >
                 Book VIP Preview
@@ -202,13 +206,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
 
           {/* Detailed Overview */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border)',
             padding: '2rem',
+            boxShadow: 'var(--shadow-card)',
             marginBottom: '2rem'
           }}>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
               Project Master Plan & Specifications
             </h2>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', marginBottom: '1.5rem' }}>
@@ -235,16 +240,16 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
   // Directory of all projects
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -269,7 +274,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Exclusive New Residential Developments
           </h1>
@@ -300,10 +305,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
                 cursor: 'pointer',
-                backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-                color: activeCity === c ? '#070709' : 'var(--text-secondary)',
-                border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
-                transition: 'all 0.2s'
+                backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'var(--bg-card)',
+                color: activeCity === c ? 'var(--gold-text)' : 'var(--text-secondary)',
+                border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'var(--border)'}`,
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               {c}
@@ -333,23 +338,25 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                 key={proj.projectId}
                 onClick={() => onNavigate(`project-${proj.projectId}`)}
                 style={{
-                  backgroundColor: '#101018',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '16px',
-                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  border: '1px solid var(--border)',
                   overflow: 'hidden',
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                  transition: 'all 0.2s ease'
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.45)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                 }}
               >
                 <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
@@ -389,7 +396,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                 </div>
 
                 <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
                     {proj.title}
                   </h3>
 
@@ -401,20 +408,21 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ selectedProjectId, o
                   <div style={{
                     padding: '0.65rem 0.85rem',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    backgroundColor: 'var(--bg-secondary)',
                     fontSize: '0.8rem',
                     color: 'var(--text-secondary)',
                     marginBottom: '1rem',
                     display: 'flex',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    border: '1px solid var(--border)'
                   }}>
-                    <span>Possession: <strong>{proj.possessionDate || 'Dec 2026'}</strong></span>
-                    <span style={{ color: '#22C55E', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <span>Possession: <strong style={{ color: 'var(--text-primary)' }}>{proj.possessionDate || 'Dec 2026'}</strong></span>
+                    <span style={{ color: '#16A34A', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <ShieldCheck size={13} /> RERA Approved
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', marginTop: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>
                       {(proj.configurations || ['3 & 4 BHK']).join(', ')}
                     </span>

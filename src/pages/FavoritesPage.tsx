@@ -68,7 +68,7 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
         color: 'var(--text-primary)'
       }}>
         <Heart size={56} color="var(--gold-primary)" style={{ marginBottom: '1rem', opacity: 0.7 }} />
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
           Private Saved Portfolio
         </h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', marginBottom: '1.5rem', lineHeight: 1.6 }}>
@@ -80,11 +80,12 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
             padding: '0.85rem 2rem',
             borderRadius: 'var(--radius-full)',
             backgroundColor: 'var(--gold-primary)',
-            color: '#070709',
+            color: 'var(--gold-text)',
             fontWeight: 800,
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(212, 175, 55, 0.3)'
+            boxShadow: '0 4px 16px rgba(198, 161, 91, 0.35)',
+            transition: 'background-color 250ms ease, transform 200ms ease'
           }}
         >
           Sign In to Access Portfolio
@@ -95,8 +96,8 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
@@ -110,10 +111,10 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
           gap: '1rem',
           marginBottom: '2rem',
           paddingBottom: '1.5rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+          borderBottom: '1px solid var(--border)'
         }}>
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.4rem' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
               Saved Luxury Portfolio
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
@@ -130,12 +131,13 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                 gap: '0.45rem',
                 padding: '0.65rem 1.25rem',
                 borderRadius: 'var(--radius-full)',
-                backgroundColor: 'rgba(212, 175, 55, 0.12)',
-                border: '1px solid rgba(212, 175, 55, 0.3)',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border)',
                 color: 'var(--gold-primary)',
                 fontWeight: 700,
                 fontSize: '0.85rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               <Layers size={16} /> Compare Matrix
@@ -150,11 +152,13 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                 padding: '0.65rem 1.25rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontWeight: 800,
                 fontSize: '0.85rem',
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                transition: 'background-color 250ms ease, transform 200ms ease'
               }}
             >
               <Compass size={16} /> Discover More
@@ -178,12 +182,13 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
           <div style={{
             padding: '5rem 2rem',
             textAlign: 'center',
-            backgroundColor: '#0F0F16',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: 'var(--radius-xl)',
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)'
           }}>
-            <Heart size={48} color="var(--gold-primary)" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+            <Heart size={48} color="var(--gold-primary)" style={{ marginBottom: '1rem', opacity: 0.6 }} />
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
               Your Portfolio is Empty
             </h3>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '420px', margin: '0 auto 1.5rem', fontSize: '0.9rem' }}>
@@ -195,10 +200,12 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                 padding: '0.75rem 1.75rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontWeight: 800,
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                transition: 'background-color 250ms ease, transform 200ms ease'
               }}
             >
               Explore Available Estates
@@ -220,23 +227,25 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                   key={prop.propertyId}
                   onClick={() => onNavigate(`property-${prop.propertyId}`)}
                   style={{
-                    backgroundColor: '#101018',
+                    backgroundColor: 'var(--bg-card)',
                     borderRadius: 'var(--radius-xl, 16px)',
-                    border: '1px solid rgba(212, 175, 55, 0.2)',
+                    border: '1px solid var(--border)',
                     overflow: 'hidden',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                    transition: 'transform 0.2s ease, border-color 0.2s ease'
+                    boxShadow: 'var(--shadow-card)',
+                    transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                   }}
                 >
                   <div style={{ position: 'relative', height: '200px', overflow: 'hidden' }}>
@@ -280,7 +289,7 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                   </div>
 
                   <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
                       {prop.title}
                     </h3>
 
@@ -295,7 +304,8 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                       justifyContent: 'space-between',
                       padding: '0.6rem 0.8rem',
                       borderRadius: '8px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
                       fontSize: '0.8rem',
                       color: 'var(--text-secondary)',
                       marginBottom: '1rem'
@@ -317,16 +327,17 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                             flex: 1,
                             padding: '0.65rem',
                             borderRadius: 'var(--radius-md)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            color: '#FFFFFF',
+                            backgroundColor: 'var(--bg-secondary)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
                             fontSize: '0.8rem',
                             fontWeight: 600,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.3rem'
+                            gap: '0.3rem',
+                            transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
                           }}
                         >
                           <Layers size={14} /> Compare
@@ -343,11 +354,13 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ onNavigate, onComp
                           padding: '0.65rem',
                           borderRadius: 'var(--radius-md)',
                           backgroundColor: 'var(--gold-primary)',
-                          color: '#070709',
+                          color: 'var(--gold-text)',
                           fontSize: '0.8rem',
                           fontWeight: 800,
                           border: 'none',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                          transition: 'background-color 250ms ease, transform 200ms ease'
                         }}
                       >
                         View Details

@@ -547,9 +547,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
           {/* View Mode Buttons */}
           <div style={{
             display: 'flex',
-            backgroundColor: '#0E0E14',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            border: '1px solid var(--border)',
             padding: '3px'
           }}>
             <button
@@ -563,9 +563,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 backgroundColor: viewMode === 'split' ? 'var(--gold-primary)' : 'transparent',
-                color: viewMode === 'split' ? '#070709' : 'var(--text-secondary)',
+                color: viewMode === 'split' ? 'var(--gold-text)' : 'var(--text-secondary)',
                 cursor: 'pointer',
-                transition: 'all var(--transition-fast)'
+                transition: 'background-color 250ms ease, color 250ms ease'
               }}
               title="Split View (Map + List)"
             >
@@ -584,9 +584,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 backgroundColor: viewMode === 'grid' ? 'var(--gold-primary)' : 'transparent',
-                color: viewMode === 'grid' ? '#070709' : 'var(--text-secondary)',
+                color: viewMode === 'grid' ? 'var(--gold-text)' : 'var(--text-secondary)',
                 cursor: 'pointer',
-                transition: 'all var(--transition-fast)'
+                transition: 'background-color 250ms ease, color 250ms ease'
               }}
               title="Grid View Only"
             >
@@ -605,9 +605,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 backgroundColor: viewMode === 'map' ? 'var(--gold-primary)' : 'transparent',
-                color: viewMode === 'map' ? '#070709' : 'var(--text-secondary)',
+                color: viewMode === 'map' ? 'var(--gold-text)' : 'var(--text-secondary)',
                 cursor: 'pointer',
-                transition: 'all var(--transition-fast)'
+                transition: 'background-color 250ms ease, color 250ms ease'
               }}
               title="Map View Only"
             >
@@ -621,10 +621,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       {/* Filter Toolbar */}
       <div style={{
         padding: '1.25rem 1.5rem',
-        backgroundColor: '#0E0E14',
+        backgroundColor: 'var(--bg-card)',
         borderRadius: 'var(--radius-xl)',
-        border: '1px solid rgba(212, 175, 55, 0.22)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-card)',
         marginBottom: '2rem'
       }}>
         {/* Row 1: Search, Location + GPS auto-detect, Purpose tabs */}
@@ -695,8 +695,8 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                   border: 'none',
                   cursor: 'pointer',
                   backgroundColor: selectedPurpose === purpose ? 'var(--gold-primary)' : 'transparent',
-                  color: selectedPurpose === purpose ? '#070709' : 'var(--text-secondary)',
-                  transition: 'all var(--transition-fast)'
+                  color: selectedPurpose === purpose ? 'var(--gold-text)' : 'var(--text-secondary)',
+                  transition: 'background-color 250ms ease, color 250ms ease'
                 }}
               >
                 {purpose === 'Buy'
@@ -826,10 +826,11 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                         borderRadius: 'var(--radius-full)',
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        border: selected ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                        border: selected ? '1px solid var(--gold-primary)' : '1px solid var(--border)',
                         backgroundColor: selected ? 'var(--gold-primary)' : 'transparent',
-                        color: selected ? '#070709' : 'var(--text-secondary)',
-                        cursor: 'pointer'
+                        color: selected ? 'var(--gold-text)' : 'var(--text-secondary)',
+                        cursor: 'pointer',
+                        transition: 'background-color 250ms ease, color 250ms ease'
                       }}
                     >
                       {a}

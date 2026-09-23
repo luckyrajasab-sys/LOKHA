@@ -11,7 +11,7 @@
   line-height: 1.25;
   padding: 0.75rem 1.35rem;
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
   white-space: nowrap;
   user-select: none;
 }
@@ -30,6 +30,7 @@
 
 .btn-primary:hover {
   background-color: var(--gold-hover);
+  color: var(--gold-text);
   transform: translateY(-1px);
 }
 
@@ -39,14 +40,16 @@
 }
 
 .btn-secondary {
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border-medium);
 }
 
 .btn-secondary:hover {
-  background-color: var(--bg-elevated);
+  background-color: var(--bg-secondary);
   border-color: var(--border-gold);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
@@ -58,6 +61,8 @@
 .btn-outline:hover {
   border-color: var(--gold-primary);
   color: var(--gold-primary);
+  background-color: var(--gold-subtle);
+  transform: translateY(-1px);
 }
 
 .btn-ghost {
@@ -66,8 +71,9 @@
 }
 
 .btn-ghost:hover {
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-secondary);
   color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .btn-sm {
@@ -162,7 +168,8 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 250ms ease;
   position: relative;
   overflow: hidden;
 }
@@ -170,11 +177,20 @@
 .card:hover {
   border-color: var(--border-gold);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .card-elevated {
   background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-sm);
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 250ms ease;
+}
+
+.card-elevated:hover {
+  border-color: var(--border-gold);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* Badges */

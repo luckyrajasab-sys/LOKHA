@@ -103,26 +103,26 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
           width: '100%',
           maxWidth: '980px',
           maxHeight: '94vh',
-          backgroundColor: '#0C0C12',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-xl, 18px)',
-          border: '1.5px solid rgba(212, 175, 55, 0.35)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 175, 55, 0.15)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-xl)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           position: 'relative',
-          color: '#FFFFFF'
+          color: 'var(--text-primary)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Bar */}
         <div style={{
           padding: '1rem 1.5rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid var(--border)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: 'rgba(14, 14, 20, 0.98)'
+          backgroundColor: 'var(--bg-card)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <span style={{
@@ -543,11 +543,13 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
                   gap: '0.45rem',
                   padding: '0.45rem 0.95rem',
                   borderRadius: 'var(--radius-md, 8px)',
-                  backgroundColor: 'var(--gold-primary, #D4AF37)',
-                  color: '#070709',
+                  backgroundColor: 'var(--gold-primary)',
+                  color: 'var(--gold-text)',
                   fontSize: '0.8rem',
                   fontWeight: 800,
-                  textDecoration: 'none'
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                  transition: 'background-color 250ms ease, transform 200ms ease'
                 }}
               >
                 <span>Open in Google Maps</span>
@@ -560,16 +562,16 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
           <div style={{
             borderRadius: 'var(--radius-lg, 12px)',
             overflow: 'hidden',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.6)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '0.6rem 1rem',
-              backgroundColor: '#101018',
-              borderBottom: '1px solid rgba(255,255,255,0.08)'
+              backgroundColor: 'var(--bg-secondary)',
+              borderBottom: '1px solid var(--border)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 700, color: 'var(--gold-primary)' }}>
                 <MapPin size={14} />
@@ -586,8 +588,8 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
                     fontSize: '0.7rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    backgroundColor: mapViewMode === 'roadmap' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.06)',
-                    color: mapViewMode === 'roadmap' ? '#070709' : '#B0B0C0'
+                    backgroundColor: mapViewMode === 'roadmap' ? 'var(--gold-primary)' : 'var(--bg-card)',
+                    color: mapViewMode === 'roadmap' ? 'var(--gold-text)' : 'var(--text-secondary)'
                   }}
                 >
                   Roadmap
@@ -602,8 +604,8 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
                     fontSize: '0.7rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    backgroundColor: mapViewMode === 'satellite' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.06)',
-                    color: mapViewMode === 'satellite' ? '#070709' : '#B0B0C0'
+                    backgroundColor: mapViewMode === 'satellite' ? 'var(--gold-primary)' : 'var(--bg-card)',
+                    color: mapViewMode === 'satellite' ? 'var(--gold-text)' : 'var(--text-secondary)'
                   }}
                 >
                   Satellite

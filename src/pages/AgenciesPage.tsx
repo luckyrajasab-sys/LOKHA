@@ -27,16 +27,16 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -61,7 +61,7 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Premier Real Estate Developers & Conglomerates
           </h1>
@@ -100,33 +100,35 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
               <div
                 key={dev.agencyId}
                 style={{
-                  backgroundColor: '#101018',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '16px',
-                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  border: '1px solid var(--border)',
                   padding: '1.75rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '1.25rem',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                  transition: 'all 0.2s ease'
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.45)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                   <img
                     src={dev.logoUrl || 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=200&q=80'}
                     alt={dev.name}
-                    style={{ width: '70px', height: '70px', borderRadius: '12px', objectFit: 'cover', border: '1px solid rgba(255, 255, 255, 0.1)' }}
+                    style={{ width: '70px', height: '70px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--border)' }}
                   />
                   <div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.2rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
                       {dev.name}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -145,8 +147,8 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
                   gap: '0.75rem',
                   padding: '0.85rem',
                   borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
                   fontSize: '0.8rem'
                 }}>
                   <div>
@@ -155,7 +157,7 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-tertiary)', display: 'block' }}>RERA Track Record</span>
-                    <strong style={{ color: '#22C55E', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                    <strong style={{ color: '#16A34A', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                       <ShieldCheck size={14} /> 100% Compliant
                     </strong>
                   </div>
@@ -168,7 +170,7 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
                     padding: '0.75rem',
                     borderRadius: 'var(--radius-full)',
                     backgroundColor: 'var(--gold-primary)',
-                    color: '#070709',
+                    color: 'var(--gold-text)',
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     border: 'none',
@@ -177,7 +179,9 @@ export const AgenciesPage: React.FC<AgenciesPageProps> = ({ onNavigate }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.4rem',
-                    marginTop: 'auto'
+                    marginTop: 'auto',
+                    boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                    transition: 'background-color 250ms ease, transform 200ms ease'
                   }}
                 >
                   Explore Developer Projects <ArrowRight size={15} />

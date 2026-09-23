@@ -138,7 +138,7 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
         color: 'var(--text-primary)'
       }}>
         <Calendar size={56} color="var(--gold-primary)" style={{ marginBottom: '1rem', opacity: 0.7 }} />
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
           LOKHA Private Site Visits & Chauffeur
         </h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '460px', marginBottom: '1.5rem', lineHeight: 1.6 }}>
@@ -150,10 +150,12 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
             padding: '0.85rem 2rem',
             borderRadius: 'var(--radius-full)',
             backgroundColor: 'var(--gold-primary)',
-            color: '#070709',
+            color: 'var(--gold-text)',
             fontWeight: 800,
             border: 'none',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(198, 161, 91, 0.35)',
+            transition: 'background-color 250ms ease, transform 200ms ease'
           }}
         >
           Sign In to Track Scheduled Visits
@@ -164,8 +166,8 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
@@ -179,10 +181,10 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
           gap: '1rem',
           marginBottom: '2rem',
           paddingBottom: '1.5rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+          borderBottom: '1px solid var(--border)'
         }}>
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
               My Scheduled Site Visits
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
@@ -199,11 +201,13 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
               padding: '0.75rem 1.4rem',
               borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--gold-primary)',
-              color: '#070709',
+              color: 'var(--gold-text)',
               fontWeight: 800,
               fontSize: '0.85rem',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+              transition: 'background-color 250ms ease, transform 200ms ease'
             }}
           >
             <Compass size={16} /> Book New Visit
@@ -219,14 +223,14 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
               style={{
                 padding: '0.5rem 1.2rem',
                 borderRadius: 'var(--radius-full)',
-                backgroundColor: activeTab === tab ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-                color: activeTab === tab ? '#070709' : 'var(--text-secondary)',
-                border: `1px solid ${activeTab === tab ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
+                backgroundColor: activeTab === tab ? 'var(--gold-primary)' : 'var(--bg-card)',
+                color: activeTab === tab ? 'var(--gold-text)' : 'var(--text-secondary)',
+                border: `1px solid ${activeTab === tab ? 'var(--gold-primary)' : 'var(--border)'}`,
                 fontSize: '0.85rem',
                 fontWeight: 700,
                 textTransform: 'capitalize',
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               {tab} Visits
@@ -250,12 +254,13 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
           <div style={{
             padding: '4rem 2rem',
             textAlign: 'center',
-            backgroundColor: '#0F0F16',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)'
           }}>
-            <Calendar size={48} color="var(--gold-primary)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+            <Calendar size={48} color="var(--gold-primary)" style={{ opacity: 0.7, marginBottom: '1rem' }} />
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
               No {activeTab} site visits scheduled
             </h3>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '420px', margin: '0 auto 1.5rem', fontSize: '0.9rem' }}>
@@ -267,10 +272,12 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
                 padding: '0.75rem 1.6rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontWeight: 800,
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                transition: 'background-color 250ms ease, transform 200ms ease'
               }}
             >
               Discover Properties
@@ -282,16 +289,17 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
               <div
                 key={visit.visitId}
                 style={{
-                  backgroundColor: '#101018',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '16px',
-                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  border: '1px solid var(--border)',
                   padding: '1.5rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
                   gap: '1.5rem',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -307,7 +315,7 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
                     <div style={{ marginBottom: '0.4rem' }}>
                       {getStatusBadge(visit.status)}
                     </div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
                       {visit.propertyTitle}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -333,12 +341,13 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
                     style={{
                       padding: '0.65rem 1.25rem',
                       borderRadius: 'var(--radius-full)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
                     }}
                   >
                     View Listing
@@ -368,13 +377,15 @@ export const SiteVisitsPage: React.FC<SiteVisitsPageProps> = ({ onNavigate }) =>
                       padding: '0.65rem 1.25rem',
                       borderRadius: 'var(--radius-full)',
                       backgroundColor: 'var(--gold-primary)',
-                      color: '#070709',
+                      color: 'var(--gold-text)',
                       fontSize: '0.85rem',
                       fontWeight: 800,
                       textDecoration: 'none',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.35rem'
+                      gap: '0.35rem',
+                      boxShadow: '0 4px 12px rgba(198, 161, 91, 0.35)',
+                      transition: 'background-color 250ms ease, transform 200ms ease'
                     }}
                   >
                     <Phone size={14} /> Concierge Hotline

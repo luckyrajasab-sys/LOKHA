@@ -145,8 +145,8 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
       <div style={{
         position: 'relative',
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border-subtle)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '840px', margin: '0 auto' }}>
@@ -156,8 +156,8 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
             gap: '0.5rem',
             padding: '0.35rem 0.95rem',
             borderRadius: 'var(--radius-full)',
-            backgroundColor: 'rgba(212, 175, 55, 0.08)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            backgroundColor: 'var(--gold-subtle)',
+            border: '1px solid var(--border-gold)',
             fontSize: '0.8rem',
             color: 'var(--gold-primary)',
             fontWeight: 700,
@@ -171,7 +171,7 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
             fontWeight: 800,
             lineHeight: 1.15,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Buy Verified Luxury Homes & Penthouses
           </h1>
@@ -183,20 +183,20 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
             maxWidth: '640px',
             margin: '0 auto 2rem'
           }}>
-            Every residence is vetted for RERA compliance, clean freehold title deeds, and active Electricity Board records with zero brokerage on developer residences.
+            Explore freehold residences, sea-facing villas, and architectural penthouses across premium metropolises. Complete title clearance and RERA escrow compliance certified.
           </p>
 
-          {/* Quick Search Bar */}
+          {/* Quick Search */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#12121A',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: 'var(--radius-full)',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            border: '1px solid var(--border-medium)',
             padding: '0.4rem 0.6rem 0.4rem 1.25rem',
             maxWidth: '680px',
             margin: '0 auto',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.5)'
+            boxShadow: 'var(--shadow-md)'
           }}>
             <Search size={18} color="var(--gold-primary)" style={{ flexShrink: 0, marginRight: '0.65rem' }} />
             <input
@@ -208,7 +208,7 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
                 flex: 1,
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: '#FFFFFF',
+                color: 'var(--text-primary)',
                 fontSize: '0.9rem',
                 outline: 'none'
               }}
@@ -235,11 +235,12 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
       <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '2rem 1.25rem' }}>
         {/* 2. Interactive Filter Bar */}
         <div style={{
-          backgroundColor: '#0F0F16',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-xl, 14px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--border-subtle)',
           padding: '1.25rem',
           marginBottom: '2rem',
+          boxShadow: 'var(--shadow-sm)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem'
@@ -459,25 +460,25 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
                   key={prop.propertyId}
                   onClick={() => onNavigate(`property-${prop.propertyId}`)}
                   style={{
-                    backgroundColor: '#101018',
+                    backgroundColor: 'var(--bg-card)',
                     borderRadius: 'var(--radius-xl, 16px)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid var(--border-subtle)',
                     overflow: 'hidden',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+                    boxShadow: 'var(--shadow-sm)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-6px)';
-                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
-                    e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.7)';
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.borderColor = 'var(--border-gold)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)';
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                   }}
                 >
                   {/* Card Visual Header */}
@@ -577,7 +578,7 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
                       fontSize: '1.05rem',
                       fontWeight: 700,
                       marginBottom: '0.4rem',
-                      color: '#FFFFFF',
+                      color: 'var(--text-primary)',
                       lineHeight: 1.3,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
@@ -608,7 +609,7 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
                       justifyContent: 'space-between',
                       padding: '0.65rem 0.85rem',
                       borderRadius: 'var(--radius-md)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                      backgroundColor: 'var(--bg-secondary)',
                       fontSize: '0.8rem',
                       color: 'var(--text-secondary)',
                       marginTop: 'auto',
@@ -626,7 +627,7 @@ export const BuyPage: React.FC<BuyPageProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* Action button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-subtle)' }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
                         ₹{Math.round(price / sqft).toLocaleString()}/sqft
                       </span>

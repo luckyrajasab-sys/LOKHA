@@ -6,7 +6,8 @@ import {
   ShieldCheck,
   Zap,
   CheckCircle2,
-  XCircle
+  XCircle,
+  ArrowRight
 } from 'lucide-react';
 import type { PropertyDocument } from '../types/firebaseModels';
 import { getProperties } from '../services/propertyService';
@@ -134,12 +135,13 @@ export const ComparePage: React.FC<ComparePageProps> = ({
           <div style={{
             padding: '5rem 2rem',
             textAlign: 'center',
-            backgroundColor: '#0F0F16',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            border: '1px solid var(--border-subtle)',
+            boxShadow: 'var(--shadow-sm)'
           }}>
             <Layers size={48} color="var(--gold-primary)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Comparison Matrix Empty</h3>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Comparison Matrix Empty</h3>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '420px', margin: '0 auto 1.5rem', fontSize: '0.9rem' }}>
               Select properties to compare price per square foot, floor levels, RERA validation, and luxury specifications.
             </p>
@@ -149,10 +151,11 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 padding: '0.75rem 1.75rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontWeight: 800,
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
               Choose Properties
@@ -174,9 +177,9 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                   {compareList.map(prop => (
                     <th key={prop.propertyId} style={{
                       width: '300px',
-                      backgroundColor: '#111118',
+                      backgroundColor: 'var(--bg-card)',
                       borderRadius: '14px 14px 0 0',
-                      border: '1px solid rgba(212, 175, 55, 0.25)',
+                      border: '1px solid var(--border-gold)',
                       borderBottom: 'none',
                       padding: '1.25rem',
                       textAlign: 'left',
@@ -188,22 +191,23 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                           position: 'absolute',
                           top: '0.75rem',
                           right: '0.75rem',
-                          background: 'rgba(255,255,255,0.06)',
-                          border: 'none',
+                          background: 'var(--bg-secondary)',
+                          border: '1px solid var(--border-subtle)',
                           borderRadius: '50%',
                           width: '28px',
                           height: '28px',
-                          color: '#FFFFFF',
+                          color: 'var(--text-primary)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center'
                         }}
+                        title="Remove from comparison"
                       >
                         <X size={14} />
                       </button>
 
-                      <div style={{ height: '140px', borderRadius: '8px', overflow: 'hidden', marginBottom: '0.75rem' }}>
+                      <div style={{ height: '140px', borderRadius: '10px', overflow: 'hidden', marginBottom: '0.75rem' }}>
                         <img
                           src={prop.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80'}
                           alt={prop.title}
@@ -211,16 +215,17 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                         />
                       </div>
 
-                      <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--gold-primary)', marginBottom: '0.25rem' }}>
-                        {formatPrice(prop.price || 15000000)}
+                      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--gold-primary)', textTransform: 'uppercase' }}>
+                        {prop.propertyType || 'Villa'}
                       </div>
-
-                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0.35rem' }}>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {prop.title}
                       </div>
-
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        {prop.location?.city || 'India'}
+                        {prop.location?.address ? `${prop.location.address}, ` : ''}{prop.location?.city}
+                      </div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--gold-primary)', marginTop: '0.4rem' }}>
+                        {formatPrice(prop.price || 12500000)}
                       </div>
                     </th>
                   ))}
@@ -231,7 +236,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 {/* Section: Core Specifications */}
                 <tr>
                   <td colSpan={compareList.length + 1} style={{
-                    padding: '1rem 0.5rem 0.5rem',
+                    padding: '1.5rem 0.5rem 0.5rem',
                     fontSize: '0.85rem',
                     fontWeight: 800,
                     color: 'var(--gold-primary)',
@@ -245,7 +250,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Super Built-up Area</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem', fontWeight: 700 }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {p.specifications?.areaSqFt || 2200} sq.ft
                     </td>
                   ))}
@@ -257,7 +262,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                     const price = p.price || 12000000;
                     const sqft = p.specifications?.areaSqFt || 2000;
                     return (
-                      <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem', fontWeight: 700, color: 'var(--gold-primary)' }}>
+                      <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', fontWeight: 700, color: 'var(--gold-primary)' }}>
                         ₹{Math.round(price / sqft).toLocaleString()}/sqft
                       </td>
                     );
@@ -267,7 +272,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Bedrooms / Layout</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                       {p.specifications?.bedrooms || 3} BHK
                     </td>
                   ))}
@@ -276,7 +281,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Bathrooms</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                       {p.specifications?.bathrooms || 3} Baths
                     </td>
                   ))}
@@ -285,7 +290,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Facing (Vastu)</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                       {p.specifications?.facing || 'North-East'}
                     </td>
                   ))}
@@ -294,7 +299,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Covered Parking</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                       {p.specifications?.parkingSpaces || 2} Covered Slots
                     </td>
                   ))}
@@ -317,7 +322,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>RERA Registration</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#22C55E', fontSize: '0.85rem', fontWeight: 700 }}>
                         <ShieldCheck size={16} />
                         {p.compliance?.reraNumber || 'TN/01/B/0142'}
@@ -329,7 +334,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Electricity Board (EB) Meter</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#22C55E', fontSize: '0.85rem', fontWeight: 700 }}>
                         <Zap size={15} /> Active Meter Verified
                       </div>
@@ -340,7 +345,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                 <tr>
                   <td style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Patta / Deed Freehold</td>
                   {compareList.map(p => (
-                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#22C55E', fontSize: '0.85rem', fontWeight: 700 }}>
                         <CheckCircle2 size={15} /> Clear Title & CC Issued
                       </div>
@@ -368,8 +373,8 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                     {compareList.map(p => {
                       const hasAmenity = (p.amenities || []).some(a => a.toLowerCase().includes(amenity.toLowerCase().slice(0, 5))) || true;
                       return (
-                        <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-                          {hasAmenity ? <CheckCircle2 size={18} color="#22C55E" /> : <XCircle size={18} color="rgba(255,255,255,0.2)" />}
+                        <td key={p.propertyId} style={{ padding: '0.85rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+                          {hasAmenity ? <CheckCircle2 size={18} color="#22C55E" /> : <XCircle size={18} color="var(--text-tertiary)" />}
                         </td>
                       );
                     })}
@@ -382,26 +387,31 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                   {compareList.map(p => (
                     <td key={p.propertyId} style={{
                       padding: '1.25rem',
-                      backgroundColor: '#111118',
+                      backgroundColor: 'var(--bg-card)',
                       borderRadius: '0 0 14px 14px',
-                      border: '1px solid rgba(212, 175, 55, 0.25)',
+                      border: '1px solid var(--border-gold)',
                       borderTop: 'none'
                     }}>
                       <button
                         onClick={() => onNavigate(`property-${p.propertyId}`)}
                         style={{
                           width: '100%',
-                          padding: '0.75rem',
-                          borderRadius: 'var(--radius-full)',
+                          padding: '0.65rem',
+                          borderRadius: '8px',
                           backgroundColor: 'var(--gold-primary)',
-                          color: '#070709',
-                          fontWeight: 800,
+                          color: 'var(--gold-text)',
+                          fontWeight: 700,
                           fontSize: '0.85rem',
                           border: 'none',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.35rem',
+                          transition: 'all 0.2s ease'
                         }}
                       >
-                        Inspect Residence
+                        View Estate <ArrowRight size={14} />
                       </button>
                     </td>
                   ))}
@@ -411,12 +421,12 @@ export const ComparePage: React.FC<ComparePageProps> = ({
           </div>
         )}
 
-        {/* Modal: Property Picker */}
+        {/* Modal: Property Selector for comparison */}
         {pickerOpen && (
           <div style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
             backdropFilter: 'blur(8px)',
             zIndex: 1000,
             display: 'flex',
@@ -427,21 +437,22 @@ export const ComparePage: React.FC<ComparePageProps> = ({
             <div style={{
               width: '100%',
               maxWidth: '640px',
-              backgroundColor: '#12121A',
-              border: '1px solid rgba(212, 175, 55, 0.3)',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-gold)',
               borderRadius: '16px',
               padding: '1.75rem',
               maxHeight: '80vh',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              boxShadow: 'var(--shadow-lg)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   Select Property to Compare
                 </h3>
                 <button
                   onClick={() => setPickerOpen(false)}
-                  style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
                 >
                   <X size={20} />
                 </button>
@@ -460,13 +471,19 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                         gap: '1rem',
                         padding: '0.75rem',
                         borderRadius: '10px',
-                        backgroundColor: '#181824',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border-subtle)',
                         cursor: 'pointer',
-                        transition: 'border-color 0.2s'
+                        transition: 'all 0.2s ease'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--gold-primary)'}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
                     >
                       <img
                         src={prop.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=120&q=80'}
@@ -474,14 +491,15 @@ export const ComparePage: React.FC<ComparePageProps> = ({
                         style={{ width: '64px', height: '64px', borderRadius: '8px', objectFit: 'cover' }}
                       />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#FFFFFF' }}>{prop.title}</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{prop.title}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                           {prop.location?.city} • {prop.specifications?.bedrooms || 3} BHK • {prop.specifications?.areaSqFt} sqft
                         </div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--gold-primary)', marginTop: '0.2rem' }}>
+                          {formatPrice(prop.price || 12500000)}
+                        </div>
                       </div>
-                      <div style={{ fontWeight: 800, color: 'var(--gold-primary)', fontSize: '1rem' }}>
-                        {formatPrice(prop.price || 12000000)}
-                      </div>
+                      <Plus size={20} color="var(--gold-primary)" />
                     </div>
                   ))}
               </div>

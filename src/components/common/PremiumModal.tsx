@@ -129,13 +129,13 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
           maxWidth: '920px',
           maxHeight: '92vh',
           overflowY: 'auto',
-          backgroundColor: '#0A0A0F',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-xl, 16px)',
-          border: '1.5px solid rgba(212, 175, 55, 0.4)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.15)',
+          border: '1.5px solid var(--border)',
+          boxShadow: 'var(--shadow-xl)',
           padding: '2rem 2.25rem',
           position: 'relative',
-          color: '#FFFFFF'
+          color: 'var(--text-primary)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -149,9 +149,9 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            color: 'var(--text-secondary, #A0A0B0)',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -173,7 +173,7 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
             borderRadius: '9999px',
             backgroundColor: 'rgba(212, 175, 55, 0.15)',
             border: '1px solid rgba(212, 175, 55, 0.35)',
-            color: 'var(--gold-primary, #D4AF37)',
+            color: 'var(--gold-primary)',
             fontSize: '0.8rem',
             fontWeight: 800,
             letterSpacing: '0.05em',
@@ -190,14 +190,12 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
             letterSpacing: '-0.02em',
             lineHeight: 1.25,
             marginBottom: '0.65rem',
-            background: 'linear-gradient(135deg, #FFFFFF 0%, #D4AF37 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            color: 'var(--text-primary)'
           }}>
             Unlock Direct Owner Communication
           </h2>
 
-          <p style={{ fontSize: '0.925rem', color: '#B0B0C0', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             {reason} You get <strong>3 free communications</strong> on standard accounts. Upgrade now to connect directly with owners, verified developers, and private estate agents.
           </p>
         </div>
@@ -219,11 +217,11 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
                   position: 'relative',
                   padding: '1.75rem 1.4rem',
                   borderRadius: 'var(--radius-lg, 12px)',
-                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : '#0E0E16',
-                  border: isSelected ? '2px solid #D4AF37' : '1px solid rgba(255, 255, 255, 0.08)',
-                  boxShadow: isSelected ? '0 10px 30px rgba(212, 175, 55, 0.2)' : 'none',
+                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : 'var(--bg-secondary)',
+                  border: isSelected ? '2px solid var(--gold-primary)' : '1px solid var(--border)',
+                  boxShadow: isSelected ? 'var(--shadow-card)' : 'none',
                   cursor: 'pointer',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease',
                   display: 'flex',
                   flexDirection: 'column'
                 }}
@@ -235,15 +233,15 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
                     top: '-11px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    backgroundColor: tier.popular ? '#D4AF37' : '#9333EA',
-                    color: tier.popular ? '#070709' : '#FFFFFF',
+                    backgroundColor: tier.popular ? 'var(--gold-primary)' : '#9333EA',
+                    color: tier.popular ? 'var(--gold-text)' : '#FFFFFF',
                     fontSize: '0.65rem',
                     fontWeight: 900,
                     letterSpacing: '0.06em',
                     padding: '0.2rem 0.65rem',
                     borderRadius: '9999px',
                     whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                   }}>
                     {tier.badge}
                   </div>
@@ -251,10 +249,10 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                       {tier.name}
                     </h3>
-                    <p style={{ fontSize: '0.78rem', color: '#9090A0', marginTop: '0.25rem', lineHeight: 1.35 }}>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.35 }}>
                       {tier.description}
                     </p>
                   </div>
@@ -262,18 +260,18 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
 
                 {/* Price Display */}
                 <div style={{ margin: '1rem 0 1.25rem', display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '1.1rem', color: '#D4AF37', fontWeight: 700 }}>₹</span>
-                  <span style={{ fontSize: '2.4rem', fontWeight: 900, color: '#FFFFFF', lineHeight: 1 }}>
+                  <span style={{ fontSize: '1.1rem', color: 'var(--gold-primary)', fontWeight: 700 }}>₹</span>
+                  <span style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1 }}>
                     {tier.price}
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: '#888899' }}>one-time</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>one-time</span>
                 </div>
 
                 {/* Feature Bullet points */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', flex: 1, marginBottom: '1.5rem' }}>
                   {tier.features.map((feat, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.8rem', color: '#D0D0DE' }}>
-                      <Check size={14} color="#D4AF37" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      <Check size={14} color="var(--gold-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -295,14 +293,14 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
                     fontWeight: 700,
                     fontSize: '0.85rem',
                     cursor: processing ? 'not-allowed' : 'pointer',
-                    backgroundColor: isSelected ? 'var(--gold-primary, #D4AF37)' : 'rgba(255, 255, 255, 0.08)',
-                    color: isSelected ? '#070709' : '#FFFFFF',
+                    backgroundColor: isSelected ? 'var(--gold-primary)' : 'var(--bg-card)',
+                    color: isSelected ? 'var(--gold-text)' : 'var(--text-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    transition: 'all 0.2s',
-                    boxShadow: isSelected ? '0 4px 16px rgba(212, 175, 55, 0.4)' : 'none'
+                    transition: 'background-color 250ms ease, color 250ms ease, transform 200ms ease',
+                    boxShadow: isSelected ? '0 4px 16px rgba(198, 161, 91, 0.4)' : 'none'
                   }}
                 >
                   {processing && selectedTier === tier.id ? (
@@ -329,19 +327,19 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({
           justifyContent: 'center',
           gap: '1.5rem',
           flexWrap: 'wrap',
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          borderTop: '1px solid var(--border)',
           paddingTop: '1.25rem',
           fontSize: '0.8rem',
-          color: '#8A8A9C'
+          color: 'var(--text-tertiary)'
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <ShieldCheck size={15} color="#D4AF37" /> 100% Verified Real Estate Owners
+            <ShieldCheck size={15} color="var(--gold-primary)" /> 100% Verified Real Estate Owners
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <PhoneCall size={15} color="#D4AF37" /> Instant Phone & Direct WhatsApp
+            <PhoneCall size={15} color="var(--gold-primary)" /> Instant Phone & Direct WhatsApp
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Sparkles size={15} color="#D4AF37" /> Instant Activation
+            <Sparkles size={15} color="var(--gold-primary)" /> Instant Activation
           </span>
         </div>
       </div>

@@ -314,9 +314,9 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     }}>
       {/* 1. Breadcrumb Bar */}
       <div style={{
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        borderBottom: '1px solid var(--border-subtle)',
         padding: '0.85rem 1.5rem',
-        backgroundColor: '#0A0A0F',
+        backgroundColor: 'var(--bg-secondary)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -619,8 +619,9 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               gap: '1rem',
               padding: '1.5rem',
               borderRadius: 'var(--radius-lg, 12px)',
-              backgroundColor: '#101017',
-              border: '1px solid rgba(212, 175, 55, 0.16)'
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Layout</span>
@@ -736,10 +737,11 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             <div style={{
               padding: '1.5rem',
               borderRadius: 'var(--radius-lg, 12px)',
-              backgroundColor: '#101017',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)' }}>
                 Property Overview & Architectural Highlights
               </h2>
               <div style={{
@@ -758,10 +760,11 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
             <div style={{
               padding: '1.5rem',
               borderRadius: 'var(--radius-lg, 12px)',
-              backgroundColor: '#101017',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.25rem', color: '#FFFFFF' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
                 Signature Amenities & Club Facilities
               </h2>
 
@@ -809,10 +812,11 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
             <div style={{
               padding: '1.5rem',
               borderRadius: 'var(--radius-lg, 12px)',
-              backgroundColor: '#101017',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)' }}>
                 Prime Location & Neighborhood Transit
               </h2>
 
@@ -857,12 +861,13 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
             <div style={{
               padding: '1.5rem',
               borderRadius: 'var(--radius-lg, 12px)',
-              backgroundColor: '#101017',
-              border: '1px solid rgba(212, 175, 55, 0.16)'
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
                 <Calculator size={22} color="var(--gold-primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Home Loan EMI Estimation
                 </h2>
               </div>
@@ -958,11 +963,11 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
           <div style={{
             position: 'sticky',
             top: '5.5rem',
-            backgroundColor: '#101017',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-gold)',
             borderRadius: 'var(--radius-xl, 16px)',
             padding: '1.75rem',
-            boxShadow: '0 20px 48px rgba(0,0,0,0.6)',
+            boxShadow: 'var(--shadow-lg)',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.25rem'
@@ -1188,13 +1193,13 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
           <div style={{
             width: '100%',
             maxWidth: '480px',
-            backgroundColor: '#12121A',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-gold)',
             borderRadius: '16px',
             padding: '1.75rem',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.8)'
+            boxShadow: 'var(--shadow-lg)'
           }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
               Schedule Free In-Person Site Visit
             </h3>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
@@ -1371,14 +1376,14 @@ Features full Vastu compliance, private elevator foyer access, multi-tier biomet
         }}>
           <div style={{
             width: '100%',
-            maxWidth: '480px',
-            backgroundColor: '#12121A',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            maxWidth: '520px',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-gold)',
             borderRadius: '16px',
             padding: '1.75rem',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.8)'
+            boxShadow: 'var(--shadow-lg)'
           }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.35rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
               Connect with Verified Property Representative
             </h3>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>

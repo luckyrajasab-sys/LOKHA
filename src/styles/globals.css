@@ -20,8 +20,48 @@ body {
   color: var(--text-primary);
   line-height: 1.55;
   min-height: 100vh;
-  transition: background-color var(--transition-base), color var(--transition-base);
+  transition: background-color 250ms ease, color 250ms ease;
   overflow-x: hidden;
+}
+
+/* Global Theme Transitions: smooth color, background, border and shadow transitions */
+body,
+header,
+nav,
+footer,
+main,
+section,
+article,
+aside,
+div,
+span,
+p,
+h1, h2, h3, h4, h5, h6,
+a,
+button,
+input,
+textarea,
+select,
+table,
+tr,
+th,
+td,
+svg {
+  transition:
+    background-color 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease,
+    fill 250ms ease,
+    stroke 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after,
+  body, header, nav, footer, main, section, article, div, button, input {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 a {

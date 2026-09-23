@@ -125,16 +125,16 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-primary, #070709)',
-      color: 'var(--text-primary, #FFFFFF)',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '5rem'
     }}>
       {/* City Switcher Bar */}
       <div style={{
         padding: '1rem 1.5rem',
-        backgroundColor: '#0C0C12',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        backgroundColor: 'var(--bg-card)',
+        borderBottom: '1px solid var(--border)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -148,14 +148,14 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
             style={{
               padding: '0.5rem 1.25rem',
               borderRadius: 'var(--radius-full)',
-              backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-              color: activeCity === c ? '#070709' : 'var(--text-secondary)',
-              border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
+              backgroundColor: activeCity === c ? 'var(--gold-primary)' : 'var(--bg-secondary)',
+              color: activeCity === c ? 'var(--gold-text)' : 'var(--text-secondary)',
+              border: `1px solid ${activeCity === c ? 'var(--gold-primary)' : 'var(--border)'}`,
               fontSize: '0.85rem',
               fontWeight: 700,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
-              transition: 'all 0.2s'
+              transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
             }}
           >
             {c}
@@ -177,7 +177,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(7,7,9,0.3) 0%, rgba(7,7,9,0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(7,7,9,0.2) 0%, rgba(7,7,9,0.85) 100%)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
@@ -209,13 +209,13 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
             </p>
 
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-              <div style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Benchmark Capital Rate</span>
+              <div style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.65)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', display: 'block' }}>Benchmark Capital Rate</span>
                 <strong style={{ fontSize: '1.1rem', color: '#FFFFFF' }}>{currentData.avgRate}</strong>
               </div>
 
-              <div style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Capital Appreciation</span>
+              <div style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.65)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', display: 'block' }}>Capital Appreciation</span>
                 <strong style={{ fontSize: '1.1rem', color: '#22C55E' }}>{currentData.yoyAppreciation}</strong>
               </div>
             </div>
@@ -226,20 +226,21 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1.25rem' }}>
         {/* City Overview */}
         <div style={{
-          backgroundColor: '#101018',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--border)',
           padding: '2rem',
           marginBottom: '3rem',
           lineHeight: 1.8,
           fontSize: '1rem',
-          color: 'var(--text-secondary)'
+          color: 'var(--text-secondary)',
+          boxShadow: 'var(--shadow-card)'
         }}>
           {currentData.description}
         </div>
 
         {/* Micro-markets Grid */}
-        <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>
           Top Micro-Markets in {activeCity}
         </h2>
 
@@ -253,16 +254,28 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
             <div
               key={i}
               style={{
-                backgroundColor: '#101018',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '14px',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
+                border: '1px solid var(--border)',
                 padding: '1.5rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.65rem'
+                gap: '0.65rem',
+                boxShadow: 'var(--shadow-card)',
+                transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.borderColor = 'var(--gold-primary)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
               }}
             >
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF' }}>{m.name}</h3>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>{m.name}</h3>
               <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--gold-primary)' }}>{m.avgRate}</div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{m.highlight}</p>
 
@@ -272,16 +285,17 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
                   marginTop: 'auto',
                   padding: '0.5rem',
                   borderRadius: 'var(--radius-full)',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
                   fontSize: '0.8rem',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.3rem'
+                  gap: '0.3rem',
+                  transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
                 }}
               >
                 Browse Listings <ArrowRight size={13} />
@@ -292,13 +306,14 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
 
         {/* Infrastructure Highlights */}
         <div style={{
-          backgroundColor: '#101018',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: '16px',
-          border: '1px solid rgba(212, 175, 55, 0.2)',
+          border: '1px solid var(--border)',
           padding: '2rem',
-          marginBottom: '3rem'
+          marginBottom: '3rem',
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
             Infrastructure & Growth Drivers
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
@@ -316,10 +331,11 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
           textAlign: 'center',
           padding: '3rem 2rem',
           borderRadius: '16px',
-          background: 'linear-gradient(180deg, #161622 0%, #0F0F17 100%)',
-          border: '1px solid rgba(212, 175, 55, 0.3)'
+          background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
             Explore Verified Luxury Estates in {activeCity}
           </h3>
           <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.5rem', fontSize: '0.9rem' }}>
@@ -331,12 +347,13 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ selectedCity, onNa
               padding: '0.85rem 2.25rem',
               borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--gold-primary)',
-              color: '#070709',
+              color: 'var(--gold-text)',
               fontWeight: 800,
               fontSize: '0.95rem',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(212, 175, 55, 0.35)'
+              boxShadow: '0 4px 20px rgba(198, 161, 91, 0.35)',
+              transition: 'background-color 250ms ease, transform 200ms ease'
             }}
           >
             View {activeCity} Portfolio →

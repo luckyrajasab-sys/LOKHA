@@ -83,8 +83,8 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
       {/* Hero Header */}
       <div style={{
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #101018 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border-subtle)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -94,8 +94,8 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
             gap: '0.45rem',
             padding: '0.35rem 0.95rem',
             borderRadius: 'var(--radius-full)',
-            backgroundColor: 'rgba(212, 175, 55, 0.08)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            backgroundColor: 'var(--gold-subtle)',
+            border: '1px solid var(--border-gold)',
             fontSize: '0.8rem',
             color: 'var(--gold-primary)',
             fontWeight: 700,
@@ -109,7 +109,7 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
             fontWeight: 800,
             lineHeight: 1.2,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Luxury Home Loan EMI Calculator
           </h1>
@@ -137,14 +137,14 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
         }}>
           {/* Inputs Box */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.2)',
+            border: '1px solid var(--border-subtle)',
             padding: '2rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '2rem',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+            boxShadow: 'var(--shadow-sm)'
           }}>
             {/* 1. Loan Amount */}
             <div>
@@ -224,14 +224,14 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
 
           {/* Results Summary Box */}
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            border: '1px solid var(--border-gold)',
             padding: '2rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem',
-            boxShadow: '0 12px 32px rgba(0,0,0,0.6)'
+            boxShadow: 'var(--shadow-md)'
           }}>
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -243,7 +243,7 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
               </div>
             </div>
 
-            <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.08)' }} />
+            <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)' }} />
 
             {/* Principal vs Interest Visual Bar */}
             <div>
@@ -251,21 +251,21 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
                 <span style={{ color: '#22C55E' }}>Principal: {principalPct}% ({formatINR(loanAmount)})</span>
                 <span style={{ color: '#EAB308' }}>Interest: {interestPct}% ({formatINR(totalInterest)})</span>
               </div>
-              <div style={{ height: '12px', borderRadius: '6px', overflow: 'hidden', display: 'flex', backgroundColor: '#1A1A24' }}>
+              <div style={{ height: '12px', borderRadius: '6px', overflow: 'hidden', display: 'flex', backgroundColor: 'var(--bg-secondary)' }}>
                 <div style={{ width: `${principalPct}%`, backgroundColor: '#22C55E' }} />
                 <div style={{ width: `${interestPct}%`, backgroundColor: '#EAB308' }} />
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+              <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Total Interest Payable</span>
                 <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#EAB308' }}>{formatINR(totalInterest)}</span>
               </div>
 
-              <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+              <div style={{ padding: '1rem', borderRadius: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block' }}>Total Overall Payment</span>
-                <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>{formatINR(totalPayment)}</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>{formatINR(totalPayment)}</span>
               </div>
             </div>
 
@@ -279,7 +279,8 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
                 color: 'var(--gold-primary)',
                 fontSize: '0.85rem',
                 fontWeight: 700,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
               {showAmortization ? 'Hide Amortization Table' : 'View Year-by-Year Amortization Table ↓'}
@@ -294,7 +295,7 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
                 padding: '0.95rem',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--gold-primary)',
-                color: '#070709',
+                color: 'var(--gold-text)',
                 fontSize: '0.9rem',
                 fontWeight: 800,
                 border: 'none',
@@ -303,7 +304,8 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.4rem',
-                boxShadow: '0 4px 16px rgba(212, 175, 55, 0.35)'
+                boxShadow: 'var(--shadow-gold)',
+                transition: 'all 0.2s ease'
               }}
             >
               Apply for Pre-Approved HNWI Home Loan <ArrowRight size={16} />
@@ -314,19 +316,20 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
         {/* Amortization Table (Accordion/Toggle) */}
         {showAmortization && (
           <div style={{
-            backgroundColor: '#101018',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid rgba(212, 175, 55, 0.2)',
+            border: '1px solid var(--border-subtle)',
             padding: '1.75rem',
             marginBottom: '3rem',
+            boxShadow: 'var(--shadow-sm)',
             overflowX: 'auto'
           }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
               Year-by-Year Loan Amortization Schedule
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--text-tertiary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
                   <th style={{ padding: '0.75rem' }}>Year</th>
                   <th style={{ padding: '0.75rem' }}>Principal Paid</th>
                   <th style={{ padding: '0.75rem' }}>Interest Paid</th>
@@ -335,11 +338,11 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
               </thead>
               <tbody>
                 {generateAmortization().map(row => (
-                  <tr key={row.year} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', fontSize: '0.875rem' }}>
+                  <tr key={row.year} style={{ borderBottom: '1px solid var(--border-subtle)', fontSize: '0.875rem' }}>
                     <td style={{ padding: '0.75rem', fontWeight: 700, color: 'var(--gold-primary)' }}>Year {row.year}</td>
                     <td style={{ padding: '0.75rem', color: '#22C55E' }}>₹{row.principalPaid.toLocaleString('en-IN')}</td>
                     <td style={{ padding: '0.75rem', color: '#EAB308' }}>₹{row.interestPaid.toLocaleString('en-IN')}</td>
-                    <td style={{ padding: '0.75rem', color: '#FFFFFF' }}>₹{row.balance.toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '0.75rem', color: 'var(--text-primary)' }}>₹{row.balance.toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
               </tbody>
@@ -349,7 +352,7 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
 
         {/* Indian Bank Comparisons */}
         <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
             Premier Bank Mortgage Rate Comparison
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
@@ -365,18 +368,19 @@ export const EmiCalculatorPage: React.FC<EmiCalculatorPageProps> = ({ onNavigate
               <div
                 key={i}
                 style={{
-                  backgroundColor: '#101018',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  border: '1px solid var(--border-subtle)',
                   padding: '1.25rem',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.75rem'
+                  gap: '0.75rem',
+                  boxShadow: 'var(--shadow-sm)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Building size={18} color="var(--gold-primary)" />
-                  <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>{b.name}</span>
+                  <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{b.name}</span>
                 </div>
 
                 <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--gold-primary)' }}>

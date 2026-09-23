@@ -89,7 +89,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
         <h1 style={{
           fontSize: 'clamp(1.8rem, 3.5vw, 2.75rem)',
           fontWeight: 800,
-          color: '#FFFFFF',
+          color: 'var(--text-primary)',
           letterSpacing: '-0.02em',
           margin: 0
         }}>
@@ -115,9 +115,10 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
         justifyContent: 'space-between',
         gap: '1rem',
         padding: '1.1rem 1.25rem',
-        backgroundColor: 'var(--bg-secondary, #0E0E14)',
+        backgroundColor: 'var(--bg-card)',
         borderRadius: 'var(--radius-lg, 12px)',
-        border: '1px solid rgba(212, 175, 55, 0.2)',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-card)',
         marginBottom: '2.5rem'
       }}>
         {/* Category Tabs */}
@@ -139,12 +140,12 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                 cursor: 'pointer',
                 border: selectedCategory === tab.id
                   ? '1px solid var(--gold-primary)'
-                  : '1px solid rgba(255, 255, 255, 0.08)',
+                  : '1px solid var(--border)',
                 backgroundColor: selectedCategory === tab.id
                   ? 'var(--gold-primary)'
-                  : 'rgba(255, 255, 255, 0.03)',
-                color: selectedCategory === tab.id ? '#070709' : 'var(--text-secondary)',
-                transition: 'all 0.2s'
+                  : 'var(--bg-secondary)',
+                color: selectedCategory === tab.id ? 'var(--gold-text)' : 'var(--text-secondary)',
+                transition: 'background-color 250ms ease, color 250ms ease, border-color 250ms ease'
               }}
             >
               {tab.label}
@@ -161,9 +162,9 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
               style={{
                 padding: '0.5rem 2rem 0.5rem 0.9rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: '#15151D',
-                color: '#FFFFFF',
-                border: '1px solid rgba(212, 175, 55, 0.25)',
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
                 fontSize: '0.8125rem',
                 cursor: 'pointer',
                 outline: 'none'
@@ -217,7 +218,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Building size={20} color="var(--gold-primary)" />
-                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                   New House Rent & Lease Opportunities
                 </h2>
               </div>
@@ -315,7 +316,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                   <h3 style={{
                     fontSize: '1rem',
                     fontWeight: 700,
-                    color: '#FFFFFF',
+                    color: 'var(--text-primary)',
                     margin: '0 0 0.4rem',
                     lineHeight: 1.3
                   }}>
@@ -337,7 +338,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                   <div style={{
                     marginTop: 'auto',
                     paddingTop: '0.85rem',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderTop: '1px solid var(--border)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between'
@@ -374,7 +375,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
         <section style={{ marginBottom: '3.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <Flame size={20} color="#F97316" />
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
               Special Rental Offers & Platform Deals
             </h2>
           </div>
@@ -393,12 +394,13 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                 style={{
                   padding: '1.5rem',
                   borderRadius: 'var(--radius-lg, 12px)',
-                  backgroundColor: 'rgba(212, 175, 55, 0.04)',
-                  border: '1px solid rgba(212, 175, 55, 0.28)',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.75rem',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -409,7 +411,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                     letterSpacing: '0.06em',
                     padding: '0.2rem 0.7rem',
                     borderRadius: 'var(--radius-full)',
-                    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                    backgroundColor: 'rgba(212, 175, 55, 0.15)',
                     color: 'var(--gold-primary)',
                     display: 'flex',
                     alignItems: 'center',
@@ -424,7 +426,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                 </div>
 
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 0.35rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.35rem' }}>
                     {offer.title}
                   </h3>
                   <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--gold-primary)', marginBottom: '0.35rem' }}>
@@ -440,15 +442,15 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    backgroundColor: 'var(--bg-secondary)',
                     padding: '0.5rem 0.85rem',
                     borderRadius: '8px',
-                    border: '1px dashed rgba(212, 175, 55, 0.4)',
+                    border: '1px dashed var(--border)',
                     marginTop: '0.5rem'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Tag size={15} color="var(--gold-primary)" />
-                      <span style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.08em', color: '#FFFFFF' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--text-primary)' }}>
                         {offer.code}
                       </span>
                     </div>
@@ -460,7 +462,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                         borderRadius: 'var(--radius-sm, 6px)',
                         backgroundColor: copiedCode === offer.code ? 'rgba(34, 197, 94, 0.2)' : 'rgba(212, 175, 55, 0.15)',
                         border: '1px solid rgba(212, 175, 55, 0.3)',
-                        color: copiedCode === offer.code ? '#22C55E' : 'var(--gold-primary)',
+                        color: copiedCode === offer.code ? '#16A34A' : 'var(--gold-primary)',
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -485,7 +487,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <ShieldCheck size={20} color="var(--gold-primary)" />
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
               Platform Releases & Updates
             </h2>
           </div>
@@ -500,11 +502,13 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                 style={{
                   padding: '1.25rem 1.5rem',
                   borderRadius: 'var(--radius-lg, 12px)',
-                  backgroundColor: 'var(--bg-secondary, #0E0E14)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  boxShadow: 'var(--shadow-card)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.65rem'
+                  gap: '0.65rem',
+                  transition: 'background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -533,7 +537,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
                   </span>
                 </div>
 
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {update.title}
                 </div>
 

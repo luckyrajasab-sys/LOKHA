@@ -157,23 +157,23 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
       position: 'relative',
       height: 'calc(100vh - 4.75rem)',
       display: 'flex',
-      backgroundColor: '#070709',
-      color: '#FFFFFF',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)',
       overflow: 'hidden'
     }}>
       {/* Left Sidebar: Filters & Property Cards */}
       <div style={{
         width: 'min(440px, 100vw)',
         height: '100%',
-        backgroundColor: '#0D0D14',
-        borderRight: '1px solid rgba(212, 175, 55, 0.2)',
+        backgroundColor: 'var(--bg-secondary)',
+        borderRight: '1px solid var(--border-subtle)',
         display: 'flex',
         flexDirection: 'column',
         zIndex: 10,
-        boxShadow: '8px 0 24px rgba(0,0,0,0.5)'
+        boxShadow: 'var(--shadow-md)'
       }}>
         {/* Top Filter Bar */}
-        <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--border-subtle)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
             <button
               onClick={() => onNavigate('properties')}
@@ -196,7 +196,7 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
             </span>
           </div>
 
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
             Explore Estates on Map
           </h2>
 
@@ -213,9 +213,10 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
                   cursor: 'pointer',
-                  backgroundColor: selectedCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.04)',
-                  color: selectedCity === c ? '#070709' : 'var(--text-secondary)',
-                  border: `1px solid ${selectedCity === c ? 'var(--gold-primary)' : 'rgba(255, 255, 255, 0.1)'}`
+                  backgroundColor: selectedCity === c ? 'var(--gold-primary)' : 'var(--bg-card)',
+                  color: selectedCity === c ? 'var(--gold-text)' : 'var(--text-secondary)',
+                  border: `1px solid ${selectedCity === c ? 'var(--gold-primary)' : 'var(--border-subtle)'}`,
+                  transition: 'all 0.2s ease'
                 }}
               >
                 {c}
@@ -240,14 +241,27 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
                   key={prop.propertyId}
                   onClick={() => handleCardClick(prop)}
                   style={{
-                    backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : '#14141E',
+                    backgroundColor: isSelected ? 'var(--gold-subtle)' : 'var(--bg-card)',
                     borderRadius: '12px',
-                    border: isSelected ? '2px solid var(--gold-primary)' : '1px solid rgba(255, 255, 255, 0.08)',
+                    border: isSelected ? '2px solid var(--gold-primary)' : '1px solid var(--border-subtle)',
                     padding: '0.75rem',
                     cursor: 'pointer',
                     display: 'flex',
                     gap: '0.85rem',
-                    transition: 'all 0.2s'
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = 'var(--border-gold)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }
                   }}
                 >
                   <img
@@ -263,7 +277,7 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
                     <div style={{
                       fontWeight: 700,
                       fontSize: '0.85rem',
-                      color: '#FFFFFF',
+                      color: 'var(--text-primary)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
@@ -273,6 +287,7 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.2rem 0' }}>
                       {prop.location?.city} • {prop.specifications?.bedrooms || 3} BHK • {prop.specifications?.areaSqFt} sqft
                     </div>
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -282,12 +297,13 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
                         padding: '0.25rem 0.65rem',
                         borderRadius: 'var(--radius-full)',
                         backgroundColor: 'var(--gold-primary)',
-                        color: '#070709',
+                        color: 'var(--gold-text)',
                         fontSize: '0.7rem',
                         fontWeight: 800,
                         border: 'none',
                         cursor: 'pointer',
-                        marginTop: '0.2rem'
+                        marginTop: '0.2rem',
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       View Details
@@ -312,15 +328,15 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 100,
-            backgroundColor: 'rgba(13, 13, 20, 0.95)',
+            backgroundColor: 'var(--bg-glass)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(212, 175, 55, 0.4)',
+            border: '1px solid var(--border-gold)',
             borderRadius: '16px',
             padding: '0.75rem 1.25rem',
             display: 'flex',
             alignItems: 'center',
             gap: '1rem',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.8)',
+            boxShadow: 'var(--shadow-lg)',
             maxWidth: '90%'
           }}>
             <div>
@@ -330,8 +346,8 @@ export const MapSearchPage: React.FC<MapSearchPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '0.85rem' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#FFFFFF', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ borderLeft: '1px solid var(--border-subtle)', paddingLeft: '0.85rem' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {selectedProp.title}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>

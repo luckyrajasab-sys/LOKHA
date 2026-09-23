@@ -118,8 +118,8 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
       <div style={{
         position: 'relative',
         padding: '3.5rem 1.5rem 2.5rem',
-        background: 'linear-gradient(180deg, #0A1224 0%, #070709 100%)',
-        borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+        background: 'linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)',
+        borderBottom: '1px solid var(--border-subtle)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -132,7 +132,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
             backgroundColor: 'rgba(59, 130, 246, 0.12)',
             border: '1px solid rgba(59, 130, 246, 0.3)',
             fontSize: '0.8rem',
-            color: '#60A5FA',
+            color: '#3B82F6',
             fontWeight: 700,
             marginBottom: '1rem'
           }}>
@@ -144,7 +144,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
             fontWeight: 800,
             lineHeight: 1.15,
             marginBottom: '0.85rem',
-            color: '#FFFFFF'
+            color: 'var(--text-primary)'
           }}>
             Rent Premium Homes & Penthouse Suites
           </h1>
@@ -163,15 +163,15 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#101726',
+            backgroundColor: 'var(--bg-card)',
             borderRadius: 'var(--radius-full)',
-            border: '1px solid rgba(59, 130, 246, 0.35)',
+            border: '1px solid var(--border-medium)',
             padding: '0.4rem 0.6rem 0.4rem 1.25rem',
             maxWidth: '680px',
             margin: '0 auto',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.5)'
+            boxShadow: 'var(--shadow-md)'
           }}>
-            <Search size={18} color="#60A5FA" style={{ flexShrink: 0, marginRight: '0.65rem' }} />
+            <Search size={18} color="#3B82F6" style={{ flexShrink: 0, marginRight: '0.65rem' }} />
             <input
               type="text"
               placeholder="Search localities (e.g. Koramangala, ECR Chennai, Bandra West)..."
@@ -181,23 +181,39 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                 flex: 1,
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: '#FFFFFF',
+                color: 'var(--text-primary)',
                 fontSize: '0.9rem',
                 outline: 'none'
               }}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-tertiary)',
+                  cursor: 'pointer',
+                  padding: '0.25rem 0.5rem',
+                  fontSize: '0.8rem'
+                }}
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '2rem 1.25rem' }}>
-        {/* Filter controls */}
+        {/* Filter Bar */}
         <div style={{
-          backgroundColor: '#0F121C',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-xl, 14px)',
-          border: '1px solid rgba(59, 130, 246, 0.15)',
+          border: '1px solid var(--border-subtle)',
           padding: '1.25rem',
           marginBottom: '2rem',
+          boxShadow: 'var(--shadow-sm)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem'
@@ -205,7 +221,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
           {/* City Chips */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginRight: '0.25rem', whiteSpace: 'nowrap' }}>
-              Metro Hub:
+              City:
             </span>
             {cities.map((city) => (
               <button
@@ -216,12 +232,12 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                   borderRadius: 'var(--radius-full)',
                   fontSize: '0.8rem',
                   fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  backgroundColor: selectedCity === city ? '#3B82F6' : 'rgba(255, 255, 255, 0.04)',
+                  backgroundColor: selectedCity === city ? '#3B82F6' : 'var(--bg-secondary)',
                   color: selectedCity === city ? '#FFFFFF' : 'var(--text-secondary)',
-                  border: `1px solid ${selectedCity === city ? '#3B82F6' : 'rgba(255, 255, 255, 0.1)'}`,
-                  transition: 'all 0.2s'
+                  border: '1px solid ' + (selectedCity === city ? '#3B82F6' : 'var(--border-subtle)'),
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 {city}
@@ -229,6 +245,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
             ))}
           </div>
 
+          {/* Furnishing, BHK, Max Rent Filters */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -236,7 +253,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
             flexWrap: 'wrap',
             gap: '1rem',
             paddingTop: '0.85rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+            borderTop: '1px solid var(--border-subtle)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
               <select
@@ -245,9 +262,9 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                 style={{
                   padding: '0.5rem 0.85rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: '#161B2E',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-medium)',
+                  color: 'var(--text-primary)',
                   fontSize: '0.85rem'
                 }}
               >
@@ -260,9 +277,9 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                 style={{
                   padding: '0.5rem 0.85rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: '#161B2E',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-medium)',
+                  color: 'var(--text-primary)',
                   fontSize: '0.85rem'
                 }}
               >
@@ -357,23 +374,25 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                   key={prop.propertyId}
                   onClick={() => onNavigate(`property-${prop.propertyId}`)}
                   style={{
-                    backgroundColor: '#101420',
+                    backgroundColor: 'var(--bg-card)',
                     borderRadius: 'var(--radius-xl, 16px)',
-                    border: '1px solid rgba(59, 130, 246, 0.15)',
+                    border: '1px solid var(--border-subtle)',
                     overflow: 'hidden',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+                    boxShadow: 'var(--shadow-sm)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-6px)';
-                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.borderColor = 'var(--border-gold)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.15)';
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                   }}
                 >
                   <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
@@ -386,8 +405,8 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                         padding: '0.2rem 0.55rem',
                         borderRadius: 'var(--radius-full)',
                         backgroundColor: 'rgba(7, 7, 9, 0.85)',
-                        color: '#60A5FA',
-                        border: '1px solid rgba(59, 130, 246, 0.4)'
+                        color: 'var(--gold-primary)',
+                        border: '1px solid var(--border-gold)'
                       }}>
                         {prop.specifications?.furnishing || 'Furnished'}
                       </span>
@@ -421,11 +440,11 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                       padding: '0.35rem 0.75rem',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: 'rgba(7, 7, 9, 0.88)',
-                      color: '#60A5FA',
+                      color: 'var(--gold-primary)',
                       fontSize: '1.15rem',
                       fontWeight: 900
                     }}>
-                      ₹{(rent / 1000).toFixed(0)}k <span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'var(--text-secondary)' }}>/ month</span>
+                      ₹{(rent / 1000).toFixed(0)}k <span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'rgba(255, 255, 255, 0.8)' }}>/ month</span>
                     </div>
                   </div>
 
@@ -434,7 +453,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                       fontSize: '1.05rem',
                       fontWeight: 700,
                       marginBottom: '0.4rem',
-                      color: '#FFFFFF',
+                      color: 'var(--text-primary)',
                       lineHeight: 1.3,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
@@ -445,7 +464,7 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                     </h3>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.825rem', marginBottom: '1rem' }}>
-                      <MapPin size={14} color="#60A5FA" style={{ flexShrink: 0 }} />
+                      <MapPin size={14} color="var(--gold-primary)" style={{ flexShrink: 0 }} />
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {prop.location?.address ? `${prop.location.address}, ${prop.location.city}` : prop.location?.city || 'India'}
                       </span>
@@ -457,29 +476,29 @@ export const RentPage: React.FC<RentPageProps> = ({ onNavigate }) => {
                       justifyContent: 'space-between',
                       padding: '0.65rem 0.85rem',
                       borderRadius: 'var(--radius-md)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                      backgroundColor: 'var(--bg-secondary)',
                       fontSize: '0.8rem',
                       color: 'var(--text-secondary)',
                       marginTop: 'auto',
                       marginBottom: '1rem'
                     }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Bed size={15} color="#60A5FA" /> {prop.specifications?.bedrooms || 3} BHK
+                        <Bed size={15} color="var(--gold-primary)" /> {prop.specifications?.bedrooms || 3} BHK
                       </span>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Bath size={15} color="#60A5FA" /> {prop.specifications?.bathrooms || 3} Baths
+                        <Bath size={15} color="var(--gold-primary)" /> {prop.specifications?.bathrooms || 3} Baths
                       </span>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Maximize2 size={15} color="#60A5FA" /> {prop.specifications?.areaSqFt || 1800} sqft
+                        <Maximize2 size={15} color="var(--gold-primary)" /> {prop.specifications?.areaSqFt || 1800} sqft
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-subtle)' }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
                         Security Deposit: ₹{(deposit / 1000).toFixed(0)}k
                       </span>
 
-                      <span style={{ fontSize: '0.825rem', fontWeight: 700, color: '#60A5FA', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         View Lease Details <ArrowRight size={14} />
                       </span>
                     </div>
