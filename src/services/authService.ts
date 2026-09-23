@@ -7,7 +7,7 @@ import {
   updateUserProfile as updateFirebaseUserProfile
 } from '../firebase/auth';
 import { auth, db } from '../firebase/config';
-import { RecaptchaVerifier, signInWithPhoneNumber, deleteUser } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, deleteUser, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile, AccountPurpose } from '../types/auth';
 import type { FirebaseUserRole, UserDocument } from '../types/firebaseModels';
@@ -107,8 +107,17 @@ export async function requestPhoneOTP(phoneNumber: string, appVerifier: Recaptch
 }
 
 export async function confirmPhoneOTP(confirmationResult: any, otpCode: string, phoneNumber?: string): Promise<UserProfile> {
-  const result = await confirmationResult.confirm(otpCode);
-  const fbUser = result.user;
+  let fbUser;
+  if (typeof confirmationResult === 'string') {
+    const credential = PhoneAuthProvider.credential(confirmationResult, otpCode);
+    const userCredential = await signInWithCredential(auth, credential);
+    fbUser = userCredential.user;
+  } else if (confirmationResult && typeof confirmationResult.confirm === 'function') {
+    const result = await confirmationResult.confirm(otpCode);
+    fbUser = result.user;
+  } else {
+    throw new Error('Invalid verification session. Please request a new OTP.');
+  }
   return {
     id: fbUser.uid,
     displayName: fbUser.displayName || 'Phone User',
