@@ -119,3 +119,46 @@ export async function fetchAllInquiries(): Promise<InquiryDocument[]> {
     return [];
   }
 }
+
+/**
+ * Creates a comprehensive multi-step institutional or buyer requirement inquiry.
+ * Saves to Firestore 'inquiries' collection and dispatches admin notifications.
+ */
+export async function createDetailedEnquiry(
+  payload: Omit<InquiryDocument, 'inquiryId' | 'status' | 'createdAt' | 'updatedAt'>
+): Promise<InquiryDocument> {
+  const colRef = collection(db, INQUIRIES_COL);
+  const newDocRef = doc(colRef);
+  const now = new Date().toISOString();
+
+  const inquiry: InquiryDocument = {
+    ...payload,
+    inquiryId: newDocRef.id,
+    propertyId: payload.propertyId || 'custom-enquiry',
+    ownerId: payload.ownerId || 'admin',
+    status: 'new',
+    createdAt: now,
+    updatedAt: now
+  };
+
+  await setDoc(newDocRef, inquiry);
+
+  // Send admin notification
+  try {
+    const adminNotifRef = doc(collection(db, USERS_COL, 'admin', 'notifications'));
+    await setDoc(adminNotifRef, {
+      notificationId: adminNotifRef.id,
+      type: 'detailed_enquiry',
+      title: `New ${payload.intent?.toUpperCase() || 'CUSTOM'} Requirement Submitted`,
+      message: `${payload.buyerName || 'Client'} submitted a request for ${payload.propertyType || 'properties'} in ${payload.locationDetails?.city || 'India'}.`,
+      relatedInquiryId: newDocRef.id,
+      isRead: false,
+      createdAt: now
+    });
+  } catch (err) {
+    console.warn('Could not post admin notification for detailed enquiry:', err);
+  }
+
+  return inquiry;
+}
+

@@ -42,12 +42,18 @@ interface PropertiesPageProps {
   initialSearchQuery?: string;
   initialLocationQuery?: string;
   initialViewType?: string;
+  initialPropertyType?: string;
+  initialListingType?: string;
+  initialPurpose?: string;
 }
 
 export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   initialSearchQuery = '',
   initialLocationQuery = '',
-  initialViewType = 'properties'
+  initialViewType = 'properties',
+  initialPropertyType,
+  initialListingType,
+  initialPurpose
 }) => {
   const { user, userDoc } = useAuth();
   const { showToast } = useToast();
@@ -70,10 +76,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [userCoordinates, setUserCoordinates] = useState<[number, number] | undefined>(undefined);
   const [isDetectingLoc, setIsDetectingLoc] = useState(false);
   const [selectedCity, setSelectedCity] = useState('All');
-  const [selectedType, setSelectedType] = useState<PropertyType | 'All'>('All');
-  const [selectedListingType, setSelectedListingType] = useState<PropertyListingType | 'All'>('All');
+  const [selectedType, setSelectedType] = useState<PropertyType | 'All'>(
+    (initialPropertyType as PropertyType) || 'All'
+  );
+  const [selectedListingType, setSelectedListingType] = useState<PropertyListingType | 'All'>(
+    (initialListingType as PropertyListingType) || 'All'
+  );
   const [selectedPurpose, setSelectedPurpose] = useState<'All' | 'Buy' | 'Rent' | 'Lease' | 'Stays' | 'Invest'>(
-    initialViewType === 'stays' ? 'Stays' : 'All'
+    (initialPurpose as any) || (initialViewType === 'stays' ? 'Stays' : 'All')
   );
   const [selectedFurnished, setSelectedFurnished] = useState<FurnishedStatus | 'All'>('All');
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
@@ -102,6 +112,18 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       }
     }
   }, [initialLocationQuery, locationQuery, selectedCity]);
+
+  useEffect(() => {
+    if (initialPropertyType !== undefined) {
+      setSelectedType((initialPropertyType as PropertyType) || 'All');
+    }
+    if (initialListingType !== undefined) {
+      setSelectedListingType((initialListingType as PropertyListingType) || 'All');
+    }
+    if (initialPurpose !== undefined) {
+      setSelectedPurpose(initialPurpose as any);
+    }
+  }, [initialPropertyType, initialListingType, initialPurpose]);
 
   // Premium Modal State
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);

@@ -168,7 +168,28 @@ export interface InquiryDocument {
   message: string;
   phone?: string;
   status: InquiryStatus;
-  intent?: 'buy' | 'rent' | 'lease' | 'stay';
+  intent?: 'buy' | 'rent' | 'lease' | 'stay' | 'sell' | 'list' | 'invest' | string;
+  propertyType?: string;
+  locationDetails?: {
+    country?: string;
+    state?: string;
+    city?: string;
+    locality?: string;
+  };
+  budgetRange?: {
+    min?: number;
+    max?: number;
+  };
+  requirements?: {
+    bhk?: string;
+    areaSqFt?: string;
+    furnishing?: string;
+    parking?: string;
+    amenities?: string[];
+  };
+  timeline?: string;
+  preferredContactMethod?: string;
+  additionalRequirements?: string;
   createdAt: string;
   updatedAt: string;
 }

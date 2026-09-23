@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/common/Toast';
-import { Navbar } from './components/common/Navbar';
-import { Sidebar } from './components/common/Sidebar';
+import { Navbar, type NavFilterOptions } from './components/common/Navbar';
 import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { Footer } from './components/common/Footer';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
@@ -50,7 +49,7 @@ function parsePathToView(pathname: string): { view: string; param?: string } {
 
 export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
-  const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(false);
+  const [navFilters, setNavFilters] = useState<NavFilterOptions>({});
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
   const [globalSearchLocation, setGlobalSearchLocation] = useState<string>('');
   const [compareItems, setCompareItems] = useState<PropertyDocument[]>([]);
@@ -71,9 +70,12 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePop);
   }, []);
 
-  const handleNavigate = (view: string, location?: string) => {
+  const handleNavigate = (view: string, location?: string, filters?: NavFilterOptions) => {
     if (location !== undefined) {
       setGlobalSearchLocation(location);
+    }
+    if (filters !== undefined) {
+      setNavFilters(filters);
     }
     setCurrentView(view);
 
@@ -258,6 +260,9 @@ export const App: React.FC = () => {
             initialSearchQuery={globalSearchQuery}
             initialLocationQuery={globalSearchLocation}
             initialViewType={currentView}
+            initialPropertyType={navFilters.type}
+            initialListingType={navFilters.listingType}
+            initialPurpose={navFilters.purpose}
           />
         );
 
@@ -276,90 +281,47 @@ export const App: React.FC = () => {
             flexDirection: 'column',
             backgroundColor: 'var(--bg-primary, #070709)',
             color: 'var(--text-primary, #FFFFFF)',
-            position: 'relative'
+            position: 'relative',
+            width: '100%',
+            overflowX: 'hidden'
           }}>
-            {/* Top Navigation Bar: Spans 100% full screen width edge-to-edge */}
+            {/* Apple-Inspired Luxury Top Navigation Bar */}
             <Navbar
               currentView={currentView}
               onNavigate={handleNavigate}
               onSearch={handleSearch}
-              onToggleSidebar={() => setSidebarExpanded(prev => !prev)}
             />
 
-            {/* Body Layout: Sidebar + Main Content Layout */}
+            {/* Main Application Body (100% Full Width Edge-to-Edge) */}
             <div style={{
               display: 'flex',
+              flexDirection: 'column',
               flex: 1,
-              position: 'relative',
-              minHeight: 'calc(100vh - 4.75rem)'
-            }}>
-              {/* 1. Animated Expandable Sidebar (Present on all pages) */}
-              <Sidebar
-                currentView={currentView}
-                onNavigate={handleNavigate}
-                isExpanded={sidebarExpanded}
-                onToggleExpanded={(val?: boolean) => setSidebarExpanded(prev => val !== undefined ? val : !prev)}
-              />
+              width: '100%',
+              minWidth: 0,
+              position: 'relative'
+            }} className="main-content-layout">
+              {/* Dynamic View Content */}
+              <main style={{ flex: 1, width: '100%' }}>
+                {renderContent()}
+              </main>
 
-              {/* Mobile Backdrop Overlay when sidebar is expanded on small screens */}
-              {sidebarExpanded && (
-                <div
-                  onClick={() => setSidebarExpanded(false)}
-                  style={{
-                    position: 'fixed',
-                    top: '4.75rem',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-                    backdropFilter: 'blur(4px)',
-                    zIndex: 290
-                  }}
-                  className="mobile-backdrop"
-                />
-              )}
+              {/* Footer */}
+              <Footer onNavigate={handleNavigate} />
 
-              {/* 2. Main Layout Area (Smoothly expands/contracts with sidebar) */}
-              <div style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                minWidth: 0,
-                marginLeft: sidebarExpanded
-                  ? 'var(--sidebar-expanded-w, 260px)'
-                  : 'var(--sidebar-collapsed-w, 68px)',
-                transition: 'margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1)'
-              }} className="main-content-layout">
-                {/* Dynamic View Content */}
-                <main style={{ flex: 1 }}>
-                  {renderContent()}
-                </main>
-
-                {/* Footer */}
-                <Footer onNavigate={handleNavigate} />
-
-                {/* Mobile Bottom Navigation Bar */}
-                <MobileBottomNav currentView={currentView} onNavigate={handleNavigate} />
-              </div>
+              {/* Mobile Bottom Navigation Bar */}
+              <MobileBottomNav currentView={currentView} onNavigate={handleNavigate} />
             </div>
           </div>
 
           <style>{`
+            .main-content-layout {
+              width: 100% !important;
+              margin-left: 0 !important;
+            }
             @media (max-width: 768px) {
               .main-content-layout {
-                margin-left: 0 !important;
                 padding-bottom: 4.75rem !important;
-                width: 100% !important;
-                min-width: 0 !important;
-              }
-              .mobile-backdrop {
-                display: block !important;
-                z-index: 290 !important;
-              }
-            }
-            @media (min-width: 769px) {
-              .mobile-backdrop {
-                display: none !important;
               }
             }
           `}</style>

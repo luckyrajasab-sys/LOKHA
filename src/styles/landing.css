@@ -1,0 +1,281 @@
+/* ==========================================================================
+   LOKHA Editorial Landing Page Styles
+   ========================================================================== */
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scroll Reveal Animations */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger-1 { transition-delay: 100ms; }
+.reveal-stagger-2 { transition-delay: 200ms; }
+.reveal-stagger-3 { transition-delay: 300ms; }
+.reveal-stagger-4 { transition-delay: 400ms; }
+
+/* Hero Specifics */
+.landing-hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+  padding: 5rem 1.5rem 4rem;
+}
+
+.landing-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.92);
+  transition: transform 0.6s ease-out;
+  z-index: 0;
+}
+
+.landing-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(250, 249, 246, 0.75) 0%,
+    rgba(250, 249, 246, 0.45) 40%,
+    rgba(250, 249, 246, 0.95) 100%
+  );
+  z-index: 1;
+}
+
+[data-theme="dark"] .landing-hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(7, 7, 9, 0.82) 0%,
+    rgba(7, 7, 9, 0.55) 40%,
+    rgba(7, 7, 9, 0.98) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Floating Property Card */
+.floating-preview-card {
+  position: absolute;
+  right: 2rem;
+  bottom: 2.5rem;
+  z-index: 3;
+  width: 320px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: floatCard 6s ease-in-out infinite alternate;
+}
+
+@keyframes floatCard {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}
+
+@media (max-width: 1024px) {
+  .floating-preview-card {
+    display: none;
+  }
+}
+
+/* Editorial Typography */
+.editorial-title {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  color: var(--text-primary);
+}
+
+.editorial-sub {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold-primary);
+  margin-bottom: 0.85rem;
+}
+
+/* Asymmetric Architectural Gallery Grid */
+.editorial-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 180px;
+  gap: 1.25rem;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  background-color: var(--border-subtle);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.04);
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem;
+  color: #FFFFFF;
+}
+
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+/* Gallery Span Variants */
+.g-col-6-row-2 { grid-column: span 6; grid-row: span 2; }
+.g-col-3-row-2 { grid-column: span 3; grid-row: span 2; }
+.g-col-3-row-1 { grid-column: span 3; grid-row: span 1; }
+.g-col-4-row-2 { grid-column: span 4; grid-row: span 2; }
+.g-col-4-row-1 { grid-column: span 4; grid-row: span 1; }
+.g-col-8-row-2 { grid-column: span 8; grid-row: span 2; }
+
+@media (max-width: 900px) {
+  .editorial-gallery-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 160px;
+  }
+  .g-col-6-row-2 { grid-column: span 6; grid-row: span 2; }
+  .g-col-3-row-2 { grid-column: span 3; grid-row: span 2; }
+  .g-col-3-row-1 { grid-column: span 3; grid-row: span 1; }
+  .g-col-4-row-2 { grid-column: span 6; grid-row: span 2; }
+  .g-col-4-row-1 { grid-column: span 3; grid-row: span 1; }
+  .g-col-8-row-2 { grid-column: span 6; grid-row: span 2; }
+}
+
+@media (max-width: 600px) {
+  .editorial-gallery-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+  .gallery-item {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
+
+/* Lightbox Modal */
+.lightbox-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(7, 7, 9, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 1080px;
+  max-height: 85vh;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.lightbox-content img {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* Number Counter Animation */
+.stat-counter {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+/* Capabilities Hover Glow */
+.capability-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.capability-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-gold);
+  box-shadow: var(--shadow-md);
+}
+
+/* FAQ Accordion Transitions */
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.faq-answer.is-open {
+  grid-template-rows: 1fr;
+}
+
+.faq-answer-inner {
+  overflow: hidden;
+}
